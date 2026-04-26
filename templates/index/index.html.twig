@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bienvenue{% endblock %}
+
+{% block body %}
+<div class="container min-vh-100 d-flex flex-column justify-content-center py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-3 fw-bold">Bienvenue 👋</h1>
+        <p class="lead text-secondary">Choisissez une section pour commencer :</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <div class="col-md-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title">MaCuisine</h5>
+                    <p class="card-text text-secondary">Réseau social de partage de recettes.</p>
+                    <a href="{{ path('app_macuisine_index') }}" class="btn btn-primary mt-auto">Ouvrir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title">MonPoids</h5>
+                    <p class="card-text text-secondary">Suivi de votre IMC et de vos mesures corporelles.</p>
+                    <a href="{{ path('app_monpoids_index') }}" class="btn btn-primary mt-auto">Ouvrir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
