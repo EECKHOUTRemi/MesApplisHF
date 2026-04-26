@@ -15,11 +15,11 @@ class Relationship
 
     #[ORM\ManyToOne(inversedBy: 'relationships')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $userId1 = null;
+    private ?User $user1 = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $userId2 = null;
+    private ?User $user2 = null;
 
     #[ORM\Column(length: 10)]
     private ?string $status = null;
@@ -35,26 +35,26 @@ class Relationship
         return $this->id;
     }
 
-    public function getUserId1(): ?User
+    public function getuser1(): ?User
     {
-        return $this->userId1;
+        return $this->user1;
     }
 
-    public function setUserId1(?User $userId1): static
+    public function setuser1(?User $user1): static
     {
-        $this->userId1 = $userId1;
+        $this->user1 = $user1;
 
         return $this;
     }
 
-    public function getUserId2(): ?User
+    public function getuser2(): ?User
     {
-        return $this->userId2;
+        return $this->user2;
     }
 
-    public function setUserId2(?User $userId2): static
+    public function setuser2(?User $user2): static
     {
-        $this->userId2 = $userId2;
+        $this->user2 = $user2;
 
         return $this;
     }
