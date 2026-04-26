@@ -1,0 +1,38 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ path('app_index') }}">
+            <i class="bi bi-collection-fill fs-4" aria-hidden="true"></i>
+            <span class="fw-bold">MesApplisHF</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Ouvrir le menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_macuisine_index') }}">MaCuisine</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_monpoids_index') }}">MonPoids</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-2" href="{{ path('app_profil_index') }}" title="Profil" aria-label="Profil">
+                        <i class="bi bi-person-circle fs-4" aria-hidden="true"></i>
+                        <span class="d-lg-none">Profil</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-2" href="{{ path('app_logout') }}" title="Déconnexion" aria-label="Déconnexion">
+                        <i id="logout-icon" class="bi bi-door-open-fill fs-4" style="color: red;" onmouseover="this.style.color='pink'" onmouseout="this.style.color='red'" aria-hidden="true"></i>
+                        <span class="d-lg-none">Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

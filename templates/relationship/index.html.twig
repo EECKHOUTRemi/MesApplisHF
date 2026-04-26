@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Relationship index{% endblock %}
+
+{% block body %}
+    <h1>Relationship index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Status</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for relationship in relationships %}
+            <tr>
+                <td>{{ relationship.id }}</td>
+                <td>{{ relationship.status }}</td>
+                <td>{{ relationship.createdAt ? relationship.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ relationship.updatedAt ? relationship.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_relationship_show', {'id': relationship.id}) }}">show</a>
+                    <a href="{{ path('app_relationship_edit', {'id': relationship.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_relationship_new') }}">Create new</a>
+{% endblock %}
