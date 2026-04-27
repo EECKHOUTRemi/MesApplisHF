@@ -10,15 +10,82 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/monpoids/measurement', name: 'app_MonPoids_measurement_')]
 final class MeasurementController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(MeasurementRepository $measurementRepository): Response
+    public function index(MeasurementRepository $measurementRepository, ChartBuilderInterface $chartBuilder): Response
     {
+        $measurements = $measurementRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'ASC']);
+        $dates = array_map(
+            fn (Measurement $measurement) => $measurement->getCreatedAt()->format('d/m/Y'),
+            $measurements,
+        );
+        $chestData = array_map(
+            fn (Measurement $measurement) => $measurement->getChest(),
+            $measurements,
+        );
+        $hipsData = array_map(
+            fn (Measurement $measurement) => $measurement->getHips(),
+            $measurements,
+        );
+        $thighData = array_map(
+            fn (Measurement $measurement) => $measurement->getThigh(),
+            $measurements,
+        );
+        $waistData = array_map(
+            fn (Measurement $measurement) => $measurement->getWaist(),
+            $measurements,
+        );
+
+        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
+
+        $chart->setData([
+            'labels' => $dates,
+            'datasets' => [
+                [
+                    'label' => 'Poitrine',
+                    'backgroundColor' => 'rgb(255, 99, 132)',
+                    'borderColor' => 'rgb(255, 99, 132)',
+                    'data' => $chestData,
+                ],
+                [
+                    'label' => 'Hanches',
+                    'backgroundColor' => 'rgb(54, 162, 235)',
+                    'borderColor' => 'rgb(54, 162, 235)',
+                    'data' => $hipsData,
+                ],
+                [
+                    'label' => 'Cuisse',
+                    'backgroundColor' => 'rgb(255, 205, 86)',
+                    'borderColor' => 'rgb(255, 205, 86)',
+                    'data' => $thighData,
+                ],
+                [
+                    'label' => 'Taille',
+                    'backgroundColor' => 'rgb(75, 192, 192)',
+                    'borderColor' => 'rgb(75, 192, 192)',
+                    'data' => $waistData,
+                ],
+            ],
+        ]);
+
+        $chart->setOptions([
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'scales' => [
+                'y' => [
+                    'suggestedMin' => 0,
+                    'suggestedMax' => 100,
+                ],
+            ],
+        ]);
         return $this->render('MonPoids/measurement/index.html.twig', [
             'measurements' => $measurementRepository->findAll(),
+            'chart' => $chart,
         ]);
     }
 
