@@ -3,8 +3,10 @@
 namespace App\Controller\MonPoids;
 
 use App\Entity\MonPoids\Bmi;
+use App\Entity\User;
 use App\Form\MonPoids\BmiType;
 use App\Repository\MonPoids\BmiRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,13 +72,22 @@ final class BmiController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepo): Response
     {
+        $user = $userRepo->find($this->getUser());
+        $userHeight = $user->getHeight();
         $bmi = new Bmi();
+        if ($userHeight) {
+            $bmi->setHeight($userHeight);
+        }
         $form = $this->createForm(BmiType::class, $bmi);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if (!$userHeight) {
+                $user->setHeight($bmi->getHeight());
+                $entityManager->persist($user);
+            }
             $bmi->setCreatedAt(new \DateTimeImmutable());
             $bmi->setUser($this->getUser());
             $bmi->setBmi($bmi->getHeight(), $bmi->getWeight());
