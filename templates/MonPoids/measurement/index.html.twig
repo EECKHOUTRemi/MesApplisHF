@@ -19,46 +19,72 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Poitrine (cm)</th>
-                        <th>Hanches (cm)</th>
-                        <th>Cuisse (cm)</th>
-                        <th>Taille (cm)</th>
-                        <th>Date</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for measurement in measurements %}
-                    <tr>
-                        <td>{{ measurement.chest }}</td>
-                        <td>{{ measurement.hips }}</td>
-                        <td>{{ measurement.thigh }}</td>
-                        <td>{{ measurement.waist }}</td>
-                        <td>{{ measurement.createdAt ? measurement.createdAt|date('d/m/Y H:i') : '—' }}</td>
-                        <td class="text-end">
-                            <a href="{{ path('app_MonPoids_measurement_show', {'id': measurement.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{{ path('app_MonPoids_measurement_edit', {'id': measurement.id}) }}" class="btn btn-sm btn-outline-secondary" title="Modifier">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center text-secondary py-5">
-                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                            Aucun enregistrement pour le moment.
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+    {% set chartDefault = measurements|length > 2 %}
+    <ul class="nav nav-pills mb-3" id="measurementViewTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link{{ chartDefault ? '' : ' active' }}" id="table-tab" data-bs-toggle="pill" data-bs-target="#table-view" type="button" role="tab" aria-controls="table-view" aria-selected="{{ chartDefault ? 'false' : 'true' }}">
+                <i class="bi bi-table me-1"></i> Tableau
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link{{ chartDefault ? ' active' : '' }}" id="chart-tab" data-bs-toggle="pill" data-bs-target="#chart-view" type="button" role="tab" aria-controls="chart-view" aria-selected="{{ chartDefault ? 'true' : 'false' }}">
+                <i class="bi bi-graph-up me-1"></i> Graphique
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="measurementViewTabsContent">
+        <div class="tab-pane fade{{ chartDefault ? '' : ' show active' }}" id="table-view" role="tabpanel" aria-labelledby="table-tab">
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Poitrine (cm)</th>
+                                <th>Hanches (cm)</th>
+                                <th>Cuisse (cm)</th>
+                                <th>Taille (cm)</th>
+                                <th>Date</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for measurement in measurements %}
+                            <tr>
+                                <td>{{ measurement.chest }}</td>
+                                <td>{{ measurement.hips }}</td>
+                                <td>{{ measurement.thigh }}</td>
+                                <td>{{ measurement.waist }}</td>
+                                <td>{{ measurement.createdAt ? measurement.createdAt|date('d/m/Y H:i') : '—' }}</td>
+                                <td class="text-end">
+                                    <a href="{{ path('app_MonPoids_measurement_show', {'id': measurement.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_MonPoids_measurement_edit', {'id': measurement.id}) }}" class="btn btn-sm btn-outline-secondary" title="Modifier">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-secondary py-5">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    Aucun enregistrement pour le moment.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade{{ chartDefault ? ' show active' : '' }}" id="chart-view" role="tabpanel" aria-labelledby="chart-tab">
+            <div class="card shadow-sm p-3">
+                <div style="height: 480px;">
+                    {{ render_chart(chart) }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
