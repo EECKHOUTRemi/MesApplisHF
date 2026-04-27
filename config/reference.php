@@ -1286,6 +1286,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type SymfonycastsVerifyEmailConfig = array{
  *     lifetime?: int|Param, // The length of time in seconds that a signed URI is valid for after it is created. // Default: 3600
  * }
+ * @psalm-type StimulusConfig = array{
+ *     controller_paths?: list<scalar|Param|null>,
+ *     controllers_json?: scalar|Param|null, // Default: "%kernel.project_dir%/assets/controllers.json"
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1297,6 +1301,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     twig?: TwigConfig,
  *     twig_extra?: TwigExtraConfig,
  *     symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
+ *     stimulus?: StimulusConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1309,6 +1314,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig?: TwigConfig,
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
+ *         stimulus?: StimulusConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1321,6 +1327,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig?: TwigConfig,
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
+ *         stimulus?: StimulusConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1333,6 +1340,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig?: TwigConfig,
  *         twig_extra?: TwigExtraConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
+ *         stimulus?: StimulusConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
