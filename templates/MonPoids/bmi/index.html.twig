@@ -20,18 +20,27 @@
     </div>
 
     {% set chartDefault = bmis|length > 2 %}
-    <ul class="nav nav-pills mb-3" id="bmiViewTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link{{ chartDefault ? '' : ' active' }}" id="table-tab" data-bs-toggle="pill" data-bs-target="#table-view" type="button" role="tab" aria-controls="table-view" aria-selected="{{ chartDefault ? 'false' : 'true' }}">
-                <i class="bi bi-table me-1"></i> Tableau
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link{{ chartDefault ? ' active' : '' }}" id="chart-tab" data-bs-toggle="pill" data-bs-target="#chart-view" type="button" role="tab" aria-controls="chart-view" aria-selected="{{ chartDefault ? 'true' : 'false' }}">
-                <i class="bi bi-graph-up me-1"></i> Graphique
-            </button>
-        </li>
-    </ul>
+    {% if bmis|length > 1 %}
+        <ul class="nav nav-pills mb-3" id="bmiViewTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link{{ chartDefault ? '' : ' active' }}" id="table-tab" data-bs-toggle="pill" data-bs-target="#table-view" type="button" role="tab" aria-controls="table-view" aria-selected="{{ chartDefault ? 'false' : 'true' }}">
+                    <i class="bi bi-table me-1"></i> Tableau
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link{{ chartDefault ? ' active' : '' }}" id="chart-tab" data-bs-toggle="pill" data-bs-target="#chart-view" type="button" role="tab" aria-controls="chart-view" aria-selected="{{ chartDefault ? 'true' : 'false' }}">
+                    <i class="bi bi-graph-up me-1"></i> Graphique
+                </button>
+            </li>
+        </ul>
+        <div class="tab-pane fade{{ chartDefault ? ' show active' : '' }}" id="chart-view" role="tabpanel" aria-labelledby="chart-tab">
+            <div class="card shadow-sm p-3">
+                <div style="height: 480px;">
+                    {{ render_chart(chart) }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
     <div class="tab-content" id="bmiViewTabsContent">
         <div class="tab-pane fade{{ chartDefault ? '' : ' show active' }}" id="table-view" role="tabpanel" aria-labelledby="table-tab">
@@ -73,14 +82,6 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade{{ chartDefault ? ' show active' : '' }}" id="chart-view" role="tabpanel" aria-labelledby="chart-tab">
-            <div class="card shadow-sm p-3">
-                <div style="height: 480px;">
-                    {{ render_chart(chart) }}
                 </div>
             </div>
         </div>
