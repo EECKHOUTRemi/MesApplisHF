@@ -10,15 +10,62 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/monpoids/bmi', name: 'app_MonPoids_bmi_')]
 final class BmiController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(BmiRepository $bmiRepository): Response
+    public function index(BmiRepository $bmiRepository, ChartBuilderInterface $chartBuilder): Response
     {
+        $bmis = $bmiRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'ASC']);
+        $dates = array_map(
+            fn (Bmi $bmi) => $bmi->getCreatedAt()->format('d/m/Y'),
+            $bmis,
+        );
+        $bmiData = array_map(
+            fn (Bmi $bmi) => $bmi->getBmi(),
+            $bmis,
+        );
+        $weightData = array_map(
+            fn (Bmi $bmi) => $bmi->getWeight(),
+            $bmis,
+        );
+        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
+
+        $chart->setData([
+            'labels' => $dates,
+            'datasets' => [
+                [
+                    'label' => 'IMC',
+                    'backgroundColor' => 'rgb(255, 99, 132)',
+                    'borderColor' => 'rgb(255, 99, 132)',
+                    'data' => $bmiData,
+                ],
+                [
+                    'label' => 'Poids',
+                    'backgroundColor' => 'rgb(54, 162, 235)',
+                    'borderColor' => 'rgb(54, 162, 235)',
+                    'data' => $weightData,
+                ],
+            ],
+        ]);
+
+        $chart->setOptions([
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'scales' => [
+                'y' => [
+                    'suggestedMin' => 0,
+                    'suggestedMax' => 100,
+                ],
+            ],
+        ]);
+        
         return $this->render('MonPoids/bmi/index.html.twig', [
-            'bmis' => $bmiRepository->findAll(),
+            'bmis' => $bmis,
+            'chart' => $chart,
         ]);
     }
 
