@@ -13,11 +13,8 @@ final class ProfilController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(): Response
     {
-        $profil = $this->getUser();
-        dd($profil);
-
-        return $this->render('profile/index.html.twig', [
-            'profil' => $profile,
+        return $this->render('profil/index.html.twig', [
+            'profil' => $this->getUser(),
         ]);
     }
 }
