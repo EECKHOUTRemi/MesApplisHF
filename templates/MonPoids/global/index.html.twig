@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MonPoids{% endblock %}
+
+{% block body %}
+<div class="container d-flex flex-column justify-content-center py-5" style="min-height: calc(100vh - 70px);">
+    <div class="text-center mb-5">
+        <h1 class="display-3 fw-bold">MonPoids <i class="bi bi-heart-pulse text-primary"></i></h1>
+        <p class="lead text-secondary">Suivez votre IMC et vos mesures corporelles au fil du temps.</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <div class="col-md-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center d-flex flex-column">
+                    <i class="bi bi-speedometer2 display-4 text-primary mb-3" aria-hidden="true"></i>
+                    <h5 class="card-title">IMC</h5>
+                    <p class="card-text text-secondary">Calculez et historisez votre indice de masse corporelle.</p>
+                    <a href="{{ path('app_MonPoids_bmi_index') }}" class="btn btn-primary mt-auto">Ouvrir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center d-flex flex-column">
+                    <i class="bi bi-rulers display-4 text-primary mb-3" aria-hidden="true"></i>
+                    <h5 class="card-title">Mesures</h5>
+                    <p class="card-text text-secondary">Enregistrez vos mensurations et suivez leur évolution.</p>
+                    <a href="{{ path('app_MonPoids_measurement_index') }}" class="btn btn-primary mt-auto">Ouvrir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

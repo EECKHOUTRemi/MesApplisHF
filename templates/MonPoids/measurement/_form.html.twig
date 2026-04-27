@@ -1,0 +1,11 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <div class="d-flex gap-2 mt-3">
+        <button class="btn btn-primary">
+            <i class="bi bi-check-lg"></i> {{ button_label|default('Enregistrer') }}
+        </button>
+        <a href="{{ path('app_MonPoids_measurement_index') }}" class="btn btn-outline-secondary">Annuler</a>
+    </div>
+{{ form_end(form) }}
