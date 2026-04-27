@@ -1,7 +1,14 @@
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
 
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+    {{ form_label(form.chest, 'Poitrine (cm)') }}
+    {{ form_widget(form.chest) }}
+    {{ form_label(form.hips, 'Hanches (cm)') }}
+    {{ form_widget(form.hips) }}
+    {{ form_label(form.thigh, 'Cuisse (cm)') }}
+    {{ form_widget(form.thigh) }}
+    {{ form_label(form.waist, 'Taille (cm)') }}
+    {{ form_widget(form.waist) }}
     <div class="d-flex gap-2 mt-3">
         <button class="btn btn-primary">
             <i class="bi bi-check-lg"></i> {{ button_label|default('Enregistrer') }}

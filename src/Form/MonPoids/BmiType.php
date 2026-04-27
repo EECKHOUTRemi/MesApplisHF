@@ -16,14 +16,6 @@ class BmiType extends AbstractType
         $builder
             ->add('height')
             ->add('weight')
-            ->add('bmi')
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 

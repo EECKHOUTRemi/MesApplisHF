@@ -30,6 +30,9 @@ final class BmiController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $bmi->setCreatedAt(new \DateTimeImmutable());
+            $bmi->setUser($this->getUser());
+            $bmi->setBmi($bmi->getHeight(), $bmi->getWeight());
             $entityManager->persist($bmi);
             $entityManager->flush();
 
@@ -57,6 +60,7 @@ final class BmiController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $bmi->setBmi($bmi->getHeight(), $bmi->getWeight());
             $entityManager->flush();
 
             return $this->redirectToRoute('app_MonPoids_bmi_index', [], Response::HTTP_SEE_OTHER);
