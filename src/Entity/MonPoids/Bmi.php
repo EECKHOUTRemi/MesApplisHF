@@ -76,9 +76,11 @@ class Bmi
         return $this->bmi;
     }
 
-    public function setBmi(float $bmi): static
+    public function setBmi(float $height, float $weight): static
     {
-        $this->bmi = $bmi;
+        $bmi = $weight / ($height / 100) ** 2;
+
+        $this->bmi = round($bmi, 2);
 
         return $this;
     }

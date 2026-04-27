@@ -18,13 +18,6 @@ class MeasurementType extends AbstractType
             ->add('hips')
             ->add('thigh')
             ->add('waist')
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 

@@ -36,7 +36,7 @@
                     <tr>
                         <td>{{ bmi.height }}</td>
                         <td>{{ bmi.weight }}</td>
-                        <td><span class="badge bg-primary-subtle text-primary fs-6">{{ bmi.bmi }}</span></td>
+                        <td><span class="badge bg-{% if bmi.bmi < 18.5 %}danger{% elseif bmi.bmi < 25 %}success{% elseif bmi.bmi < 30 %}warning{% else %}danger{% endif %}-subtle text-{% if bmi.bmi < 18.5 %}danger{% elseif bmi.bmi < 25 %}success{% elseif bmi.bmi < 30 %}warning{% else %}danger{% endif %} fs-6">{{ bmi.bmi }}</span></td>
                         <td>{{ bmi.createdAt ? bmi.createdAt|date('d/m/Y H:i') : '—' }}</td>
                         <td class="text-end">
                             <a href="{{ path('app_MonPoids_bmi_show', {'id': bmi.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
