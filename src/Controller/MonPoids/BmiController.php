@@ -3,7 +3,6 @@
 namespace App\Controller\MonPoids;
 
 use App\Entity\MonPoids\Bmi;
-use App\Entity\User;
 use App\Form\MonPoids\BmiType;
 use App\Repository\MonPoids\BmiRepository;
 use App\Repository\UserRepository;
