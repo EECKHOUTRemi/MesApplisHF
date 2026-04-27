@@ -84,7 +84,7 @@ final class MeasurementController extends AbstractController
             ],
         ]);
         return $this->render('MonPoids/measurement/index.html.twig', [
-            'measurements' => $measurementRepository->findAll(),
+            'measurements' => $measurements,
             'chart' => $chart,
         ]);
     }
