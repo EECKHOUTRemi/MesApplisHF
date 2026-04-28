@@ -110,59 +110,6 @@ erDiagram
     }
 ```
 
-### Tables
-
-#### `user` — [User.php](src/entity/User.php)
-
-| Column        | Type                | Constraints                  |
-| ------------- | ------------------- | ---------------------------- |
-| `id`          | `INT`               | PK, auto-increment           |
-| `email`       | `VARCHAR(180)`      | **unique** (`UNIQ_IDENTIFIER_EMAIL`) |
-| `roles`       | `JSON`              | array of role strings        |
-| `password`    | `VARCHAR`           | hashed                       |
-| `username`    | `VARCHAR(30)`       |                              |
-| `is_verified` | `BOOLEAN`           | default `false`              |
-| `height`      | `DOUBLE`            | nullable (cm)                |
-| `created_at`  | `DATETIME_IMMUTABLE`|                              |
-
-Implements `UserInterface` + `PasswordAuthenticatedUserInterface`. Every user implicitly gets `ROLE_USER`.
-
-#### `relationship` — [Relationship.php](src/entity/Relationship.php)
-
-| Column       | Type                | Constraints                |
-| ------------ | ------------------- | -------------------------- |
-| `id`         | `INT`               | PK                         |
-| `user1_id`   | `INT`               | FK → `user(id)`, NOT NULL  |
-| `user2_id`   | `INT`               | FK → `user(id)`, NOT NULL  |
-| `status`     | `VARCHAR(10)`       | e.g. `pending`, `accepted` |
-| `created_at` | `DATETIME_IMMUTABLE`|                            |
-| `updated_at` | `DATETIME_IMMUTABLE`| nullable                   |
-
-Two `ManyToOne` references to `User` — models a directed link between two users.
-
-#### `bmi` — [Bmi.php](src/entity/MonPoids/Bmi.php)
-
-| Column       | Type                | Constraints               |
-| ------------ | ------------------- | ------------------------- |
-| `id`         | `INT`               | PK                        |
-| `user_id`    | `INT`               | FK → `user(id)`, NOT NULL |
-| `height`     | `DOUBLE`            | cm                        |
-| `weight`     | `DOUBLE`            | kg                        |
-| `bmi`        | `DOUBLE`            | computed: `kg / (m)²`     |
-| `created_at` | `DATETIME_IMMUTABLE`|                           |
-
-#### `measurement` — [Measurement.php](src/entity/MonPoids/Measurement.php)
-
-| Column       | Type                | Constraints               |
-| ------------ | ------------------- | ------------------------- |
-| `id`         | `INT`               | PK                        |
-| `user_id`    | `INT`               | FK → `user(id)`, NOT NULL |
-| `chest`      | `DOUBLE`            | cm                        |
-| `hips`       | `DOUBLE`            | cm                        |
-| `thigh`      | `DOUBLE`            | cm                        |
-| `waist`      | `DOUBLE`            | cm                        |
-| `created_at` | `DATETIME_IMMUTABLE`|                           |
-
 > Table and column names follow Doctrine's default snake-case mapping. The `user` table is quoted (`` `user` ``) because it's a reserved keyword on most engines.
 
 ## Common commands
