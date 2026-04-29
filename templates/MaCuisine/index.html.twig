@@ -1,20 +1,247 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TestController!{% endblock %}
+{% block title %}MaCuisine{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .macuisine-hero {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            color: #fff;
+            border-radius: 1rem;
+            padding: 3rem 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.08);
+        }
+        .macuisine-hero h1 {
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+        .macuisine-hero .lead {
+            opacity: .95;
+        }
+        .stat-card {
+            border: none;
+            border-radius: .9rem;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.08);
+        }
+        .stat-card .stat-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .action-card {
+            border: 0;
+            border-radius: .9rem;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.08);
+        }
+        .action-card .action-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .recipe-card {
+            border: 0;
+            border-radius: .9rem;
+            overflow: hidden;
+            transition: transform .15s ease, box-shadow .15s ease;
+            height: 100%;
+        }
+        .recipe-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.1);
+        }
+        .recipe-card .recipe-thumb {
+            height: 120px;
+            background: linear-gradient(135deg, #ffe5d9 0%, #ffc9b0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.75rem;
+            color: #ff7e5f;
+        }
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .section-title .bi {
+            color: #ff7e5f;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container py-4">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <section class="macuisine-hero">
+        <div class="row align-items-center g-4">
+            <div class="col-md-8">
+                <h1 class="display-4 mb-2">
+                    <i class="bi bi-egg-fried me-2" aria-hidden="true"></i>MaCuisine
+                </h1>
+                <p class="lead mb-3">
+                    Bonjour {{ app.user.username }}, partagez vos recettes et inspirez-vous de celles de la communauté.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ path('app_ma_cuisine_recipe_new') }}" class="btn btn-light fw-semibold">
+                        <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Nouvelle recette
+                    </a>
+                    <a href="{{ path('app_ma_cuisine_recipe_index') }}" class="btn btn-outline-light fw-semibold">
+                        <i class="bi bi-collection me-1" aria-hidden="true"></i>Toutes les recettes
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4 text-center d-none d-md-block">
+                <i class="bi bi-cup-hot" style="font-size: 7rem; opacity: .85;" aria-hidden="true"></i>
+            </div>
+        </div>
+    </section>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/remie/dev/Perso/MesApplisHF/src/Controller/TestController.php</code></li>
-        <li>Your template at <code>C:/Users/remie/dev/Perso/MesApplisHF/templates/test/index.html.twig</code></li>
-    </ul>
+    <section class="mb-5">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="text-primary"><i class="bi bi-journal-richtext fs-1" aria-hidden="true"></i></div>
+                        <div>
+                            <div class="stat-value">{{ totalRecipes }}</div>
+                            <div class="text-secondary">recette{{ totalRecipes > 1 ? 's' : '' }} dans la communauté</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="text-success"><i class="bi bi-basket fs-1" aria-hidden="true"></i></div>
+                        <div>
+                            <div class="stat-value">{{ totalIngredients }}</div>
+                            <div class="text-secondary">ingrédient{{ totalIngredients > 1 ? 's' : '' }} référencé{{ totalIngredients > 1 ? 's' : '' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="text-warning"><i class="bi bi-bookmark-heart fs-1" aria-hidden="true"></i></div>
+                        <div>
+                            <div class="stat-value">{{ myRecipesCount }}</div>
+                            <div class="text-secondary">de vos recette{{ myRecipesCount > 1 ? 's' : '' }} partagée{{ myRecipesCount > 1 ? 's' : '' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h2 class="section-title h4"><i class="bi bi-lightning-charge-fill"></i>Que voulez-vous faire ?</h2>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a href="{{ path('app_ma_cuisine_recipe_new') }}" class="text-decoration-none text-reset">
+                    <div class="card action-card shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <span class="action-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-plus-lg"></i></span>
+                            <h5 class="card-title">Partager une recette</h5>
+                            <p class="card-text text-secondary mb-0">Ajoutez une nouvelle recette à votre carnet et faites-la découvrir.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{ path('app_ma_cuisine_recipe_index') }}" class="text-decoration-none text-reset">
+                    <div class="card action-card shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <span class="action-icon bg-success bg-opacity-10 text-success"><i class="bi bi-search"></i></span>
+                            <h5 class="card-title">Explorer le fil</h5>
+                            <p class="card-text text-secondary mb-0">Parcourez toutes les recettes partagées par la communauté.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{ path('app_profil_index') }}" class="text-decoration-none text-reset">
+                    <div class="card action-card shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <span class="action-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-person-heart"></i></span>
+                            <h5 class="card-title">Mon profil</h5>
+                            <p class="card-text text-secondary mb-0">Retrouvez vos informations et vos relations culinaires.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="section-title h4 mb-0"><i class="bi bi-clock-history"></i>Recettes récentes</h2>
+            {% if recentRecipes|length > 0 %}
+                <a href="{{ path('app_ma_cuisine_recipe_index') }}" class="btn btn-sm btn-outline-secondary">
+                    Tout voir <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                </a>
+            {% endif %}
+        </div>
+
+        {% if recentRecipes|length > 0 %}
+            <div class="row g-3">
+                {% for recipe in recentRecipes %}
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ path('app_ma_cuisine_recipe_show', {'id': recipe.id}) }}" class="text-decoration-none text-reset">
+                            <div class="card recipe-card shadow-sm">
+                                <div class="recipe-thumb">
+                                    <i class="bi bi-egg-fried" aria-hidden="true"></i>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title mb-1">{{ recipe.name }}</h5>
+                                    <p class="text-secondary small mb-2">
+                                        <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
+                                        {{ recipe.author.username }}
+                                        {% if recipe.createdAt %}
+                                            <span class="mx-1">·</span>
+                                            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+                                            {{ recipe.createdAt|date('d/m/Y') }}
+                                        {% endif %}
+                                    </p>
+                                    <p class="card-text text-secondary mb-0">
+                                        {{ recipe.description|length > 110 ? recipe.description|slice(0, 110) ~ '…' : recipe.description }}
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-journal-plus display-4 text-secondary mb-3" aria-hidden="true"></i>
+                    <h5>Aucune recette pour le moment</h5>
+                    <p class="text-secondary mb-3">Soyez le premier à partager une recette avec la communauté&nbsp;!</p>
+                    <a href="{{ path('app_ma_cuisine_recipe_new') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Créer ma première recette
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+
 </div>
 {% endblock %}

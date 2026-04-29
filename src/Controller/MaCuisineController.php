@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Repository\MaCuisine\IngredientRepository;
+use App\Repository\MaCuisine\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -10,10 +13,21 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class MaCuisineController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index()
+    public function index(RecipeRepository $recipeRepository, IngredientRepository $ingredientRepository): Response
     {
+        $recentRecipes = $recipeRepository->createQueryBuilder('r')
+            ->orderBy('r.createdAt', 'DESC')
+            ->setMaxResults(6)
+            ->getQuery()
+            ->getResult();
+
+        $myRecipesCount = $recipeRepository->count(['author' => $this->getUser()]);
+
         return $this->render("MaCuisine/index.html.twig", [
-            'controller_name' => 'CookingRecipesController'
+            'recentRecipes' => $recentRecipes,
+            'totalRecipes' => $recipeRepository->count([]),
+            'totalIngredients' => $ingredientRepository->count([]),
+            'myRecipesCount' => $myRecipesCount,
         ]);
     }
 }
