@@ -4,7 +4,7 @@ A Symfony 8 application skeleton powering the **HF apps portal**.
 
 It hosts a collection of small personal apps. The first one shipped is **MonPoids** — a weight & body-measurement tracker with a BMI calculator.
 
-> Status: early development — Doctrine entities and authentication model are in place; controllers are still being added.
+> Status: early development.
 
 ---
 
@@ -69,6 +69,9 @@ erDiagram
     USER ||--o{ RELATIONSHIP    : "user1 / user2"
     USER ||--o{ MONPOIDS_BMI    : has
     USER ||--o{ MONPOIDS_MEASUREMENT : has
+    USER ||--o{ RECIPE          : authors
+    RECIPE ||--o{ REF_RECIPE_INGREDIENT : contains
+    INGREDIENT ||--o{ REF_RECIPE_INGREDIENT : "used in"
 
     USER {
         int             id PK
@@ -107,6 +110,28 @@ erDiagram
         float           thigh
         float           waist
         datetime_immut  createdAt
+    }
+
+    RECIPE {
+        int             id PK
+        int             author_id FK
+        string(15)      name
+        string(600)     description
+        datetime_immut  createdAt
+        datetime_immut  updatedAt "nullable"
+    }
+
+    INGREDIENT {
+        int             id PK
+        string(255)     name
+        string(255)     type "nullable"
+    }
+
+    REF_RECIPE_INGREDIENT {
+        int             recipe_id PK,FK
+        int             ingredient_id PK,FK
+        float           quantity
+        string(10)      unite
     }
 ```
 
