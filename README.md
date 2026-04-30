@@ -93,7 +93,7 @@ erDiagram
         datetime_immut  updatedAt "nullable"
     }
 
-    MONPOIDS_BMI {
+    BMI {
         int             id PK
         int             user_id FK
         float           height
@@ -102,7 +102,7 @@ erDiagram
         datetime_immut  createdAt
     }
 
-    MONPOIDS_MEASUREMENT {
+    MEASUREMENT {
         int             id PK
         int             user_id FK
         float           chest
