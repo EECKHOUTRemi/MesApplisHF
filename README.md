@@ -67,8 +67,8 @@ php -S 127.0.0.1:8000 -t public
 ```mermaid
 erDiagram
     USER ||--o{ RELATIONSHIP    : "user1 / user2"
-    USER ||--o{ MONPOIDS_BMI    : has
-    USER ||--o{ MONPOIDS_MEASUREMENT : has
+    USER ||--o{ BMI    : has
+    USER ||--o{ MEASUREMENT : has
     USER ||--o{ RECIPE          : authors
     RECIPE ||--o{ REF_RECIPE_INGREDIENT : contains
     INGREDIENT ||--o{ REF_RECIPE_INGREDIENT : "used in"
