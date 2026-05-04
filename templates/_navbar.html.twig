@@ -12,7 +12,7 @@
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_macuisine_index' %}active{% endif %}" href="{{ path('app_macuisine_index') }}">MaCuisine</a>
+                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_macuisine_index' %}active{% endif %}" href="{{ path('app_macuisine_index') }}" onclick="alert('En cours de développement');return false;">MaCuisine</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {% if app.request.attributes.get('_route') == 'app_mon_poids_global' %}active{% endif %}" href="{{ path('app_mon_poids_global') }}">MonPoids</a>
