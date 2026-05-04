@@ -52,6 +52,11 @@
 /.web-server-pid
 
 # Environment variables file
-/.env
-/.env.local
 /.env.*.local
+
+# Claude
+/.claude
+###> symfony/asset-mapper ###
+/public/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###
