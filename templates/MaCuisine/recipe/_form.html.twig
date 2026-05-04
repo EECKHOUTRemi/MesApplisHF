@@ -8,15 +8,6 @@
         <div class="col-12">
             {{ form_row(form.description, {'label': 'Description', 'attr': {'placeholder': 'Décrivez votre recette, les étapes, les astuces…', 'rows': 6}}) }}
         </div>
-        <div class="col-md-6">
-            {{ form_row(form.createdAt, {'label': 'Date de création'}) }}
-        </div>
-        <div class="col-md-6">
-            {{ form_row(form.updatedAt, {'label': 'Dernière mise à jour'}) }}
-        </div>
-        <div class="col-12">
-            {{ form_row(form.author, {'label': 'Auteur'}) }}
-        </div>
     </div>
 
     <div class="d-flex justify-content-end gap-2 mt-4">
