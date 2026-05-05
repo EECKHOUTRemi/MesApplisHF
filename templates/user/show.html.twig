@@ -2,7 +2,8 @@
 
 {% block title %}User{% endblock %}
 
-{% block body    <div class="container py-4">
+{% block body %}
+    <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">User details</h1>
             <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">
@@ -14,10 +15,6 @@
             <div class="card-body">
                 <table class="table mb-0">
                     <tbody>
-                        <tr>
-                            <th scope="row" style="width: 200px;">Id</th>
-                            <td>{{ user.id }}</td>
-                        </tr>
                         <tr>
                             <th scope="row">Email</th>
                             <td>{{ user.email }}</td>
@@ -33,10 +30,6 @@
                                     <span class="badge {{ role == 'ROLE_ADMIN' ? 'text-bg-danger' : 'text-bg-secondary' }}">{{ role }}</span>
                                 {% endfor %}
                             </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Password</th>
-                            <td><code class="text-truncate d-inline-block" style="max-width: 100%;">{{ user.password }}</code></td>
                         </tr>
                         <tr>
                             <th scope="row">Verified</th>
@@ -59,5 +52,4 @@
             </div>
         </div>
     </div>
-clude('user/_delete_form.html.twig') }}
 {% endblock %}
