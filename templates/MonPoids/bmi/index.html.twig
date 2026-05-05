@@ -13,9 +13,11 @@
             <a href="{{ path('app_mon_poids_global') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Retour
             </a>
-            <a href="{{ path('app_MonPoids_bmi_new') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> Nouveau calcul
-            </a>
+            {% if not is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_MonPoids_bmi_new') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Nouveau calcul
+                </a>
+            {% endif %}
         </div>
     </div>
 
