@@ -20,17 +20,18 @@ final class BmiController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(BmiRepository $bmiRepository, ChartBuilderInterface $chartBuilder): Response
     {
-        $bmis = $bmiRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'ASC']);
+        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ;
+        $bmis = $bmiRepository->findBy($isAdmin ? [] : ['user' => $this->getUser()], ['createdAt' => 'ASC']);
         $dates = array_map(
-            fn (Bmi $bmi) => $bmi->getCreatedAt()->format('d/m/Y'),
+            function(Bmi $bmi) { return $bmi->getCreatedAt()->format('d/m/Y'); },
             $bmis,
         );
         $bmiData = array_map(
-            fn (Bmi $bmi) => $bmi->getBmi(),
+            function(Bmi $bmi) { return $bmi->getBmi(); },
             $bmis,
         );
         $weightData = array_map(
-            fn (Bmi $bmi) => $bmi->getWeight(),
+            function(Bmi $bmi) { return $bmi->getWeight(); },
             $bmis,
         );
         $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
