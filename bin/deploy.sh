@@ -26,8 +26,8 @@ if [ ! -f "composer.json" ]; then
     exit 1
 fi
 
-log "Pulling latest code from release branch..."
-git pull origin release
+log "Pulling latest code from main branch..."
+git pull origin main
 
 log "Installing PHP dependencies..."
 composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
