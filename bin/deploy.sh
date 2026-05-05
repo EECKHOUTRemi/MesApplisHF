@@ -30,22 +30,22 @@ log "Pulling latest code from release branch..."
 git pull origin release
 
 log "Installing PHP dependencies..."
-composer install --no-dev --optimize-autoloader --no-interaction
+composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 log "Installing JavaScript vendor assets..."
-php bin/console importmap:install
+sudo -u www-data php bin/console importmap:install
 
 log "Running database migrations..."
-php bin/console doctrine:migrations:migrate --no-interaction
+sudo -u www-data php bin/console doctrine:migrations:migrate --no-interaction
 
 log "Clearing and warming cache..."
-sudo rm -rf var/cache/*
+sudo rm -rf /var/www/MesApplisHF/var/cache/*
 sudo -u www-data php bin/console cache:clear --env=prod --no-warmup
 sudo -u www-data php bin/console cache:warmup --env=prod
 
 log "Fixing permissions..."
-sudo chown -R deploy:www-data var/
-sudo chmod -R 2775 var/
+sudo chown -R deploy:www-data /var/www/MesApplisHF/var/
+sudo chmod -R 2775 /var/www/MesApplisHF/var/
 
 log "Reloading PHP-FPM (clears opcache)..."
 sudo systemctl reload php8.4-fpm
