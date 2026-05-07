@@ -25,4 +25,14 @@ return [
     'chart.js' => [
         'version' => '3.9.1',
     ],
+    'jquery' => [
+        'version' => '4.0.0',
+    ],
+    'select2' => [
+        'version' => '4.1.0-rc.0',
+    ],
+    'select2/dist/css/select2.min.css' => [
+        'version' => '4.1.0-rc.0',
+        'type' => 'css',
+    ],
 ];

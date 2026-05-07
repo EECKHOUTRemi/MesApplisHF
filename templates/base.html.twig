@@ -18,7 +18,7 @@
                     #logout-icon:hover {
                         color: darkred;
                     }
-                    </style>
+                </style>
             {% endif %}
         {% endblock %}
 
@@ -40,5 +40,13 @@
         {% endif %}
         
         {% block body %}{% endblock %}
+
+        <script type="module">
+            import $ from 'jquery';
+            window.$ = window.jQuery = $;
+            import 'select2';
+            import 'select2/dist/css/select2.min.css';
+        </script>
+        {% block scripts %}{% endblock %}
     </body>
 </html>
