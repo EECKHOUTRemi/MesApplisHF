@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\MaCuisine;
+namespace App\Controller\macuisine;
 
 use App\Entity\MaCuisine\Recipe;
 use App\Form\MaCuisine\RecipeType;
@@ -22,7 +22,7 @@ final class RecipeController extends AbstractController
     #[Route(name: 'app_ma_cuisine_recipe_index', methods: ['GET'])]
     public function index(RecipeRepository $recipeRepository): Response
     {
-        return $this->render('MaCuisine/recipe/index.html.twig', [
+        return $this->render('macuisine/recipe/index.html.twig', [
             'recipes' => $recipeRepository->findAll(),
         ]);
     }
@@ -40,7 +40,7 @@ final class RecipeController extends AbstractController
             return $this->redirectToRoute('app_ma_cuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('MaCuisine/recipe/new.html.twig', [
+        return $this->render('macuisine/recipe/new.html.twig', [
             'recipe' => $recipe,
             'form' => $form,
         ]);
@@ -49,7 +49,7 @@ final class RecipeController extends AbstractController
     #[Route('/{id}', name: 'app_ma_cuisine_recipe_show', methods: ['GET'])]
     public function show(Recipe $recipe): Response
     {
-        return $this->render('MaCuisine/recipe/show.html.twig', [
+        return $this->render('macuisine/recipe/show.html.twig', [
             'recipe' => $recipe,
         ]);
     }
@@ -78,7 +78,7 @@ final class RecipeController extends AbstractController
             ];
         }
 
-        return $this->render('MaCuisine/recipe/edit.html.twig', [
+        return $this->render('macuisine/recipe/edit.html.twig', [
             'recipe' => $recipe,
             'form' => $form,
             'ingredients' => $ingredientsList

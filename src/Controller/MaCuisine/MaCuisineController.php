@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\macuisine;
 
 use App\Repository\MaCuisine\IngredientRepository;
 use App\Repository\MaCuisine\RecipeRepository;
@@ -23,7 +23,7 @@ final class MaCuisineController extends AbstractController
 
         $myRecipesCount = $recipeRepository->count(['author' => $this->getUser()]);
 
-        return $this->render("MaCuisine/index.html.twig", [
+        return $this->render("macuisine/index.html.twig", [
             'recentRecipes' => $recentRecipes,
             'totalRecipes' => $recipeRepository->count([]),
             'totalIngredients' => $ingredientRepository->count([]),

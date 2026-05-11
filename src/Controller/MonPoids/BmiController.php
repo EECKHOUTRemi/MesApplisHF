@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\MonPoids;
+namespace App\Controller\monpoids;
 
 use App\Entity\MonPoids\Bmi;
 use App\Form\MonPoids\BmiType;
@@ -67,7 +67,7 @@ final class BmiController extends AbstractController
             ],
         ]);
         
-        return $this->render('MonPoids/bmi/index.html.twig', [
+        return $this->render('monpoids/bmi/index.html.twig', [
             'bmis' => $bmis,
             'chart' => $chart,
         ]);
@@ -99,7 +99,7 @@ final class BmiController extends AbstractController
             return $this->redirectToRoute('app_MonPoids_bmi_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('MonPoids/bmi/new.html.twig', [
+        return $this->render('monpoids/bmi/new.html.twig', [
             'bmi' => $bmi,
             'form' => $form,
         ]);
@@ -108,7 +108,7 @@ final class BmiController extends AbstractController
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Bmi $bmi): Response
     {
-        return $this->render('MonPoids/bmi/show.html.twig', [
+        return $this->render('monpoids/bmi/show.html.twig', [
             'bmi' => $bmi,
         ]);
     }
@@ -126,7 +126,7 @@ final class BmiController extends AbstractController
             return $this->redirectToRoute('app_MonPoids_bmi_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('MonPoids/bmi/edit.html.twig', [
+        return $this->render('monpoids/bmi/edit.html.twig', [
             'bmi' => $bmi,
             'form' => $form,
         ]);

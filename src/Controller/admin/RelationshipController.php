@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\admin;
 
 use App\Entity\Relationship;
 use App\Form\RelationshipType;
@@ -18,7 +18,7 @@ final class RelationshipController extends AbstractController
     #[Route(name: 'app_relationship_index', methods: ['GET'])]
     public function index(RelationshipRepository $relationshipRepository): Response
     {
-        return $this->render('relationship/index.html.twig', [
+        return $this->render('admin/relationship/index.html.twig', [
             'relationships' => $relationshipRepository->findAll(),
         ]);
     }
@@ -37,7 +37,7 @@ final class RelationshipController extends AbstractController
             return $this->redirectToRoute('app_relationship_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('relationship/new.html.twig', [
+        return $this->render('admin/relationship/new.html.twig', [
             'relationship' => $relationship,
             'form' => $form,
         ]);
@@ -46,7 +46,7 @@ final class RelationshipController extends AbstractController
     #[Route('/{id}', name: 'app_relationship_show', methods: ['GET'])]
     public function show(Relationship $relationship): Response
     {
-        return $this->render('relationship/show.html.twig', [
+        return $this->render('admin/relationship/show.html.twig', [
             'relationship' => $relationship,
         ]);
     }
@@ -63,7 +63,7 @@ final class RelationshipController extends AbstractController
             return $this->redirectToRoute('app_relationship_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('relationship/edit.html.twig', [
+        return $this->render('admin/relationship/edit.html.twig', [
             'relationship' => $relationship,
             'form' => $form,
         ]);

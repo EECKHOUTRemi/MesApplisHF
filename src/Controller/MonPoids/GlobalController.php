@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\MonPoids;
+namespace App\Controller\monpoids;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +13,7 @@ final class GlobalController extends AbstractController
     IsGranted('ROLE_USER')]
     public function index(): Response
     {
-        return $this->render('MonPoids/global/index.html.twig', [
+        return $this->render('monpoids/global/index.html.twig', [
             'controller_name' => 'GlobalController',
         ]);
     }

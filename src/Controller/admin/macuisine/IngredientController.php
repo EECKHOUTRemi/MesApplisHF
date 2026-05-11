@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\MaCuisine;
+namespace App\Controller\admin\macuisine;
 
 use App\Entity\MaCuisine\Ingredient;
 use App\Form\MaCuisine\IngredientType;
@@ -18,7 +18,7 @@ final class IngredientController extends AbstractController
     #[Route(name: 'app_ma_cuisine_ingredient_index', methods: ['GET'])]
     public function index(IngredientRepository $ingredientRepository): Response
     {
-        return $this->render('MaCuisine/ingredient/index.html.twig', [
+        return $this->render('admin/ingredient/index.html.twig', [
             'ingredients' => $ingredientRepository->findAll(),
         ]);
     }
@@ -37,7 +37,7 @@ final class IngredientController extends AbstractController
             return $this->redirectToRoute('app_ma_cuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('MaCuisine/ingredient/new.html.twig', [
+        return $this->render('admin/ingredient/new.html.twig', [
             'ingredient' => $ingredient,
             'form' => $form,
         ]);
@@ -46,7 +46,7 @@ final class IngredientController extends AbstractController
     #[Route('/{id}', name: 'app_ma_cuisine_ingredient_show', methods: ['GET'])]
     public function show(Ingredient $ingredient): Response
     {
-        return $this->render('MaCuisine/ingredient/show.html.twig', [
+        return $this->render('admin/ingredient/show.html.twig', [
             'ingredient' => $ingredient,
         ]);
     }
@@ -63,7 +63,7 @@ final class IngredientController extends AbstractController
             return $this->redirectToRoute('app_ma_cuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('MaCuisine/ingredient/edit.html.twig', [
+        return $this->render('admin/ingredient/edit.html.twig', [
             'ingredient' => $ingredient,
             'form' => $form,
         ]);
