@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\MaCuisine;
+namespace App\Form\macuisine;
 
 use App\Entity\MaCuisine\Recipe;
 use App\Form\ChoiceList\PassthroughChoiceLoader;

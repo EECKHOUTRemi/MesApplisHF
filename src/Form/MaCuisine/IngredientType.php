@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\MaCuisine;
+namespace App\Form\macuisine;
 
 use App\Entity\MaCuisine\Ingredient;
 use Symfony\Component\Form\AbstractType;

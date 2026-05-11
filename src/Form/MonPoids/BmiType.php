@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\MonPoids;
+namespace App\Form\monpoids;
 
 use App\Entity\MonPoids\Bmi;
 use Symfony\Component\Form\AbstractType;
