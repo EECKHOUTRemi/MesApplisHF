@@ -16,28 +16,34 @@ class IngredientRepository extends ServiceEntityRepository
         parent::__construct($registry, Ingredient::class);
     }
 
-    //    /**
-    //     * @return Ingredient[] Returns an array of Ingredient objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findNameLike(string $term, ?array $select = null, ?array $order = null): array
+    {
+        $allowedFields = $this->getClassMetadata()->getFieldNames();
+        $assertField = static function (string $field) use ($allowedFields): string {
+            if (!in_array($field, $allowedFields, true)) {
+                throw new \InvalidArgumentException(sprintf('Unknown field "%s".', $field));
+            }
+            return $field;
+        };
 
-    //    public function findOneBySomeField($value): ?Ingredient
-    //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $qb = $this->createQueryBuilder('i');
+
+        if ($select) {
+            $qb->select(array_map(static fn (string $c) => 'i.'.$assertField($c), $select));
+        }
+
+        $qb->andWhere('UNACCENT(UPPER(i.name)) LIKE UNACCENT(UPPER(:term))')
+            ->setParameter('term', '%'.$term.'%')
+        ;
+
+        if ($order) {
+            $direction = strtoupper($order[1]);
+            if (!in_array($direction, ['ASC', 'DESC'], true)) {
+                throw new \InvalidArgumentException(sprintf('Invalid order direction "%s".', $order[1]));
+            }
+            $qb->orderBy('i.'.$assertField($order[0]), $direction);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

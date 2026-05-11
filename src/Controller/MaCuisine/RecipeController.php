@@ -89,13 +89,12 @@ final class RecipeController extends AbstractController
     #[Route('/ajax/ingredients', name: 'app_MaCuisine_recipe_ingredients_ajax', methods: ['GET'])]
     public function ingredientsAjax(Request $request, IngredientRepository $ingredientRepository): JsonResponse
     {
-        $term = $request->request->get("term");
+        $term = $request->query->get('term');
 
-        dump('$term = ' . $term);
         if ($term === null){
             $rawIngredients = $ingredientRepository->findAll();
         } else {
-            $rawIngredients = $ingredientRepository->findBy(['name' => $term]);
+            $rawIngredients = $ingredientRepository->findNameLike($term);
         }
         $handeledIngredients = [];
         foreach ($rawIngredients as $ingredient){
