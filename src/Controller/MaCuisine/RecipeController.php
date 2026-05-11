@@ -101,7 +101,7 @@ final class RecipeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_MaCuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_ma_cuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('MaCuisine/recipe/edit.html.twig', [
@@ -118,10 +118,10 @@ final class RecipeController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_MaCuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_ma_cuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/ajax/ingredients', name: 'app_MaCuisine_recipe_ingredients_ajax', methods: ['GET'])]
+    #[Route('/ajax/ingredients', name: 'app_ma_cuisine_recipe_ingredients_ajax', methods: ['GET'])]
     public function ingredientsAjax(Request $request, IngredientRepository $ingredientRepository): JsonResponse
     {
         $term = $request->query->get('term');
