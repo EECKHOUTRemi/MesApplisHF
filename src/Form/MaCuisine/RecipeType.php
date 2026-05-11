@@ -15,7 +15,12 @@ class RecipeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('name', TextType::class)
+        $builder->add('name', TextType::class, [
+            'attr' => [
+                'maxLength' => 15
+            ]
+            
+        ])
             ->add('description', TextareaType::class)
             ->add('ingredients', ChoiceType::class, [
                 'mapped' => false,
