@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_admin_macuisine_recipe_delete', {'id': recipe.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette recette ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ recipe.id) }}">
+    <button class="btn btn-outline-danger">
+        <i class="bi bi-trash3 me-1" aria-hidden="true"></i>Supprimer
+    </button>
+</form>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\MonPoids;
+namespace App\Controller\monpoids;
 
 use App\Entity\MonPoids\Bmi;
 use App\Form\MonPoids\BmiType;
@@ -15,23 +15,25 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-#[Route('/monpoids/bmi', name: 'app_MonPoids_bmi_'), IsGranted("ROLE_USER")]
+#[Route('/monpoids/bmi', name: 'app_MonPoids_bmi_'),
+IsGranted('ROLE_USER')]
 final class BmiController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(BmiRepository $bmiRepository, ChartBuilderInterface $chartBuilder): Response
     {
-        $bmis = $bmiRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'ASC']);
+        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ;
+        $bmis = $bmiRepository->findBy($isAdmin ? [] : ['user' => $this->getUser()], ['createdAt' => 'ASC']);
         $dates = array_map(
-            fn (Bmi $bmi) => $bmi->getCreatedAt()->format('d/m/Y'),
+            function(Bmi $bmi) { return $bmi->getCreatedAt()->format('d/m/Y'); },
             $bmis,
         );
         $bmiData = array_map(
-            fn (Bmi $bmi) => $bmi->getBmi(),
+            function(Bmi $bmi) { return $bmi->getBmi(); },
             $bmis,
         );
         $weightData = array_map(
-            fn (Bmi $bmi) => $bmi->getWeight(),
+            function(Bmi $bmi) { return $bmi->getWeight(); },
             $bmis,
         );
         $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
@@ -65,7 +67,7 @@ final class BmiController extends AbstractController
             ],
         ]);
         
-        return $this->render('MonPoids/bmi/index.html.twig', [
+        return $this->render('monpoids/bmi/index.html.twig', [
             'bmis' => $bmis,
             'chart' => $chart,
         ]);
@@ -97,7 +99,7 @@ final class BmiController extends AbstractController
             return $this->redirectToRoute('app_MonPoids_bmi_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('MonPoids/bmi/new.html.twig', [
+        return $this->render('monpoids/bmi/new.html.twig', [
             'bmi' => $bmi,
             'form' => $form,
         ]);
@@ -106,7 +108,7 @@ final class BmiController extends AbstractController
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Bmi $bmi): Response
     {
-        return $this->render('MonPoids/bmi/show.html.twig', [
+        return $this->render('monpoids/bmi/show.html.twig', [
             'bmi' => $bmi,
         ]);
     }
@@ -124,7 +126,7 @@ final class BmiController extends AbstractController
             return $this->redirectToRoute('app_MonPoids_bmi_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('MonPoids/bmi/edit.html.twig', [
+        return $this->render('monpoids/bmi/edit.html.twig', [
             'bmi' => $bmi,
             'form' => $form,
         ]);

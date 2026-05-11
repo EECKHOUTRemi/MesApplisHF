@@ -12,14 +12,51 @@
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_macuisine_index' %}active{% endif %}" href="{{ path('app_macuisine_index') }}" onclick="alert('En cours de développement');return false;">MaCuisine</a>
+                    <a class="nav-link {% if 'macuisine' in app.request.pathInfo %}active{% endif %}" href="{{ path('app_ma_cuisine_index') }}" >MaCuisine</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if app.request.attributes.get('_route') == 'app_mon_poids_global' %}active{% endif %}" href="{{ path('app_mon_poids_global') }}">MonPoids</a>
+                    <a class="nav-link {% if 'monpoids' in app.request.pathInfo %}active{% endif %}" href="{{ path('app_mon_poids_global') }}">MonPoids</a>
                 </li>
             </ul>
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Administration" aria-label="Administration">
+                            <i class="bi bi-shield-lock-fill fs-4" aria-hidden="true"></i>
+                            <span class="d-lg-none">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                            <li><h6 class="dropdown-header">Administration</h6></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_user_index') }}">
+                                    <i class="bi bi-people-fill"></i> Users
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_recipe_index') }}">
+                                    <i class="bi bi-journal-richtext"></i> Recipes
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_ma_cuisine_ingredient_index') }}">
+                                    <i class="bi bi-basket-fill"></i> Ingredients
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_MonPoids_bmi_index') }}">
+                                    <i class="bi bi-speedometer2"></i> BMI
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_MonPoids_measurement_index') }}">
+                                    <i class="bi bi-rulers"></i> Measurements
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link d-flex align-items-center gap-2" href="{{ path('app_profil_index') }}" title="Profil" aria-label="Profil">
                         <i class="bi bi-person-circle fs-4" aria-hidden="true"></i>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\MonPoids;
+namespace App\Controller\monpoids;
 
 use App\Entity\MonPoids\Measurement;
 use App\Form\MonPoids\MeasurementType;
@@ -14,7 +14,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-#[Route('/monpoids/measurement', name: 'app_MonPoids_measurement_'), IsGranted("ROLE_USER")]
+#[Route('/monpoids/measurement', name: 'app_MonPoids_measurement_'),
+IsGranted('ROLE_USER')]
 final class MeasurementController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
@@ -84,7 +85,7 @@ final class MeasurementController extends AbstractController
                 ],
             ],
         ]);
-        return $this->render('MonPoids/measurement/index.html.twig', [
+        return $this->render('monpoids/measurement/index.html.twig', [
             'measurements' => $measurements,
             'chart' => $chart,
         ]);
@@ -106,7 +107,7 @@ final class MeasurementController extends AbstractController
             return $this->redirectToRoute('app_MonPoids_measurement_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('MonPoids/measurement/new.html.twig', [
+        return $this->render('monpoids/measurement/new.html.twig', [
             'measurement' => $measurement,
             'form' => $form,
         ]);
@@ -115,7 +116,7 @@ final class MeasurementController extends AbstractController
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Measurement $measurement): Response
     {
-        return $this->render('MonPoids/measurement/show.html.twig', [
+        return $this->render('monpoids/measurement/show.html.twig', [
             'measurement' => $measurement,
         ]);
     }
@@ -132,7 +133,7 @@ final class MeasurementController extends AbstractController
             return $this->redirectToRoute('app_MonPoids_measurement_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('MonPoids/measurement/edit.html.twig', [
+        return $this->render('monpoids/measurement/edit.html.twig', [
             'measurement' => $measurement,
             'form' => $form,
         ]);

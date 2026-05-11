@@ -1,0 +1,11 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{{ form_start(form) }}
+    {{ form_row(form.name, {'label': 'Nom', 'attr': {'placeholder': 'Ex. Farine, Sucre, Tomate…'}}) }}
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>{{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
+{{ form_end(form) }}

@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Form\MonPoids;
+namespace App\Form\monpoids;
 
 use App\Entity\MonPoids\Bmi;
-use App\Entity\User;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
