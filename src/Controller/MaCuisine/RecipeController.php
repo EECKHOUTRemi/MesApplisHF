@@ -9,6 +9,7 @@ use App\Repository\MaCuisine\IngredientRepository;
 use App\Repository\MaCuisine\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -86,10 +87,24 @@ final class RecipeController extends AbstractController
     }
 
     #[Route('/ajax/ingredients', name: 'app_MaCuisine_recipe_ingredients_ajax', methods: ['GET'])]
-    public function ingredientsAjax(Request $request, IngredientRepository $ingredientRepository): array
+    public function ingredientsAjax(Request $request, IngredientRepository $ingredientRepository): JsonResponse
     {
-        $ingredients = $ingredientRepository->findAll();
+        $term = $request->request->get("term");
 
-        return $ingredients;
+        dump('$term = ' . $term);
+        if ($term === null){
+            $rawIngredients = $ingredientRepository->findAll();
+        } else {
+            $rawIngredients = $ingredientRepository->findBy(['name' => $term]);
+        }
+        $handeledIngredients = [];
+        foreach ($rawIngredients as $ingredient){
+            array_push($handeledIngredients, [
+                'id' => $ingredient->getId(),
+                'name' => $ingredient->getName(),
+            ]);
+        }
+
+        return $this->json($handeledIngredients);
     }
 }
