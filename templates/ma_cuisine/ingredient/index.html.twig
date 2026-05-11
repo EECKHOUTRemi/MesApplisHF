@@ -9,7 +9,6 @@
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Type</th>
                 <th>Name</th>
                 <th>actions</th>
             </tr>
@@ -18,7 +17,6 @@
         {% for ingredient in ingredients %}
             <tr>
                 <td>{{ ingredient.id }}</td>
-                <td>{{ ingredient.type }}</td>
                 <td>{{ ingredient.name }}</td>
                 <td>
                     <a href="{{ path('app_ma_cuisine_ingredient_show', {'id': ingredient.id}) }}">show</a>

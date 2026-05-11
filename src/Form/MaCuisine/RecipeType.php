@@ -3,6 +3,7 @@
 namespace App\Form\MaCuisine;
 
 use App\Entity\MaCuisine\Recipe;
+use App\Form\ChoiceList\PassthroughChoiceLoader;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -18,6 +19,9 @@ class RecipeType extends AbstractType
             ->add('description', TextareaType::class)
             ->add('ingredients', ChoiceType::class, [
                 'mapped' => false,
+                'multiple' => true,
+                'choice_loader' => new PassthroughChoiceLoader(),
+                'choice_value' => fn ($v) => (string) $v,
                 'attr' => [
                     'class' => 'ingredients-select',
                 ],

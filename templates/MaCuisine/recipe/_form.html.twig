@@ -9,13 +9,16 @@
             {{ form_row(form.description, {'label': 'Description', 'attr': {'placeholder': 'Décrivez votre recette, les étapes, les astuces…', 'rows': 6}}) }}
         </div>
         <div class="col-12">
-            {{ form_row(form.ingredients, {
-                'label': 'Ingrédients', 
+            <label class="form-label">Ingrédients</label>
+            {{ form_widget(form.ingredients, {
                 'attr': {
                     'placeholder': 'Listez les ingrédients nécessaires…',
                     'data-ajax-url': path('app_MaCuisine_recipe_ingredients_ajax')
                 }
             }) }}
+            {{ form_errors(form.ingredients) }}
+
+            <div class="ingredient-extras mt-2"></div>
         </div>
     </div>
 
