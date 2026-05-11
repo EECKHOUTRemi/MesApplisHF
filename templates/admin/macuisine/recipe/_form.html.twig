@@ -1,0 +1,29 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{{ form_start(form) }}
+    <div class="row g-3">
+        <div class="col-12">
+            {{ form_row(form.name, {'label': 'Nom', 'attr': {'placeholder': 'Ex. Tarte aux pommes'}}) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.description, {'label': 'Description', 'attr': {'placeholder': 'Décrivez la recette…', 'rows': 6}}) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.author, {'label': 'Auteur'}) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.createdAt, {'label': 'Créée le'}) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.updatedAt, {'label': 'Mise à jour'}) }}
+        </div>
+    </div>
+
+    {{ form_rest(form) }}
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>{{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
+{{ form_end(form) }}
