@@ -36,6 +36,15 @@ $(function () {
         const $el = $(this);
         const $extras = $el.closest('.col-12').find('.ingredient-extras');
 
+        const initial = $el.data('initial') || {};
+        Object.entries(initial).forEach(([id, info]) => {
+            $el.append(new Option(info.name, id, true, true));
+            const $row = buildTagRow(info.name, id);
+            $row.find('input[name$="[qty]"]').val(info.quantity);
+            $row.find('select[name$="[unit]"]').val(info.unit);
+            $extras.append($row);
+        });
+
         $el.select2({
             placeholder: 'Sélectionnez un ingrédient',
             tags: true,
