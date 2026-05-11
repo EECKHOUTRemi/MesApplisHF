@@ -32,9 +32,6 @@ git pull origin main
 log "Installing PHP dependencies..."
 composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-log "Installing JavaScript vendor assets..."
-sudo -u www-data php bin/console importmap:install
-
 log "Running database migrations..."
 sudo -u www-data php bin/console doctrine:migrations:migrate --no-interaction
 
