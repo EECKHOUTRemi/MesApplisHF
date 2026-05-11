@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Ingredient{% endblock %}
+
+{% block body %}
+    <h1>Create new Ingredient</h1>
+
+    {{ include('ma_cuisine/ingredient/_form.html.twig') }}
+
+    <a href="{{ path('app_ma_cuisine_ingredient_index') }}">back to list</a>
+{% endblock %}
