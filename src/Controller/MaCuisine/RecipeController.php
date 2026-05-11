@@ -2,8 +2,10 @@
 
 namespace App\Controller\MaCuisine;
 
+use App\Entity\MaCuisine\Ingredient;
 use App\Entity\MaCuisine\Recipe;
 use App\Form\MaCuisine\RecipeType;
+use App\Repository\MaCuisine\IngredientRepository;
 use App\Repository\MaCuisine\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -83,5 +85,11 @@ final class RecipeController extends AbstractController
         return $this->redirectToRoute('app_MaCuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
     }
 
+    #[Route('/ajax/ingredients', name: 'app_MaCuisine_recipe_ingredients_ajax', methods: ['GET'])]
+    public function ingredientsAjax(Request $request, IngredientRepository $ingredientRepository): array
+    {
+        $ingredients = $ingredientRepository->findAll();
 
+        return $ingredients;
+    }
 }

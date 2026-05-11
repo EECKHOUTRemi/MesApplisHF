@@ -35,4 +35,9 @@ return [
         'version' => '4.1.0-rc.0',
         'type' => 'css',
     ],
+    'macuisine/select-ingredient' => [
+        'path' => './assets/macuisine/select-ingredient.js',
+        'entrypoint' => true,
+    ],
+
 ];

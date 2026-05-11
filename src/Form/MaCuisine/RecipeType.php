@@ -16,7 +16,12 @@ class RecipeType extends AbstractType
     {
         $builder->add('name', TextType::class)
             ->add('description', TextareaType::class)
-            ->add('ingredients', ChoiceType::class)
+            ->add('ingredients', ChoiceType::class, [
+                'mapped' => false,
+                'attr' => [
+                    'class' => 'ingredients-select',
+                ],
+            ])
         ;
     }
 
