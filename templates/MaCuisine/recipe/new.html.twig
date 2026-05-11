@@ -38,6 +38,4 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-    {{ importmap('macuisine/select-ingredient') }}
-{% endblock %}
+{% block importmap %}{{ importmap(['app', 'macuisine/select-ingredient']) }}{% endblock %}
