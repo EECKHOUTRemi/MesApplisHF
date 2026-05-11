@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/macuisine/ingredient'), IsGranted("ROLE_USER")]
+#[Route('/macuisine/ingredient'), IsGranted("ROLE_ADMIN")]
 final class IngredientController extends AbstractController
 {
     #[Route(name: 'app_ma_cuisine_ingredient_index', methods: ['GET'])]
