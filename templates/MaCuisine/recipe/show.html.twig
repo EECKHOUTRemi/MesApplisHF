@@ -128,8 +128,8 @@
     {% endif %}
 
     <div class="d-flex flex-wrap gap-2 justify-content-between">
-        <a href="{{ path('app_ma_cuisine_recipe_index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour au fil
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour en arrière
         </a>
 
         {% if isAuthor %}
