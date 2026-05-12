@@ -38,6 +38,11 @@ sudo -u www-data php bin/console doctrine:migrations:migrate --no-interaction
 log "Clearing and warming cache..."
 sudo rm -rf /var/www/MesApplisHF/var/cache/*
 sudo -u www-data php bin/console cache:clear --env=prod --no-warmup
+
+log "Compiling asset map..."
+rm -rf /var/www/MesApplisHF/public/assets
+php bin/console asset-map:compile --env=prod
+
 sudo -u www-data php bin/console cache:warmup --env=prod
 
 log "Fixing permissions..."
