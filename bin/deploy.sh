@@ -40,8 +40,9 @@ sudo rm -rf /var/www/MesApplisHF/var/cache/*
 sudo -u www-data php bin/console cache:clear --env=prod --no-warmup
 
 log "Compiling asset map..."
-rm -rf /var/www/MesApplisHF/public/assets
-php bin/console asset-map:compile --env=prod
+sudo rm -rf /var/www/MesApplisHF/public/assets
+sudo install -d -m 2775 -o www-data -g deploy /var/www/MesApplisHF/public/assets
+sudo -u www-data php bin/console asset-map:compile --env=prod
 
 sudo -u www-data php bin/console cache:warmup --env=prod
 
