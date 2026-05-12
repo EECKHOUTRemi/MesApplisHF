@@ -55,7 +55,7 @@ php -S 127.0.0.1:8000 -t public
 ├── src/
 │   ├── Controller/    # HTTP controllers
 │   ├── Entity/        # Doctrine entities (see "Database schema" below)
-│   │   └── MonPoids/  # MonPoids app — Bmi, Measurement
+│   │   └── monpoids/  # MonPoids app — Bmi, Measurement
 │   ├── Repository/    # Doctrine repositories
 │   └── Kernel.php     # Micro-kernel
 ├── composer.json

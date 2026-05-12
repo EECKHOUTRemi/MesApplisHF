@@ -2,7 +2,7 @@
 
 namespace App\Form\macuisine;
 
-use App\Entity\MaCuisine\Recipe;
+use App\Entity\macuisine\Recipe;
 use App\Form\ChoiceList\PassthroughChoiceLoader;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

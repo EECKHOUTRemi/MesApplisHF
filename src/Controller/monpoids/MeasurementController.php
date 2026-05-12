@@ -2,9 +2,9 @@
 
 namespace App\Controller\monpoids;
 
-use App\Entity\MonPoids\Measurement;
-use App\Form\MonPoids\MeasurementType;
-use App\Repository\MonPoids\MeasurementRepository;
+use App\Entity\monpoids\Measurement;
+use App\Form\monpoids\MeasurementType;
+use App\Repository\monpoids\MeasurementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

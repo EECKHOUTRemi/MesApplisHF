@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Entity\MaCuisine;
+namespace App\Entity\macuisine;
 
-use App\Entity\MaCuisine\RefRecipeIngredient;
+use App\Entity\macuisine\RefRecipeIngredient;
 use App\Entity\User;
-use App\Repository\MaCuisine\RecipeRepository;
+use App\Repository\macuisine\RecipeRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

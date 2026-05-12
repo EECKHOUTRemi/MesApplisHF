@@ -2,7 +2,7 @@
 
 namespace App\Form\macuisine;
 
-use App\Entity\MaCuisine\Recipe;
+use App\Entity\macuisine\Recipe;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

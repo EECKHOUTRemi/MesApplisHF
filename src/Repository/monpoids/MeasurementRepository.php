@@ -1,40 +1,40 @@
 <?php
 
-namespace App\Repository\MaCuisine;
+namespace App\Repository\monpoids;
 
-use App\Entity\MaCuisine\Recipe;
+use App\Entity\monpoids\Measurement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Recipe>
+ * @extends ServiceEntityRepository<Measurement>
  */
-class RecipeRepository extends ServiceEntityRepository
+class MeasurementRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Recipe::class);
+        parent::__construct($registry, Measurement::class);
     }
 
     //    /**
-    //     * @return Recipe[] Returns an array of Recipe objects
+    //     * @return Measurement[] Returns an array of Measurement objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
+    //        return $this->createQueryBuilder('m')
+    //            ->andWhere('m.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
+    //            ->orderBy('m.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Recipe
+    //    public function findOneBySomeField($value): ?Measurement
     //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
+    //        return $this->createQueryBuilder('m')
+    //            ->andWhere('m.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

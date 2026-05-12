@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Entity\MaCuisine;
+namespace App\Entity\macuisine;
 
-use App\Entity\MaCuisine\Ingredient;
-use App\Repository\MaCuisine\RefRecipeIngredientRepository;
+use App\Entity\macuisine\Ingredient;
+use App\Repository\macuisine\RefRecipeIngredientRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RefRecipeIngredientRepository::class)]

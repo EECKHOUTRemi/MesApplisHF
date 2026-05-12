@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Entity\MonPoids;
+namespace App\Entity\monpoids;
 
 use App\Entity\User;
-use App\Repository\MonPoids\BmiRepository;
+use App\Repository\monpoids\BmiRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BmiRepository::class)]

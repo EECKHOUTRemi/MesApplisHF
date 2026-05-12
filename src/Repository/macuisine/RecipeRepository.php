@@ -1,40 +1,40 @@
 <?php
 
-namespace App\Repository\MonPoids;
+namespace App\Repository\macuisine;
 
-use App\Entity\MonPoids\Bmi;
+use App\Entity\macuisine\Recipe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Bmi>
+ * @extends ServiceEntityRepository<Recipe>
  */
-class BmiRepository extends ServiceEntityRepository
+class RecipeRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Bmi::class);
+        parent::__construct($registry, Recipe::class);
     }
 
     //    /**
-    //     * @return Bmi[] Returns an array of Bmi objects
+    //     * @return Recipe[] Returns an array of Recipe objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
+    //        return $this->createQueryBuilder('r')
+    //            ->andWhere('r.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('b.id', 'ASC')
+    //            ->orderBy('r.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Bmi
+    //    public function findOneBySomeField($value): ?Recipe
     //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
+    //        return $this->createQueryBuilder('r')
+    //            ->andWhere('r.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

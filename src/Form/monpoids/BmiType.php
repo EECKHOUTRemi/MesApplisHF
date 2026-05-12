@@ -2,7 +2,7 @@
 
 namespace App\Form\monpoids;
 
-use App\Entity\MonPoids\Bmi;
+use App\Entity\monpoids\Bmi;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

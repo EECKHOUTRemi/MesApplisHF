@@ -2,9 +2,9 @@
 
 namespace App\Controller\monpoids;
 
-use App\Entity\MonPoids\Bmi;
-use App\Form\MonPoids\BmiType;
-use App\Repository\MonPoids\BmiRepository;
+use App\Entity\monpoids\Bmi;
+use App\Form\monpoids\BmiType;
+use App\Repository\monpoids\BmiRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

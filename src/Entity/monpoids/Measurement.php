@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Entity\MonPoids;
+namespace App\Entity\monpoids;
 
 use App\Entity\User;
-use App\Repository\MonPoids\MeasurementRepository;
+use App\Repository\monpoids\MeasurementRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MeasurementRepository::class)]

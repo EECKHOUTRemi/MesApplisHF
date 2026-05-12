@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity\MaCuisine;
+namespace App\Entity\macuisine;
 
-use App\Repository\MaCuisine\IngredientRepository;
+use App\Repository\macuisine\IngredientRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: IngredientRepository::class)]

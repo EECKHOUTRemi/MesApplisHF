@@ -2,8 +2,8 @@
 
 namespace App\Controller\macuisine;
 
-use App\Repository\MaCuisine\IngredientRepository;
-use App\Repository\MaCuisine\RecipeRepository;
+use App\Repository\macuisine\IngredientRepository;
+use App\Repository\macuisine\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;

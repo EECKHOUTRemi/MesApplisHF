@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository\MaCuisine;
+namespace App\Repository\macuisine;
 
-use App\Entity\MaCuisine\Ingredient;
+use App\Entity\macuisine\Ingredient;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

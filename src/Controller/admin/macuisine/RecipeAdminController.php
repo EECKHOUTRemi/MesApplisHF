@@ -2,9 +2,9 @@
 
 namespace App\Controller\admin\macuisine;
 
-use App\Entity\MaCuisine\Recipe;
-use App\Form\MaCuisine\RecipeAdminType;
-use App\Repository\MaCuisine\RecipeRepository;
+use App\Entity\macuisine\Recipe;
+use App\Form\macuisine\RecipeAdminType;
+use App\Repository\macuisine\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

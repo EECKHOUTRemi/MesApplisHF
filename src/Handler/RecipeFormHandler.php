@@ -2,10 +2,10 @@
 
 namespace App\Handler;
 
-use App\Entity\MaCuisine\Ingredient;
-use App\Entity\MaCuisine\Recipe;
-use App\Entity\MaCuisine\RefRecipeIngredient;
-use App\Repository\MaCuisine\IngredientRepository;
+use App\Entity\macuisine\Ingredient;
+use App\Entity\macuisine\Recipe;
+use App\Entity\macuisine\RefRecipeIngredient;
+use App\Repository\macuisine\IngredientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
