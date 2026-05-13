@@ -30,28 +30,34 @@
                             <li><h6 class="dropdown-header">Administration</h6></li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_user_index') }}">
-                                    <i class="bi bi-people-fill"></i> Users
+                                    <i class="bi bi-people-fill"></i> Utilisateurs
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_recipe_index') }}">
-                                    <i class="bi bi-journal-richtext"></i> Recipes
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_ma_cuisine_ingredient_index') }}">
-                                    <i class="bi bi-basket-fill"></i> Ingredients
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_relationship_index') }}">
+                                    <i class="bi bi-people"></i> Relations
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_MonPoids_bmi_index') }}">
-                                    <i class="bi bi-speedometer2"></i> BMI
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_recipe_index') }}">
+                                    <i class="bi bi-journal-richtext"></i> Recettes
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_MonPoids_measurement_index') }}">
-                                    <i class="bi bi-rulers"></i> Measurements
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_ma_cuisine_ingredient_index') }}">
+                                    <i class="bi bi-basket-fill"></i> Ingrédients
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_admin_monpoids_bmi_index') }}">
+                                    <i class="bi bi-speedometer2"></i> IMC
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_admin_monpoids_measurement_index') }}">
+                                    <i class="bi bi-rulers"></i> Mesures
                                 </a>
                             </li>
                         </ul>
