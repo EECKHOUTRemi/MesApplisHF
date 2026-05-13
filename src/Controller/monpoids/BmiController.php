@@ -22,8 +22,7 @@ final class BmiController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(BmiRepository $bmiRepository, ChartBuilderInterface $chartBuilder): Response
     {
-        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ;
-        $bmis = $bmiRepository->findBy($isAdmin ? [] : ['user' => $this->getUser()], ['createdAt' => 'ASC']);
+        $bmis = $bmiRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'ASC']);
         $dates = array_map(
             function(Bmi $bmi) { return $bmi->getCreatedAt()->format('d/m/Y'); },
             $bmis,

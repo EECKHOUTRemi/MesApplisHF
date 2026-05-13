@@ -1,39 +1,71 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Relationship index{% endblock %}
+{% block title %}Relations · Admin{% endblock %}
 
 {% block body %}
-    <h1>Relationship index</h1>
+<div class="container py-4" style="max-width: 1100px;">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Status</th>
-                <th>CreatedAt</th>
-                <th>UpdatedAt</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for relationship in relationships %}
-            <tr>
-                <td>{{ relationship.id }}</td>
-                <td>{{ relationship.status }}</td>
-                <td>{{ relationship.createdAt ? relationship.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ relationship.updatedAt ? relationship.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_relationship_show', {'id': relationship.id}) }}">show</a>
-                    <a href="{{ path('app_relationship_edit', {'id': relationship.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0 small">
+            <li class="breadcrumb-item"><a href="{{ path('app_index') }}" class="text-decoration-none">Accueil</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Relations</li>
+        </ol>
+    </nav>
 
-    <a href="{{ path('app_relationship_new') }}">Create new</a>
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
+        <div>
+            <h1 class="h4 mb-1 fw-bold"><i class="bi bi-people me-2" aria-hidden="true"></i>Relations</h1>
+            <p class="text-secondary mb-0 small">Gestion administrateur des relations entre utilisateurs.</p>
+        </div>
+        <a href="{{ path('app_relationship_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nouvelle relation
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width: 70px;">#</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col" class="d-none d-md-table-cell" style="width: 170px;">Créée le</th>
+                        <th scope="col" class="d-none d-lg-table-cell" style="width: 170px;">Mise à jour</th>
+                        <th scope="col" class="text-end" style="width: 140px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for relationship in relationships %}
+                    <tr>
+                        <td class="text-secondary">{{ relationship.id }}</td>
+                        <td class="fw-semibold">{{ relationship.status }}</td>
+                        <td class="d-none d-md-table-cell text-secondary small">
+                            {{ relationship.createdAt ? relationship.createdAt|date('d/m/Y H:i') : '—' }}
+                        </td>
+                        <td class="d-none d-lg-table-cell text-secondary small">
+                            {{ relationship.updatedAt ? relationship.updatedAt|date('d/m/Y H:i') : '—' }}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ path('app_relationship_show', {'id': relationship.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </a>
+                            <a href="{{ path('app_relationship_edit', {'id': relationship.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-secondary py-4">
+                            <i class="bi bi-inbox d-block fs-3 mb-2" aria-hidden="true"></i>
+                            Aucune relation enregistrée.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

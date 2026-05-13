@@ -12,18 +12,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/macuisine/ingredient'), IsGranted("ROLE_ADMIN")]
+#[Route('/macuisine/ingredient', name:'app_ma_cuisine_ingredient_'), IsGranted("ROLE_ADMIN")]
 final class IngredientController extends AbstractController
 {
-    #[Route(name: 'app_ma_cuisine_ingredient_index', methods: ['GET'])]
+    #[Route(name: 'index', methods: ['GET'])]
     public function index(IngredientRepository $ingredientRepository): Response
     {
-        return $this->render('admin/ingredient/index.html.twig', [
+        return $this->render('admin/macuisine/ingredient/index.html.twig', [
             'ingredients' => $ingredientRepository->findAll(),
         ]);
     }
 
-    #[Route('/new', name: 'app_ma_cuisine_ingredient_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $ingredient = new Ingredient();
@@ -37,21 +37,21 @@ final class IngredientController extends AbstractController
             return $this->redirectToRoute('app_ma_cuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('admin/ingredient/new.html.twig', [
+        return $this->render('admin/macuisine/ingredient/new.html.twig', [
             'ingredient' => $ingredient,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_ma_cuisine_ingredient_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Ingredient $ingredient): Response
     {
-        return $this->render('admin/ingredient/show.html.twig', [
+        return $this->render('admin/macuisine/ingredient/show.html.twig', [
             'ingredient' => $ingredient,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_ma_cuisine_ingredient_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Ingredient $ingredient, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(IngredientType::class, $ingredient);
@@ -63,13 +63,13 @@ final class IngredientController extends AbstractController
             return $this->redirectToRoute('app_ma_cuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('admin/ingredient/edit.html.twig', [
+        return $this->render('admin/macuisine/ingredient/edit.html.twig', [
             'ingredient' => $ingredient,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_ma_cuisine_ingredient_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Ingredient $ingredient, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$ingredient->getId(), $request->getPayload()->getString('_token'))) {

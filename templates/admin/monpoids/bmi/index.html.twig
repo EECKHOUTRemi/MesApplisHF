@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}IMC · Admin MonPoids{% endblock %}
+
+{% block body %}
+<div class="container py-4" style="max-width: 1100px;">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0 small">
+            <li class="breadcrumb-item"><a href="{{ path('app_mon_poids_global') }}" class="text-decoration-none">MonPoids</a></li>
+            <li class="breadcrumb-item active" aria-current="page">IMC</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
+        <div>
+            <h1 class="h4 mb-1 fw-bold"><i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>IMC</h1>
+            <p class="text-secondary mb-0 small">Gestion administrateur des calculs d'IMC.</p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width: 70px;">#</th>
+                        <th scope="col">Utilisateur</th>
+                        <th scope="col" class="d-none d-md-table-cell">Taille (cm)</th>
+                        <th scope="col" class="d-none d-md-table-cell">Poids (kg)</th>
+                        <th scope="col">IMC</th>
+                        <th scope="col" class="d-none d-lg-table-cell" style="width: 170px;">Date</th>
+                        <th scope="col" class="text-end" style="width: 140px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for bmi in bmis %}
+                    <tr>
+                        <td class="text-secondary">{{ bmi.id }}</td>
+                        <td class="fw-semibold">{{ bmi.user.email }} <span class="text-secondary small">({{ bmi.user.username }})</span></td>
+                        <td class="d-none d-md-table-cell">{{ bmi.height }}</td>
+                        <td class="d-none d-md-table-cell">{{ bmi.weight }}</td>
+                        <td>
+                            <span class="badge bg-{% if bmi.bmi < 18.5 %}danger{% elseif bmi.bmi < 25 %}success{% elseif bmi.bmi < 30 %}warning{% else %}danger{% endif %}-subtle text-{% if bmi.bmi < 18.5 %}danger{% elseif bmi.bmi < 25 %}success{% elseif bmi.bmi < 30 %}warning{% else %}danger{% endif %}">{{ bmi.bmi }}</span>
+                        </td>
+                        <td class="d-none d-lg-table-cell text-secondary small">
+                            {{ bmi.createdAt ? bmi.createdAt|date('d/m/Y H:i') : '—' }}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ path('app_MonPoids_bmi_show', {'id': bmi.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </a>
+                            <a href="{{ path('app_MonPoids_bmi_edit', {'id': bmi.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-secondary py-4">
+                            <i class="bi bi-inbox d-block fs-3 mb-2" aria-hidden="true"></i>
+                            Aucun calcul d'IMC enregistré.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
