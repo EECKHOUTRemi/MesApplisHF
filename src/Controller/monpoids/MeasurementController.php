@@ -21,7 +21,8 @@ final class MeasurementController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(MeasurementRepository $measurementRepository, ChartBuilderInterface $chartBuilder): Response
     {
-        $measurements = $measurementRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'ASC']);
+        $isAdmin = in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ;
+        $measurements = $isAdmin ? $measurementRepository->findAll() : $measurementRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'ASC']);
         $dates = array_map(
             fn (Measurement $measurement) => $measurement->getCreatedAt()->format('d/m/Y'),
             $measurements,
