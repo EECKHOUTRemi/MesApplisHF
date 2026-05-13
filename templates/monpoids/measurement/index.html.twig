@@ -21,8 +21,8 @@
         </div>
     </div>
 
-    {% set chartDefault = measurements|length > 2 %}
-    {% if measurements|length > 1 %}
+    {% set chartDefault = not is_granted('ROLE_ADMIN') and measurements|length > 2 %}
+    {% if not is_granted('ROLE_ADMIN') and measurements|length > 1 %}
         <ul class="nav nav-pills mb-3" id="measurementViewTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link{{ chartDefault ? '' : ' active' }}" id="table-tab" data-bs-toggle="pill" data-bs-target="#table-view" type="button" role="tab" aria-controls="table-view" aria-selected="{{ chartDefault ? 'false' : 'true' }}">

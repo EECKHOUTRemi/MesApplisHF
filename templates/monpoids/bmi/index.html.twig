@@ -1,13 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}IMC — Historique{% endblock %}
+{% block title %}
+    {% if is_granted('ROLE_ADMIN') %}MAHF - Admin panel : IMC{% else %}MAHF - IMC{% endif %}
+{% endblock %}
 
 {% block body %}
 <div class="container py-5">
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
         <div>
-            <h1 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-primary me-2"></i>Historique IMC</h1>
-            <p class="text-secondary mb-0">Vos calculs d'indice de masse corporelle.</p>
+            <h1 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-primary me-2"></i>
+                {% if is_granted('ROLE_ADMIN') %}
+                    Admin panel : IMC</h1>
+                {% else %}
+                    Historique IMC</h1>
+                    <p class="text-secondary mb-0">Vos calculs d'indice de masse corporelle.</p>
+                {% endif %}
         </div>
         <div class="d-flex gap-2">
             <a href="{{ path('app_mon_poids_global') }}" class="btn btn-outline-secondary">
@@ -21,8 +28,8 @@
         </div>
     </div>
 
-    {% set chartDefault = bmis|length > 2 %}
-    {% if bmis|length > 1 %}
+    {% set chartDefault = not is_granted('ROLE_ADMIN') and bmis|length > 2 %}
+    {% if not is_granted('ROLE_ADMIN') and bmis|length > 1 %}
         <ul class="nav nav-pills mb-3" id="bmiViewTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link{{ chartDefault ? '' : ' active' }}" id="table-tab" data-bs-toggle="pill" data-bs-target="#table-view" type="button" role="tab" aria-controls="table-view" aria-selected="{{ chartDefault ? 'false' : 'true' }}">
@@ -38,7 +45,7 @@
     {% endif %}
 
     <div class="tab-content" id="bmiViewTabsContent">
-        {% if bmis|length > 1 %}
+        {% if not is_granted('ROLE_ADMIN') and bmis|length > 1 %}
         <div class="tab-pane fade{{ chartDefault ? ' show active' : '' }}" id="chart-view" role="tabpanel" aria-labelledby="chart-tab">
             <div class="card shadow-sm p-3">
                 <div style="height: 480px;">
