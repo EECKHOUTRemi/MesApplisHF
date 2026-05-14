@@ -17,9 +17,8 @@ class RecipeType extends AbstractType
     {
         $builder->add('name', TextType::class, [
             'attr' => [
-                'maxLength' => 15
+                'maxLength' => 30
             ]
-            
         ])
             ->add('description', TextareaType::class)
             ->add('ingredients', ChoiceType::class, [
