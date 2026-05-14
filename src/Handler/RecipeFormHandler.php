@@ -39,6 +39,7 @@ class RecipeFormHandler
         }
         $this->em->persist($recipe);
 
+        # Create ingredient if is an id (non existant in db)
         foreach ($submittedData['recipe']['ingredients'] as $ingredient) {
             if (!is_numeric($ingredient)) {
                 $newIngredient = new Ingredient();
@@ -68,7 +69,7 @@ class RecipeFormHandler
                 ->setIngredient($ingredientObj);
 
             $ref->setUnite($datas['unit']);
-            $ref->setQuantity($datas['qty']);
+            $ref->setQuantity((int) $datas['qty'] ?? null);
 
             if (!isset($existing[$id])) {
                 $this->em->persist($ref);
