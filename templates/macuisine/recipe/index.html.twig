@@ -86,6 +86,7 @@
 {% endblock %}
 
 {% block body %}
+
 <div class="container py-4">
     <div class="feed-wrapper mx-auto">
 
@@ -167,11 +168,17 @@
                         <h2 class="post-title">{{ recipe.name }}</h2>
                     </a>
 
-                    <p class="text-body mb-3 mt-2" style="white-space: pre-line;">
-                        {{ recipe.description|length > 240 ? recipe.description|slice(0, 240) ~ '…' : recipe.description }}
-                    </p>
+                    {% if recipe.refRecipeIngredients|length > 0 %}
+                        {% for ri in recipe.refRecipeIngredients %}
+                            <span class="mb-5">{{ ri.ingredient.name }}{% if not loop.last %} - {% endif %}</span>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-body mb-3 mt-2" style="white-space: pre-line;">
+                            Pas d'ingrédients renseignés
+                        </p>
+                    {% endif %}
 
-                    <footer class="post-actions d-flex align-items-center justify-content-between border-top pt-2">
+                    <footer class="post-actions d-flex align-items-center justify-content-between border-top pt-2 mt-3">
                         <a href="{{ path('app_ma_cuisine_recipe_show', {'id': recipe.id}) }}" class="btn">
                             <i class="bi bi-eye me-1" aria-hidden="true"></i>Voir la recette
                         </a>

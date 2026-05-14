@@ -47,7 +47,19 @@
 {% endblock %}
 
 {% block body %}
+
 {% set isAuthor = app.user and recipe.author and app.user.id == recipe.author.id %}
+{% set unitLabels = {
+    'kg': 'kg',
+    'g':  'g',
+    'mg': 'mg',
+    'l':  'l',
+    'ml': 'ml',
+    'cc': 'cuillère(s) à café',
+    'cs': 'cuillère(s) à soupe',
+    'p':  'pincée(s)',
+    'u':  'unité(s)',
+} %}
 
 <div class="container py-4" style="max-width: 820px;">
 
@@ -92,26 +104,7 @@
                 {% endif %}
             </div>
 
-            <h2 class="h5 fw-bold mb-2"><i class="bi bi-journal-text text-primary me-1" aria-hidden="true"></i>Description</h2>
-            <p class="recipe-description text-body mb-0">{{ recipe.description }}</p>
-        </div>
-    </section>
-
-    {% set unitLabels = {
-        'kg': 'kg',
-        'g':  'g',
-        'mg': 'mg',
-        'l':  'l',
-        'ml': 'ml',
-        'cc': 'cuillère(s) à café',
-        'cs': 'cuillère(s) à soupe',
-        'p':  'pincée(s)',
-        'u':  'unité(s)',
-    } %}
-
-    {% if recipe.refRecipeIngredients|length > 0 %}
-        <section class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-4">
+            {% if recipe.refRecipeIngredients|length > 0 %}
                 <h2 class="h5 fw-bold mb-3"><i class="bi bi-basket text-primary me-1" aria-hidden="true"></i>Ingrédients</h2>
                 <ul class="list-group list-group-flush">
                     {% for ri in recipe.refRecipeIngredients %}
@@ -127,9 +120,17 @@
                         </li>
                     {% endfor %}
                 </ul>
-            </div>
-        </section>
-    {% endif %}
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h2 class="h5 fw-bold mb-2"><i class="bi bi-journal-text text-primary me-1" aria-hidden="true"></i>Description</h2>
+            <p class="recipe-description text-body mb-0">{{ recipe.description }}</p>
+            
+        </div>
+    </section>
 
     <div class="d-flex flex-wrap gap-2 justify-content-between">
         <a href="javascript:history.back()" class="btn btn-outline-secondary">
