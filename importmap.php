@@ -39,5 +39,4 @@ return [
         'path' => './assets/macuisine/select-ingredient.js',
         'entrypoint' => true,
     ],
-
 ];
