@@ -46,8 +46,9 @@ $(function () {
         });
 
         $el.select2({
-            placeholder: 'Sélectionnez un ingrédient',
+            placeholder: 'Sélectionnez ou créez un ingrédient',
             tags: true,
+            minimumInputLength: 3,
             ajax: {
                 url: $el.data('ajax-url'),
                 dataType: 'json',
