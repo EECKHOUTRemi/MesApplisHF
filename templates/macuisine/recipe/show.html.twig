@@ -118,7 +118,11 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                             <span>{{ ri.ingredient.name }}</span>
                             <span class="text-secondary">
-                                {{ ri.quantity }} {{ unitLabels[ri.unite]|default(ri.unite) }}
+                                {% if ri.quantity > 0 %}
+                                    {{ ri.quantity }} {{ unitLabels[ri.unite]|default(ri.unite) }}
+                                {% else %}
+                                    Pas de quantité précisée
+                                {% endif %}
                             </span>
                         </li>
                     {% endfor %}
