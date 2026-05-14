@@ -19,7 +19,7 @@ function buildTagRow(name, id) {
 
     const $label = $('<div class="col-12 col-md-4 fw-semibold"></div>').text(name + ' :');
 
-    const $qtyInput = $('<input type="number" class="form-control" placeholder="Qté">')
+    const $qtyInput = $('<input type="number" class="form-control" placeholder="Quantité" min="1">')
         .attr('name', `extras[${key}][qty]`);
     const $qty = $('<div class="col-6 col-md-4"></div>').append($qtyInput);
 
