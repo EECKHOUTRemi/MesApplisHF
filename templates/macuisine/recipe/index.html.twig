@@ -93,16 +93,17 @@
         <section class="feed-header mb-4">
             <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
                 <div>
-                    <h1 class="h3 fw-bold mb-1"><i class="bi bi-egg-fried me-1" aria-hidden="true"></i>Le fil des recettes</h1>
-                    <p class="mb-0 small opacity-90">Découvrez ce que la communauté a mijoté.</p>
+                    <h1 class="h3 fw-bold mb-1"><i class="bi bi-egg-fried me-1" aria-hidden="true"></i>{{ mine ? "Mes recettes" : "Le fil des recettes"}}</h1>
+                    <p class="mb-0 small opacity-90">{{ mine ? "Voici vos recettes, celles que vous avez concocté avec amour !" : "Découvrez ce que la communauté a mijoté" }}.</p>
                 </div>
                 <a href="{{ path('app_ma_cuisine_recipe_new') }}" class="btn btn-light fw-semibold">
-                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Publier
+                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Publier une recette
                 </a>
             </div>
         </section>
 
-        <section class="card feed-post shadow-sm mb-3">
+        {# Future searchbar #}
+        {# <section class="card feed-post shadow-sm mb-3">
             <div class="card-body d-flex align-items-center gap-3">
                 <span class="post-avatar">{{ app.user.username|first|upper }}</span>
                 <a href="{{ path('app_ma_cuisine_recipe_new') }}" class="flex-grow-1 text-decoration-none">
@@ -114,7 +115,7 @@
                     <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Nouvelle recette
                 </a>
             </div>
-        </section>
+        </section> #}
 
         {% for recipe in recipes %}
             {% set isAuthor = app.user and recipe.author and app.user.id == recipe.author.id %}
