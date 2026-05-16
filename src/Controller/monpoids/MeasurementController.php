@@ -78,6 +78,7 @@ final class MeasurementController extends AbstractController
         $chart->setOptions([
             'responsive' => true,
             'maintainAspectRatio' => false,
+            'spanGaps' => true,
             'scales' => [
                 'y' => [
                     'suggestedMin' => 0,
