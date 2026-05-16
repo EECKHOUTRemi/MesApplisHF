@@ -78,6 +78,7 @@ final class MeasurementController extends AbstractController
         $chart->setOptions([
             'responsive' => true,
             'maintainAspectRatio' => false,
+            'spanGaps' => true,
             'scales' => [
                 'y' => [
                     'suggestedMin' => 0,
@@ -99,7 +100,7 @@ final class MeasurementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $measurement->setCreatedAt(new \DateTimeImmutable());
+            $measurement->setCreatedAt($measurement->getCreatedAt() ?? new \DateTimeImmutable());
             $measurement->setUser($this->getUser());
             $entityManager->persist($measurement);
             $entityManager->flush();
@@ -145,6 +146,10 @@ final class MeasurementController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$measurement->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($measurement);
             $entityManager->flush();
+        }
+
+        if ($request->query->get('from') === 'admin') {
+            return $this->redirectToRoute('app_admin_monpoids_measurement_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->redirectToRoute('app_MonPoids_measurement_index', [], Response::HTTP_SEE_OTHER);

@@ -47,10 +47,10 @@
                             {{ bmi.createdAt ? bmi.createdAt|date('d/m/Y H:i') : '—' }}
                         </td>
                         <td class="text-end">
-                            <a href="{{ path('app_MonPoids_bmi_show', {'id': bmi.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                            <a href="{{ path('app_MonPoids_bmi_show', {'id': bmi.id, 'from': 'admin'}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
                                 <i class="bi bi-eye" aria-hidden="true"></i>
                             </a>
-                            <a href="{{ path('app_MonPoids_bmi_edit', {'id': bmi.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <a href="{{ path('app_MonPoids_bmi_edit', {'id': bmi.id, 'from': 'admin'}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="bi bi-pencil-square" aria-hidden="true"></i>
                             </a>
                         </td>

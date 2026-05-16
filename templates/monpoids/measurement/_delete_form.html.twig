@@ -1,4 +1,4 @@
-<form method="post" action="{{ path('app_MonPoids_measurement_delete', {'id': measurement.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet enregistrement ?');">
+<form method="post" action="{{ path('app_MonPoids_measurement_delete', {'id': measurement.id, 'from': from|default('')}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet enregistrement ?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ measurement.id) }}">
     <button class="btn btn-danger">
         <i class="bi bi-trash"></i> Supprimer
