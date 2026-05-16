@@ -2,7 +2,12 @@
 
 A Symfony 8 application skeleton powering the **HF apps portal**.
 
-It hosts a collection of small personal apps. The first one shipped is **MonPoids** — a weight & body-measurement tracker with a BMI calculator.
+It hosts a collection of small personal apps:
+
+- **MaCuisine** — a recipe social network where users author recipes built from a shared ingredient catalogue.
+- **MonPoids** — a weight & body-measurement tracker with a BMI calculator and Chart.js trend graphs.
+
+Each app exposes a user-facing section plus an `/admin` section restricted to `ROLE_ADMIN`.
 
 > Status: early development.
 
@@ -15,6 +20,9 @@ It hosts a collection of small personal apps. The first one shipped is **MonPoid
 | Language    | PHP **8.4+**                    |
 | Framework   | Symfony **8.0.\***              |
 | Runtime     | `symfony/runtime`               |
+| ORM         | Doctrine ORM + Migrations       |
+| Frontend    | Twig, Bootstrap 5, Stimulus     |
+| Charts      | Symfony UX Chartjs (Chart.js)   |
 | Dependency  | Composer (managed via Flex)     |
 | Autoloading | PSR-4 — `App\` → `src/`         |
 
@@ -52,10 +60,19 @@ php -S 127.0.0.1:8000 -t public
 │   ├── packages/      # cache, framework, routing
 │   └── routes/        # route definitions
 ├── public/            # Web root — index.php front controller
+├── migrations/        # Doctrine migrations
+├── assets/
+│   ├── controllers/   # Stimulus controllers (e.g. bmi_chart_controller.js)
+│   └── styles/
 ├── src/
-│   ├── Controller/    # HTTP controllers
+│   ├── Controller/
+│   │   ├── admin/     # /admin section (ROLE_ADMIN)
+│   │   ├── macuisine/ # MaCuisine — Recipe, Ingredient
+│   │   └── monpoids/  # MonPoids — Bmi, Measurement
 │   ├── Entity/        # Doctrine entities (see "Database schema" below)
-│   │   └── monpoids/  # MonPoids app — Bmi, Measurement
+│   │   ├── macuisine/ # Recipe, Ingredient, RefRecipeIngredient
+│   │   └── monpoids/  # Bmi, Measurement
+│   ├── Form/          # Symfony form types
 │   ├── Repository/    # Doctrine repositories
 │   └── Kernel.php     # Micro-kernel
 ├── composer.json
@@ -105,10 +122,10 @@ erDiagram
     MEASUREMENT {
         int             id PK
         int             user_id FK
-        float           chest
-        float           hips
-        float           thigh
-        float           waist
+        float           chest "nullable"
+        float           hips "nullable"
+        float           thigh "nullable"
+        float           waist "nullable"
         datetime_immut  createdAt
     }
 
@@ -140,10 +157,12 @@ erDiagram
 ## Common commands
 
 ```bash
-php bin/console list                # all available commands
-php bin/console debug:router        # registered routes
-php bin/console cache:clear         # clear the cache
-php bin/console about               # environment summary
+php bin/console list                       # all available commands
+php bin/console debug:router               # registered routes
+php bin/console cache:clear                # clear the cache
+php bin/console about                      # environment summary
+php bin/console make:migration             # scaffold a Doctrine migration
+php bin/console doctrine:migrations:migrate # apply pending migrations
 ```
 
 ## Adding a controller
