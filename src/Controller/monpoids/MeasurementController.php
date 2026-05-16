@@ -100,7 +100,7 @@ final class MeasurementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $measurement->setCreatedAt(new \DateTimeImmutable());
+            $measurement->setCreatedAt($measurement->getCreatedAt() ?? new \DateTimeImmutable());
             $measurement->setUser($this->getUser());
             $entityManager->persist($measurement);
             $entityManager->flush();

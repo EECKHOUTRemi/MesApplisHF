@@ -121,7 +121,7 @@ final class BmiController extends AbstractController
                 $user->setHeight($bmi->getHeight());
                 $entityManager->persist($user);
             }
-            $bmi->setCreatedAt(new \DateTimeImmutable());
+            $bmi->setCreatedAt($bmi->getCreatedAt() ?? new \DateTimeImmutable());
             $bmi->setUser($this->getUser());
             $bmi->setBmi($bmi->getHeight(), $bmi->getWeight());
             $entityManager->persist($bmi);
