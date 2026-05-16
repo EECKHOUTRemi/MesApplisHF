@@ -35,9 +35,12 @@ final class BmiController extends AbstractController
             function(Bmi $bmi) { return $bmi->getWeight(); },
             $bmis,
         );
-        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $count = count($dates);
+        $minLine = array_fill(0, $count, 19);
+        $maxLine = array_fill(0, $count, 25);
 
-        $chart->setData([
+        $bmiChart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $bmiChart->setData([
             'labels' => $dates,
             'datasets' => [
                 [
@@ -47,6 +50,41 @@ final class BmiController extends AbstractController
                     'data' => $bmiData,
                 ],
                 [
+                    'label' => 'IMC normal',
+                    'backgroundColor' => 'rgba(75, 192, 75, 0.5)',
+                    'borderColor' => 'rgba(75, 192, 75, 0.5)',
+                    'data' => $minLine,
+                    'borderDash' => [5, 5],
+                    'pointRadius' => 0,
+                    'fill' => false,
+                ],
+                [
+                    'label' => '__hidden__',
+                    'backgroundColor' => 'rgba(75, 192, 75, 0.5)',
+                    'borderColor' => 'rgba(75, 192, 75, 0.5)',
+                    'data' => $maxLine,
+                    'borderDash' => [5, 5],
+                    'pointRadius' => 0,
+                    'fill' => false,
+                ],
+            ],
+        ]);
+        $bmiChart->setOptions([
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'scales' => [
+                'y' => [
+                    'suggestedMin' => 15,
+                    'suggestedMax' => 35,
+                ],
+            ],
+        ]);
+
+        $weightChart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $weightChart->setData([
+            'labels' => $dates,
+            'datasets' => [
+                [
                     'label' => 'Poids',
                     'backgroundColor' => 'rgb(54, 162, 235)',
                     'borderColor' => 'rgb(54, 162, 235)',
@@ -54,21 +92,15 @@ final class BmiController extends AbstractController
                 ],
             ],
         ]);
-
-        $chart->setOptions([
+        $weightChart->setOptions([
             'responsive' => true,
             'maintainAspectRatio' => false,
-            'scales' => [
-                'y' => [
-                    'suggestedMin' => 0,
-                    'suggestedMax' => 100,
-                ],
-            ],
         ]);
-        
+
         return $this->render('monpoids/bmi/index.html.twig', [
             'bmis' => $bmis,
-            'chart' => $chart,
+            'bmiChart' => $bmiChart,
+            'weightChart' => $weightChart,
         ]);
     }
 

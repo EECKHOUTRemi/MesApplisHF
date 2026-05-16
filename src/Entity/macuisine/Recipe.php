@@ -28,8 +28,8 @@ class Recipe
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column(length: 15)]
-    #[Assert\Length(max: 15, maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.')]
+    #[ORM\Column(length: 30)]
+    #[Assert\Length(max: 30, maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $name = null;
 
     #[ORM\Column(length: 600)]

@@ -24,13 +24,15 @@ final class RecipeController extends AbstractController
     {
         return $this->render('macuisine/recipe/index.html.twig', [
             'recipes' => $recipeRepository->findAll(),
+            'mine' => false
         ]);
     }
 
     #[Route('/mine', name:'mine')]
     public function mine(RecipeRepository $recipeRepository){
-        return $this->render('macuisine/recipe/mine.html.twig', [
+        return $this->render('macuisine/recipe/index.html.twig', [
             'recipes' => $recipeRepository->findBy(['author' => $this->getUser()]),
+            'mine' => true
         ]);
     }
 

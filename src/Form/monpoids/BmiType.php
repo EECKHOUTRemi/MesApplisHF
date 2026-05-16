@@ -4,6 +4,8 @@ namespace App\Form\monpoids;
 
 use App\Entity\monpoids\Bmi;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -12,8 +14,9 @@ class BmiType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('height')
-            ->add('weight')
+            ->add('height', NumberType::class)
+            ->add('weight', NumberType::class)
+            ->add('createdAt', DateType::class)
         ;
     }
 
