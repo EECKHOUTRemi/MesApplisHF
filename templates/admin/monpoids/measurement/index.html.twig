@@ -47,10 +47,10 @@
                             {{ measurement.createdAt ? measurement.createdAt|date('d/m/Y H:i') : '—' }}
                         </td>
                         <td class="text-end">
-                            <a href="{{ path('app_MonPoids_measurement_show', {'id': measurement.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                            <a href="{{ path('app_MonPoids_measurement_show', {'id': measurement.id, 'from': 'admin'}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
                                 <i class="bi bi-eye" aria-hidden="true"></i>
                             </a>
-                            <a href="{{ path('app_MonPoids_measurement_edit', {'id': measurement.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <a href="{{ path('app_MonPoids_measurement_edit', {'id': measurement.id, 'from': 'admin'}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="bi bi-pencil-square" aria-hidden="true"></i>
                             </a>
                         </td>

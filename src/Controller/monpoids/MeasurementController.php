@@ -148,6 +148,10 @@ final class MeasurementController extends AbstractController
             $entityManager->flush();
         }
 
+        if ($request->query->get('from') === 'admin') {
+            return $this->redirectToRoute('app_admin_monpoids_measurement_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         return $this->redirectToRoute('app_MonPoids_measurement_index', [], Response::HTTP_SEE_OTHER);
     }
 }

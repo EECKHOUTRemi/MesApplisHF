@@ -171,6 +171,10 @@ final class BmiController extends AbstractController
             $entityManager->flush();
         }
 
+        if ($request->query->get('from') === 'admin') {
+            return $this->redirectToRoute('app_admin_monpoids_bmi_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         return $this->redirectToRoute('app_MonPoids_bmi_index', [], Response::HTTP_SEE_OTHER);
     }
 }
