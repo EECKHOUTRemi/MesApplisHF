@@ -41,9 +41,19 @@ class Recipe
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: RefRecipeIngredient::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $refRecipeIngredients;
 
+    /**
+     * @var Collection<int, Utensil>
+     */
+    #[ORM\ManyToMany(targetEntity: Utensil::class)]
+    private Collection $utensil;
+
+    #[ORM\ManyToOne]
+    private ?Category $category = null;
+
     public function __construct()
     {
         $this->refRecipeIngredients = new ArrayCollection();
+        $this->utensil = new ArrayCollection();
     }
 
     /**
@@ -115,6 +125,42 @@ class Recipe
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Utensil>
+     */
+    public function getUtensil(): Collection
+    {
+        return $this->utensil;
+    }
+
+    public function addUtensil(Utensil $utensil): static
+    {
+        if (!$this->utensil->contains($utensil)) {
+            $this->utensil->add($utensil);
+        }
+
+        return $this;
+    }
+
+    public function removeUtensil(Utensil $utensil): static
+    {
+        $this->utensil->removeElement($utensil);
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }
