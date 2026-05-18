@@ -18,16 +18,16 @@ class Measurement
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $chest = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $hips = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $thigh = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $waist = null;
 
     #[ORM\Column]
@@ -55,7 +55,7 @@ class Measurement
         return $this->chest;
     }
 
-    public function setChest(float $chest): static
+    public function setChest(?float $chest): static
     {
         $this->chest = $chest;
 
@@ -67,7 +67,7 @@ class Measurement
         return $this->hips;
     }
 
-    public function setHips(float $hips): static
+    public function setHips(?float $hips): static
     {
         $this->hips = $hips;
 
@@ -79,7 +79,7 @@ class Measurement
         return $this->thigh;
     }
 
-    public function setThigh(float $thigh): static
+    public function setThigh(?float $thigh): static
     {
         $this->thigh = $thigh;
 
@@ -91,7 +91,7 @@ class Measurement
         return $this->waist;
     }
 
-    public function setWaist(float $waist): static
+    public function setWaist(?float $waist): static
     {
         $this->waist = $waist;
 
