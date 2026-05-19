@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/macuisine/recipe', name:'app_ma_cuisine_recipe_'),
+#[Route('/macuisine/recipe', name:'app_macuisine_recipe_'),
 IsGranted('ROLE_USER')]
 final class RecipeController extends AbstractController
 {
@@ -46,7 +46,7 @@ final class RecipeController extends AbstractController
             $submittedData = $request->request->all();
             $recipeFormHandler->persistAndFlush($recipe, $submittedData);
 
-            return $this->redirectToRoute('app_ma_cuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_macuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('MaCuisine/recipe/new.html.twig', [
@@ -73,7 +73,7 @@ final class RecipeController extends AbstractController
             $submittedData = $request->request->all();
             $recipeFormHandler->persistAndFlush($recipe, $submittedData);
 
-            return $this->redirectToRoute('app_ma_cuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_macuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
         $refs = $recipe->getRefRecipeIngredients();
@@ -102,7 +102,7 @@ final class RecipeController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_ma_cuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_macuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/ajax/ingredients', name: 'ingredients_ajax', methods: ['GET'])]

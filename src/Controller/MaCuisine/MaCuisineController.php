@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/macuisine', name: 'app_ma_cuisine_'), IsGranted('ROLE_USER')]
+#[Route('/macuisine', name: 'app_macuisine_'), IsGranted('ROLE_USER')]
 final class MaCuisineController extends AbstractController
 {
     #[Route('/', name: 'index')]

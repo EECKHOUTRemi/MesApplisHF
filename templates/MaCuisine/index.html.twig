@@ -99,10 +99,10 @@
                     Bonjour {{ app.user.username }}, partagez vos recettes et inspirez-vous de celles de la communauté.
                 </p>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="{{ path('app_ma_cuisine_recipe_new') }}" class="btn btn-light fw-semibold">
+                    <a href="{{ path('app_macuisine_recipe_new') }}" class="btn btn-light fw-semibold">
                         <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Nouvelle recette
                     </a>
-                    <a href="{{ path('app_ma_cuisine_recipe_index') }}" class="btn btn-outline-light fw-semibold">
+                    <a href="{{ path('app_macuisine_recipe_index') }}" class="btn btn-outline-light fw-semibold">
                         <i class="bi bi-collection me-1" aria-hidden="true"></i>Toutes les recettes
                     </a>
                 </div>
@@ -155,7 +155,7 @@
         <h2 class="section-title h4"><i class="bi bi-lightning-charge-fill"></i>Que voulez-vous faire ?</h2>
         <div class="row g-3">
             <div class="col-md-4">
-                <a href="{{ path('app_ma_cuisine_recipe_mine') }}" class="text-decoration-none text-reset">
+                <a href="{{ path('app_macuisine_recipe_mine') }}" class="text-decoration-none text-reset">
                     <div class="card action-card shadow-sm h-100">
                         <div class="card-body text-center p-4">
                             <span class="action-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-collection"></i></span>
@@ -166,7 +166,7 @@
                 </a>
             </div>
             <div class="col-md-4">
-                <a href="{{ path('app_ma_cuisine_recipe_index') }}" class="text-decoration-none text-reset">
+                <a href="{{ path('app_macuisine_recipe_index') }}" class="text-decoration-none text-reset">
                     <div class="card action-card shadow-sm h-100">
                         <div class="card-body text-center p-4">
                             <span class="action-icon bg-success bg-opacity-10 text-success"><i class="bi bi-search"></i></span>
@@ -194,7 +194,7 @@
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h2 class="section-title h4 mb-0"><i class="bi bi-clock-history"></i>Recettes récentes</h2>
             {% if recentRecipes|length > 0 %}
-                <a href="{{ path('app_ma_cuisine_recipe_index') }}" class="btn btn-sm btn-outline-secondary">
+                <a href="{{ path('app_macuisine_recipe_index') }}" class="btn btn-sm btn-outline-secondary">
                     Tout voir <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
                 </a>
             {% endif %}
@@ -204,7 +204,7 @@
             <div class="row g-3">
                 {% for recipe in recentRecipes %}
                     <div class="col-md-6 col-lg-4">
-                        <a href="{{ path('app_ma_cuisine_recipe_show', {'id': recipe.id}) }}" class="text-decoration-none text-reset">
+                        <a href="{{ path('app_macuisine_recipe_show', {'id': recipe.id}) }}" class="text-decoration-none text-reset">
                             <div class="card recipe-card shadow-sm">
                                 <div class="recipe-thumb">
                                     <i class="bi bi-egg-fried" aria-hidden="true"></i>
@@ -235,7 +235,7 @@
                     <i class="bi bi-journal-plus display-4 text-secondary mb-3" aria-hidden="true"></i>
                     <h5>Aucune recette pour le moment</h5>
                     <p class="text-secondary mb-3">Soyez le premier à partager une recette avec la communauté&nbsp;!</p>
-                    <a href="{{ path('app_ma_cuisine_recipe_new') }}" class="btn btn-primary">
+                    <a href="{{ path('app_macuisine_recipe_new') }}" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Créer ma première recette
                     </a>
                 </div>

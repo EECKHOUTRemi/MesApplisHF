@@ -7,7 +7,7 @@
 
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb mb-0 small">
-            <li class="breadcrumb-item"><a href="{{ path('app_ma_cuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
             <li class="breadcrumb-item active" aria-current="page">Ingrédients</li>
         </ol>
     </nav>
@@ -17,7 +17,7 @@
             <h1 class="h4 mb-1 fw-bold"><i class="bi bi-basket3 me-2" aria-hidden="true"></i>Ingrédients</h1>
             <p class="text-secondary mb-0 small">Gestion administrateur du référentiel.</p>
         </div>
-        <a href="{{ path('app_ma_cuisine_ingredient_new') }}" class="btn btn-primary">
+        <a href="{{ path('app_macuisine_ingredient_new') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nouvel ingrédient
         </a>
     </div>
@@ -38,10 +38,10 @@
                         <td class="text-secondary">{{ ingredient.id }}</td>
                         <td class="fw-semibold">{{ ingredient.name }}</td>
                         <td class="text-end">
-                            <a href="{{ path('app_ma_cuisine_ingredient_show', {'id': ingredient.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                            <a href="{{ path('app_macuisine_ingredient_show', {'id': ingredient.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
                                 <i class="bi bi-eye" aria-hidden="true"></i>
                             </a>
-                            <a href="{{ path('app_ma_cuisine_ingredient_edit', {'id': ingredient.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <a href="{{ path('app_macuisine_ingredient_edit', {'id': ingredient.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="bi bi-pencil-square" aria-hidden="true"></i>
                             </a>
                         </td>

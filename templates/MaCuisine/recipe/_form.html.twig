@@ -19,7 +19,7 @@
             {{ form_widget(form.ingredients, {
                 'attr': {
                     'placeholder': 'Listez les ingrédients nécessaires…',
-                    'data-ajax-url': path('app_ma_cuisine_recipe_ingredients_ajax'),
+                    'data-ajax-url': path('app_macuisine_recipe_ingredients_ajax'),
                     'data-initial': (ingredients ?? {})|json_encode,
                 }
             }) }}

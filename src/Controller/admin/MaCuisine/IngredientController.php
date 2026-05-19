@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/macuisine/ingredient', name:'app_ma_cuisine_ingredient_'), IsGranted("ROLE_ADMIN")]
+#[Route('/macuisine/ingredient', name:'app_macuisine_ingredient_'), IsGranted("ROLE_ADMIN")]
 final class IngredientController extends AbstractController
 {
     #[Route(name: 'index', methods: ['GET'])]
@@ -34,7 +34,7 @@ final class IngredientController extends AbstractController
             $entityManager->persist($ingredient);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_ma_cuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_macuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/MaCuisine/ingredient/new.html.twig', [
@@ -60,7 +60,7 @@ final class IngredientController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_ma_cuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_macuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/MaCuisine/ingredient/edit.html.twig', [
@@ -77,6 +77,6 @@ final class IngredientController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_ma_cuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_macuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
     }
 }
