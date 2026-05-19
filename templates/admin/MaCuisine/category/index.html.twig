@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catégories · Admin MaCuisine{% endblock %}
+
+{% block body %}
+<div class="container py-4" style="max-width: 900px;">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0 small">
+            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Catégories</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
+        <div>
+            <h1 class="h4 mb-1 fw-bold"><i class="bi bi-tag-fill me-2" aria-hidden="true"></i>Catégories</h1>
+            <p class="text-secondary mb-0 small">Gestion administrateur des catégories de recettes.</p>
+        </div>
+        <a href="{{ path('app_admin_ma_cuisine_category_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nouvelle catégorie
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width: 80px;">#</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col" class="d-none d-md-table-cell" style="width: 170px;">Créée le</th>
+                        <th scope="col" class="text-end" style="width: 140px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for category in categories %}
+                    <tr>
+                        <td class="text-secondary">{{ category.id }}</td>
+                        <td class="fw-semibold">{{ category.name }}</td>
+                        <td class="d-none d-md-table-cell text-secondary small">
+                            {{ category.createdAt ? category.createdAt|date('d/m/Y H:i') : '—' }}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ path('app_admin_ma_cuisine_category_show', {'id': category.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </a>
+                            <a href="{{ path('app_admin_ma_cuisine_category_edit', {'id': category.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-secondary py-4">
+                            <i class="bi bi-inbox d-block fs-3 mb-2" aria-hidden="true"></i>
+                            Aucune catégorie enregistrée.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
