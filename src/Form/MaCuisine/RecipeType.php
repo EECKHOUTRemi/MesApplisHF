@@ -22,7 +22,10 @@ class RecipeType extends AbstractType
                 'class' => Utensil::class,
                 'choice_label' => 'name',
                 'multiple' => true,
-                'expanded' => true,
+                'expanded' => false,
+                'attr' => [
+                    'class' => 'utensils-select',
+                ],
             ])
             ->add('category', EntityType::class, [
                 'class' => Category::class,

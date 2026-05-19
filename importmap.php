@@ -39,4 +39,8 @@ return [
         'path' => './assets/MaCuisine/select-ingredient.js',
         'entrypoint' => true,
     ],
+    'MaCuisine/select-utensil' => [
+        'path' => './assets/MaCuisine/select-utensil.js',
+        'entrypoint' => true,
+    ],
 ];
