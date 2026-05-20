@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de confidentialité · MesApplisHF{% endblock %}
+
+{% block body %}
+<div class="container py-4" style="max-width: 820px;">
+
+    <h1 class="mb-1">Politique de confidentialité</h1>
+    <p class="text-secondary small mb-4">Dernière mise à jour : 20 mai 2026</p>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">1. Responsable du traitement</h2>
+        <p>
+            Le responsable du traitement des données collectées sur MesApplisHF est
+            <strong>EECKHOUT Rémi</strong>, joignable à l'adresse
+            <a href="mailto:contact@mesapplishf.fr">contact@mesapplishf.fr</a>.
+        </p>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">2. Données collectées</h2>
+        <p>Les données suivantes sont susceptibles d'être collectées :</p>
+        <ul>
+            <li><strong>Données de compte</strong> : adresse e-mail, nom d'utilisateur, mot de passe (stocké de manière hachée et non réversible), date de création du compte.</li>
+            <li><strong>Données de recettes (MaCuisine)</strong> : titre, description, ingrédients, ustensiles, catégorie, ainsi que la date de création et de modification.</li>
+            <li><strong>Données de suivi corporel (MonPoids)</strong> : poids, taille, mesures corporelles (tour de taille, hanches, etc.), IMC calculé, dates de relevé.</li>
+            <li><strong>Données techniques</strong> : adresse IP et identifiants de session, dans la stricte mesure nécessaire au fonctionnement du Service.</li>
+        </ul>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">3. Finalités du traitement</h2>
+        <ul>
+            <li>Permettre la création et la gestion de votre compte utilisateur.</li>
+            <li>Vous permettre de publier, consulter et partager des recettes au sein de la communauté MaCuisine.</li>
+            <li>Vous permettre de suivre de manière privée votre poids et vos mesures corporelles dans MonPoids.</li>
+            <li>Assurer la sécurité du Service et prévenir les usages abusifs.</li>
+        </ul>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">4. Base légale</h2>
+        <p>
+            Le traitement repose sur l'<strong>exécution du contrat</strong> que constitue l'acceptation des
+            <a href="{{ path('app_terms') }}">Conditions Générales d'Utilisation</a>, ainsi que sur votre
+            <strong>consentement</strong> pour les données sensibles (mesures corporelles, suivi de poids), retirable à tout moment.
+        </p>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">5. Visibilité de vos données</h2>
+        <ul>
+            <li><strong>Recettes</strong> : visibles par les autres utilisateurs connectés. Votre nom d'utilisateur est affiché en tant qu'auteur·e.</li>
+            <li><strong>Suivi corporel (MonPoids)</strong> : strictement privé. Aucune autre personne que vous, hors administrateurs techniques du Service, ne peut consulter ces données.</li>
+            <li><strong>Adresse e-mail et mot de passe</strong> : jamais affichés publiquement.</li>
+        </ul>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">6. Destinataires et partage</h2>
+        <p>
+            Aucune donnée personnelle n'est vendue, louée ou transmise à des partenaires commerciaux.
+            Seul l'éditeur du Service et, le cas échéant, son hébergeur <strong>Hetzner</strong>, ont accès aux données stockées dans la base, dans le strict cadre du fonctionnement technique du Service.
+        </p>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">7. Durée de conservation</h2>
+        <ul>
+            <li>Les données de compte sont conservées tant que le compte est actif.</li>
+            <li>Vos contenus (recettes, mesures) sont conservés tant que vous ne les supprimez pas ou que vous ne supprimez pas votre compte.</li>
+            <li>En cas de suppression du compte, vos données sont effacées dans un délai raisonnable, sauf obligation légale de conservation.</li>
+        </ul>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">8. Cookies</h2>
+        <p>
+            Le Service utilise uniquement les cookies strictement nécessaires à son fonctionnement (notamment un cookie de session pour vous maintenir connecté·e).
+            Aucun cookie de mesure d'audience, de publicité ou de traçage tiers n'est déposé.
+        </p>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">9. Vos droits</h2>
+        <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez des droits suivants :</p>
+        <ul>
+            <li>Droit d'accès à vos données ;</li>
+            <li>Droit de rectification ;</li>
+            <li>Droit à l'effacement (« droit à l'oubli ») ;</li>
+            <li>Droit à la limitation et à l'opposition au traitement ;</li>
+            <li>Droit à la portabilité des données.</li>
+        </ul>
+        <p>
+            Pour exercer ces droits, écrivez à <a href="mailto:contact@mesapplishf.fr">contact@mesapplishf.fr</a>.
+            Vous pouvez également introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.
+        </p>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">10. Sécurité</h2>
+        <p>
+            Les mots de passe sont stockés sous forme hachée. Des mesures techniques et organisationnelles raisonnables sont mises en œuvre pour protéger vos données contre la perte, l'altération ou l'accès non autorisé.
+            Aucun système n'étant infaillible, nous ne pouvons cependant garantir une sécurité absolue.
+        </p>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">11. Modification de la présente politique</h2>
+        <p>
+            La présente politique peut être mise à jour pour refléter des évolutions du Service ou de la réglementation.
+            La date de dernière mise à jour figure en haut de cette page.
+        </p>
+    </section>
+
+    <a href="javascript:history.back()" class="btn btn-outline-secondary mt-2">
+        <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour
+    </a>
+</div>
+{% endblock %}
