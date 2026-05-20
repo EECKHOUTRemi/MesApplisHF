@@ -74,7 +74,12 @@
     <section class="recipe-hero mb-4">
         <div class="row align-items-center g-3">
             <div class="col-md-9">
-                <span class="badge bg-light text-dark mb-2"><i class="bi bi-egg-fried me-1" aria-hidden="true"></i>Recette</span>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                    <span class="badge bg-light text-dark"><i class="bi bi-egg-fried me-1" aria-hidden="true"></i>Recette</span>
+                    {% if recipe.category %}
+                        <span class="badge text-bg-warning"><i class="bi bi-tag-fill me-1" aria-hidden="true"></i>{{ recipe.category.name }}</span>
+                    {% endif %}
+                </div>
                 <h1 class="display-5 fw-bold mb-2">{{ recipe.name }}</h1>
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <div class="d-flex align-items-center gap-2">
@@ -103,6 +108,15 @@
                     </span>
                 {% endif %}
             </div>
+
+            {% if recipe.utensil|length > 0 %}
+                <h2 class="h5 fw-bold mb-2"><i class="bi bi-tools text-primary me-1" aria-hidden="true"></i>Ustensiles</h2>
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                    {% for utensil in recipe.utensil %}
+                        <span class="badge rounded-pill text-bg-light border">{{ utensil.name }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
             {% if recipe.refRecipeIngredients|length > 0 %}
                 <h2 class="h5 fw-bold mb-3"><i class="bi bi-basket text-primary me-1" aria-hidden="true"></i>Ingrédients</h2>

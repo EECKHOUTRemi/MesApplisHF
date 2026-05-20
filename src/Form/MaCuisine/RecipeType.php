@@ -4,7 +4,6 @@ namespace App\Form\MaCuisine;
 
 use App\Entity\MaCuisine\Category;
 use App\Entity\MaCuisine\Recipe;
-use App\Entity\MaCuisine\Utensil;
 use App\Form\ChoiceList\PassthroughChoiceLoader;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -18,11 +17,11 @@ class RecipeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('utensil', EntityType::class, [
-                'class' => Utensil::class,
-                'choice_label' => 'name',
+        $builder->add('utensil', ChoiceType::class, [
+                'mapped' => false,
                 'multiple' => true,
-                'expanded' => false,
+                'choice_loader' => new PassthroughChoiceLoader(),
+                'choice_value' => fn ($v) => (string) $v,
                 'attr' => [
                     'class' => 'utensils-select',
                 ],

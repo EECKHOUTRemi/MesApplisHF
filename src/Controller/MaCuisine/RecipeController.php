@@ -6,6 +6,7 @@ use App\Entity\MaCuisine\Recipe;
 use App\Form\MaCuisine\RecipeType;
 use App\Repository\MaCuisine\IngredientRepository;
 use App\Repository\MaCuisine\RecipeRepository;
+use App\Repository\MaCuisine\UtensilRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Handler\RecipeFormHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,7 +38,7 @@ final class RecipeController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Request $request, RecipeFormHandler $recipeFormHandler): Response
+    public function new(Request $request, RecipeFormHandler $recipeFormHandler, UtensilRepository $utensilRepository): Response
     {
         $recipe = new Recipe();
         $form = $this->createForm(RecipeType::class, $recipe);
@@ -52,6 +53,11 @@ final class RecipeController extends AbstractController
         return $this->render('MaCuisine/recipe/new.html.twig', [
             'recipe' => $recipe,
             'form' => $form,
+            'utensils' => array_map(
+                fn ($u) => ['id' => $u->getId(), 'name' => $u->getName()],
+                $utensilRepository->findAll()
+            ),
+            'selectedUtensils' => [],
         ]);
     }
 
@@ -64,7 +70,7 @@ final class RecipeController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Recipe $recipe, RecipeFormHandler $recipeFormHandler): Response
+    public function edit(Request $request, Recipe $recipe, RecipeFormHandler $recipeFormHandler, UtensilRepository $utensilRepository): Response
     {
         $form = $this->createForm(RecipeType::class, $recipe);
         $form->handleRequest($request);
@@ -81,16 +87,26 @@ final class RecipeController extends AbstractController
         foreach ($refs as $ref) {
             $ingredient = $ref->getIngredient();
             $ingredientsList[$ingredient->getId()] = [
-                'name' => $ingredient->getName(), 
-                'quantity' => $ref->getQuantity(), 
+                'name' => $ingredient->getName(),
+                'quantity' => $ref->getQuantity(),
                 'unit' => $ref->getUnite()
             ];
+        }
+
+        $selectedUtensils = [];
+        foreach ($recipe->getUtensil() as $u) {
+            $selectedUtensils[] = $u->getId();
         }
 
         return $this->render('MaCuisine/recipe/edit.html.twig', [
             'recipe' => $recipe,
             'form' => $form,
-            'ingredients' => $ingredientsList
+            'ingredients' => $ingredientsList,
+            'utensils' => array_map(
+                fn ($u) => ['id' => $u->getId(), 'name' => $u->getName()],
+                $utensilRepository->findAll()
+            ),
+            'selectedUtensils' => $selectedUtensils,
         ]);
     }
 

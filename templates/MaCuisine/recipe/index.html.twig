@@ -169,6 +169,21 @@
                         <h2 class="post-title">{{ recipe.name }}</h2>
                     </a>
 
+                    {% if recipe.category or recipe.utensil|length > 0 %}
+                        <div class="d-flex flex-wrap gap-1 mt-2 mb-2">
+                            {% if recipe.category %}
+                                <span class="badge rounded-pill text-bg-warning">
+                                    <i class="bi bi-tag-fill me-1" aria-hidden="true"></i>{{ recipe.category.name }}
+                                </span>
+                            {% endif %}
+                            {% for utensil in recipe.utensil %}
+                                <span class="badge rounded-pill text-bg-light border">
+                                    <i class="bi bi-tools me-1" aria-hidden="true"></i>{{ utensil.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
                     {% if recipe.refRecipeIngredients|length > 0 %}
                         {% for ri in recipe.refRecipeIngredients %}
                             <span class="mb-5">{{ ri.ingredient.name }}{% if not loop.last %} - {% endif %}</span>
