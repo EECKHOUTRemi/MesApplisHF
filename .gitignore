@@ -53,6 +53,7 @@
 
 # Environment variables file
 /.env.*.local
+/.env.docker
 
 # Claude
 /.claude
