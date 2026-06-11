@@ -29,6 +29,8 @@
 /bin/*
 !bin/console
 !bin/symfony_requirements
+!bin/deploy.sh
+!bin/deploy-docker.sh
 /vendor/
 
 # Assets and user uploads
@@ -53,7 +55,12 @@
 
 # Environment variables file
 /.env.*.local
+# Real Docker env files hold secrets; only the .dist templates are committed.
 /.env.docker
+/.env.docker.prod
+/.env.docker.test
+/.env.docker.dev
+!/.env.docker.*.dist
 
 # Claude
 /.claude
