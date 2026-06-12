@@ -20,6 +20,9 @@ Each sub-app exposes both a regular user area and an `/admin/...` section gated 
 | Language    | PHP **8.4+**                    |
 | Framework   | Symfony **8.0.\***              |
 | Runtime     | `symfony/runtime`               |
+| ORM         | Doctrine ORM + Migrations       |
+| Frontend    | Twig, Bootstrap 5, Stimulus     |
+| Charts      | Symfony UX Chartjs (Chart.js)   |
 | Dependency  | Composer (managed via Flex)     |
 | Autoloading | PSR-4 — `App\` → `src/`         |
 
@@ -132,10 +135,10 @@ erDiagram
     MEASUREMENT {
         int             id PK
         int             user_id FK
-        float           chest
-        float           hips
-        float           thigh
-        float           waist
+        float           chest "nullable"
+        float           hips "nullable"
+        float           thigh "nullable"
+        float           waist "nullable"
         datetime_immut  createdAt
     }
 
@@ -183,10 +186,12 @@ erDiagram
 ## Common commands
 
 ```bash
-php bin/console list                # all available commands
-php bin/console debug:router        # registered routes
-php bin/console cache:clear         # clear the cache
-php bin/console about               # environment summary
+php bin/console list                       # all available commands
+php bin/console debug:router               # registered routes
+php bin/console cache:clear                # clear the cache
+php bin/console about                      # environment summary
+php bin/console make:migration             # scaffold a Doctrine migration
+php bin/console doctrine:migrations:migrate # apply pending migrations
 ```
 
 ## Adding a controller
