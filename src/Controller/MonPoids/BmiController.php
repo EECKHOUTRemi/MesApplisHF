@@ -40,6 +40,7 @@ final class BmiController extends AbstractController
         $maxLine = array_fill(0, $count, 25);
 
         $bmiChart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $green = 'rgba(75, 192, 75, 0.5)';
         $bmiChart->setData([
             'labels' => $dates,
             'datasets' => [
@@ -51,8 +52,8 @@ final class BmiController extends AbstractController
                 ],
                 [
                     'label' => 'IMC normal',
-                    'backgroundColor' => 'rgba(75, 192, 75, 0.5)',
-                    'borderColor' => 'rgba(75, 192, 75, 0.5)',
+                    'backgroundColor' => $green,
+                    'borderColor' => $green,
                     'data' => $minLine,
                     'borderDash' => [5, 5],
                     'pointRadius' => 0,
@@ -60,8 +61,8 @@ final class BmiController extends AbstractController
                 ],
                 [
                     'label' => '__hidden__',
-                    'backgroundColor' => 'rgba(75, 192, 75, 0.5)',
-                    'borderColor' => 'rgba(75, 192, 75, 0.5)',
+                    'backgroundColor' => $green,
+                    'borderColor' => $green,
                     'data' => $maxLine,
                     'borderDash' => [5, 5],
                     'pointRadius' => 0,

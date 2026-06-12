@@ -137,6 +137,37 @@ class BmiControllerTest extends AppWebTestCase
         $this->assertResponseIsSuccessful();
     }
 
+    public function testOwnerCanDeleteOwnEntry(): void
+    {
+        $user = $this->createUser();
+        $bmi = $this->createBmi($user, 180.0, 80.0);
+        $bmiId = $bmi->getId();
+        $this->login($user);
+
+        // le formulaire de suppression (token CSRF inclus) est sur la page d'édition
+        $crawler = $this->client->request('GET', '/monpoids/bmi/' . $bmiId . '/edit');
+        $form = $crawler->filter('form[action="/monpoids/bmi/' . $bmiId . '"]')->form();
+        $this->client->submit($form);
+
+        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->em()->clear();
+        $this->assertNull($this->em()->find(Bmi::class, $bmiId));
+    }
+
+    public function testDeletingSomeoneElsesEntryRedirectsWithoutDeleting(): void
+    {
+        $other = $this->createUser();
+        $bmi = $this->createBmi($other, 180.0, 80.0);
+        $bmiId = $bmi->getId();
+
+        $this->login($this->createUser());
+        $this->client->request('POST', '/monpoids/bmi/' . $bmiId);
+
+        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->em()->clear();
+        $this->assertNotNull($this->em()->find(Bmi::class, $bmiId), "L'enregistrement ne doit pas être supprimé");
+    }
+
     public function testIndexOnlyShowsOwnEntries(): void
     {
         $other = $this->createUser();
