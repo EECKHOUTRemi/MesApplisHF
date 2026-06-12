@@ -40,6 +40,7 @@ final class BmiController extends AbstractController
         $maxLine = array_fill(0, $count, 25);
 
         $bmiChart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $green = 'rgba(75, 192, 75, 0.5)';
         $bmiChart->setData([
             'labels' => $dates,
             'datasets' => [
@@ -51,8 +52,8 @@ final class BmiController extends AbstractController
                 ],
                 [
                     'label' => 'IMC normal',
-                    'backgroundColor' => 'rgba(75, 192, 75, 0.5)',
-                    'borderColor' => 'rgba(75, 192, 75, 0.5)',
+                    'backgroundColor' => $green,
+                    'borderColor' => $green,
                     'data' => $minLine,
                     'borderDash' => [5, 5],
                     'pointRadius' => 0,
@@ -60,8 +61,8 @@ final class BmiController extends AbstractController
                 ],
                 [
                     'label' => '__hidden__',
-                    'backgroundColor' => 'rgba(75, 192, 75, 0.5)',
-                    'borderColor' => 'rgba(75, 192, 75, 0.5)',
+                    'backgroundColor' => $green,
+                    'borderColor' => $green,
                     'data' => $maxLine,
                     'borderDash' => [5, 5],
                     'pointRadius' => 0,
@@ -139,6 +140,10 @@ final class BmiController extends AbstractController
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Bmi $bmi): Response
     {
+        if ($bmi->getUser()->getUserIdentifier() !== $this->getUser()->getUserIdentifier()) {
+            return $this->redirectToRoute('app_MonPoids_bmi_index');
+        }
+
         return $this->render('MonPoids/bmi/show.html.twig', [
             'bmi' => $bmi,
         ]);
@@ -147,6 +152,10 @@ final class BmiController extends AbstractController
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
     {
+        if ($bmi->getUser()->getUserIdentifier() !== $this->getUser()->getUserIdentifier()) {
+            return $this->redirectToRoute('app_MonPoids_bmi_index');
+        }
+
         $form = $this->createForm(BmiType::class, $bmi);
         $form->handleRequest($request);
 
@@ -166,6 +175,10 @@ final class BmiController extends AbstractController
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
     {
+        if ($bmi->getUser()->getUserIdentifier() !== $this->getUser()->getUserIdentifier()) {
+            return $this->redirectToRoute('app_MonPoids_bmi_index');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$bmi->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($bmi);
             $entityManager->flush();

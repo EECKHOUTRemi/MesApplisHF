@@ -1,0 +1,21 @@
+.git
+.github
+.claude
+.idea
+.vscode
+
+vendor/
+var/cache/*
+var/log/*
+node_modules/
+public/assets/
+
+# Local environment overrides and secrets must not enter the image.
+.env.local
+.env.*.local
+
+Dockerfile
+compose.yaml
+compose.override.yaml
+.dockerignore
+README.md

@@ -18,7 +18,10 @@ class MeasurementType extends AbstractType
             ->add('hips', NumberType::class)
             ->add('thigh', NumberType::class)
             ->add('waist', NumberType::class)
-            ->add('createdAt', DateType::class)
+            // l'entité attend un DateTimeImmutable ; par défaut DateType produit un DateTime
+            ->add('createdAt', DateType::class, [
+                'input' => 'datetime_immutable',
+            ])
         ;
     }
 
