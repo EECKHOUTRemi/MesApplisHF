@@ -7,7 +7,8 @@ on:
   pull_request:
 
 env:
-  IMAGE: ghcr.io/${{ github.repository }}
+  # GHCR exige un nom en minuscules ; github.repository donne "EECKHOUTRemi/MesApplisHF"
+  IMAGE: ghcr.io/eeckhoutremi/mesapplishf
 
 jobs:
   # ── Stage 1: build ──────────────────────────────────────────────
@@ -121,9 +122,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Tag & push
         run: |
-          docker tag $IMAGE:${{ github.sha }} $IMAGE:${{ github.ref_name }}
+          # "release/1.0" -> "release-1.0" : les "/" sont interdits dans un tag Docker
+          BRANCH_TAG="${GITHUB_REF_NAME//\//-}"
+          docker tag $IMAGE:${{ github.sha }} $IMAGE:$BRANCH_TAG
           docker push $IMAGE:${{ github.sha }}
-          docker push $IMAGE:${{ github.ref_name }}
+          docker push $IMAGE:$BRANCH_TAG
 
   # ── (conditional) deploy ────────────────────────────────────────
   deploy:
