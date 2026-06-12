@@ -13,6 +13,8 @@ final class MonPoidsController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(): Response
     {
-        return $this->render('MonPoids/index.html.twig');
+        // le template MonPoids/index.html.twig n'existe pas : la vraie page
+        // d'accueil de la section est la vue globale
+        return $this->redirectToRoute('app_mon_poids_global');
     }
 }
