@@ -146,7 +146,8 @@ class BmiControllerTest extends AppWebTestCase
 
         // le formulaire de suppression (token CSRF inclus) est sur la page d'édition
         $crawler = $this->client->request('GET', '/monpoids/bmi/' . $bmiId . '/edit');
-        $form = $crawler->filter('form[action="/monpoids/bmi/' . $bmiId . '"]')->form();
+        // ^= : tolère une query string ajoutée à l'action (ex. ?from=...)
+        $form = $crawler->filter('form[action^="/monpoids/bmi/' . $bmiId . '"]')->form();
         $this->client->submit($form);
 
         $this->assertResponseRedirects('/monpoids/bmi/');

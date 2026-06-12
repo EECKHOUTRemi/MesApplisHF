@@ -18,12 +18,15 @@ class RecipeAdminType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            // l'entité attend des DateTimeImmutable ; par défaut DateTimeType produit un DateTime
             ->add('createdAt', DateTimeType::class, [
                 'widget' => 'single_text',
+                'input' => 'datetime_immutable',
             ])
             ->add('updatedAt', DateTimeType::class, [
                 'widget' => 'single_text',
-                'data' => new DateTime()
+                'input' => 'datetime_immutable',
+                'data' => new \DateTimeImmutable(),
             ])
             ->add('name', TextType::class)
             ->add('description', TextareaType::class)
