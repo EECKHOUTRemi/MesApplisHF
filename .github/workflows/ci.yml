@@ -101,6 +101,13 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: coverage
+      - name: Vérifier la présence des secrets Sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          if [ -n "$SONAR_HOST_URL" ]; then echo "SONAR_HOST_URL: défini (${#SONAR_HOST_URL} caractères)"; else echo "SONAR_HOST_URL: VIDE"; fi
+          if [ -n "$SONAR_TOKEN" ]; then echo "SONAR_TOKEN: défini (${#SONAR_TOKEN} caractères)"; else echo "SONAR_TOKEN: VIDE"; fi
       - uses: SonarSource/sonarqube-scan-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
