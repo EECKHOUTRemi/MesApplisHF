@@ -11,8 +11,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/ma/cuisine/utensil')]
+#[Route('/admin/ma/cuisine/utensil'),
+IsGranted('ROLE_ADMIN')]
 final class UtensilController extends AbstractController
 {
     #[Route(name: 'app_admin_ma_cuisine_utensil_index', methods: ['GET'])]

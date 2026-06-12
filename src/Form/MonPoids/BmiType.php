@@ -16,7 +16,10 @@ class BmiType extends AbstractType
         $builder
             ->add('height', NumberType::class)
             ->add('weight', NumberType::class)
-            ->add('createdAt', DateType::class)
+            // l'entité attend un DateTimeImmutable ; par défaut DateType produit un DateTime
+            ->add('createdAt', DateType::class, [
+                'input' => 'datetime_immutable',
+            ])
         ;
     }
 

@@ -1,0 +1,116 @@
+<?php
+
+namespace App\Tests\Functional\MonPoids;
+
+use App\Entity\MonPoids\Bmi;
+use App\Entity\User;
+use App\Tests\Functional\AppWebTestCase;
+
+class BmiControllerTest extends AppWebTestCase
+{
+    private function createBmi(User $user, float $height, float $weight): Bmi
+    {
+        $bmi = new Bmi();
+        $bmi->setUser($user);
+        $bmi->setHeight($height);
+        $bmi->setWeight($weight);
+        $bmi->setBmi($height, $weight);
+        $bmi->setCreatedAt(new \DateTimeImmutable());
+
+        $em = $this->em();
+        $em->persist($bmi);
+        $em->flush();
+
+        return $bmi;
+    }
+
+    public function testIndexShowsEmptyStateForNewUser(): void
+    {
+        $this->login($this->createUser());
+
+        $this->client->request('GET', '/monpoids/bmi/');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('tbody', 'Aucun enregistrement');
+    }
+
+    public function testNewComputesAndPersistsBmi(): void
+    {
+        $user = $this->createUser();
+        $this->login($user);
+
+        $this->client->request('GET', '/monpoids/bmi/new');
+        $this->assertResponseIsSuccessful();
+
+        $this->client->submitForm('Enregistrer', [
+            'bmi[height]' => '180',
+            'bmi[weight]' => '80',
+            'bmi[createdAt]' => '2026-06-12',
+        ]);
+
+        $this->assertResponseRedirects('/monpoids/bmi/');
+
+        $saved = $this->em()->getRepository(Bmi::class)->findOneBy(['user' => $user]);
+        $this->assertNotNull($saved);
+        $this->assertSame(24.69, $saved->getBmi());
+
+        // l'IMC calculé apparaît dans l'historique
+        $this->client->followRedirect();
+        $this->assertSelectorTextContains('tbody', '24.69');
+    }
+
+    public function testNewStoresHeightOnUserWhenMissing(): void
+    {
+        $user = $this->createUser(); // sans taille renseignée
+        $this->login($user);
+
+        $this->client->request('GET', '/monpoids/bmi/new');
+        $this->client->submitForm('Enregistrer', [
+            'bmi[height]' => '172',
+            'bmi[weight]' => '65',
+            'bmi[createdAt]' => '2026-06-12',
+        ]);
+
+        $this->em()->clear();
+        $reloaded = $this->em()->find(User::class, $user->getId());
+        $this->assertSame(172.0, $reloaded->getHeight());
+    }
+
+    public function testNewPrefillsHeightFromProfile(): void
+    {
+        $this->login($this->createUser(height: 168.0));
+
+        $crawler = $this->client->request('GET', '/monpoids/bmi/new');
+
+        $this->assertSame('168', $crawler->filter('#bmi_height')->attr('value'));
+    }
+
+    public function testEditRecomputesBmi(): void
+    {
+        $user = $this->createUser();
+        $bmi = $this->createBmi($user, 180.0, 80.0);
+        $this->login($user);
+
+        $this->client->request('GET', '/monpoids/bmi/' . $bmi->getId() . '/edit');
+        $this->client->submitForm('Mettre à jour', [
+            'bmi[height]' => '180',
+            'bmi[weight]' => '90',
+        ]);
+
+        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->em()->clear();
+        $this->assertSame(27.78, $this->em()->find(Bmi::class, $bmi->getId())->getBmi());
+    }
+
+    public function testIndexOnlyShowsOwnEntries(): void
+    {
+        $other = $this->createUser();
+        $this->createBmi($other, 190.0, 111.0); // IMC 30.75, valeur reconnaissable
+
+        $this->login($this->createUser());
+        $this->client->request('GET', '/monpoids/bmi/');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextNotContains('tbody', '30.75');
+    }
+}

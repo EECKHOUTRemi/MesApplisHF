@@ -137,16 +137,24 @@ final class BmiController extends AbstractController
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]
-    public function show(Bmi $bmi): Response
+    public function show(int $id, Bmi $bmi): Response
     {
+        if ($this->getUser()->getUserIdentifier() != $id) {
+            return $this->redirectToRoute('app_MonPoids_bmi_index');
+        }
+
         return $this->render('MonPoids/bmi/show.html.twig', [
             'bmi' => $bmi,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
+    public function edit(int $id, Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
     {
+        if ($this->getUser()->getUserIdentifier() != $id) {
+            return $this->redirectToRoute('app_MonPoids_bmi_index');
+        }
+
         $form = $this->createForm(BmiType::class, $bmi);
         $form->handleRequest($request);
 
@@ -164,8 +172,12 @@ final class BmiController extends AbstractController
     }
 
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
-    public function delete(Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
+    public function delete(int $id, Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
     {
+        if ($this->getUser()->getUserIdentifier() != $id) {
+            return $this->redirectToRoute('app_MonPoids_bmi_index');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$bmi->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($bmi);
             $entityManager->flush();
