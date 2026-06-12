@@ -32,7 +32,9 @@ class IngredientRepository extends ServiceEntityRepository
             $qb->select(array_map(static fn (string $c) => 'i.'.$assertField($c), $select));
         }
 
-        $qb->andWhere('UNACCENT(UPPER(i.name)) LIKE UNACCENT(UPPER(:term))')
+        // UNACCENT d'abord : UPPER ne met pas en majuscule les lettres accentuées
+        // sur une base en locale C ('ê' reste 'ê'), alors qu'après UNACCENT tout est ASCII
+        $qb->andWhere('UPPER(UNACCENT(i.name)) LIKE UPPER(UNACCENT(:term))')
             ->setParameter('term', '%'.$term.'%')
         ;
 
