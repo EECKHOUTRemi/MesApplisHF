@@ -121,6 +121,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $data;
     }
 
+    /**
+     * @see UserInterface
+     *
+     * @deprecated since Symfony 7.3
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+    }
+
     public function getUsername(): ?string
     {
         return $this->username;

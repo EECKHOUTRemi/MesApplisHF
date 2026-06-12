@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail IMC{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                <div class="d-flex align-items-center">
+                    <a href="{{ path('app_MonPoids_bmi_index') }}" class="btn btn-outline-secondary me-3">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h1 class="fw-bold mb-0"><i class="bi bi-speedometer2 text-primary me-2"></i>Détail IMC</h1>
+                </div>
+                <a href="{{ path('app_MonPoids_bmi_edit', {'id': bmi.id, 'from': app.request.query.get('from')}) }}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <p class="text-secondary mb-1">Indice de masse corporelle</p>
+                        <p class="display-2 fw-bold text-primary mb-0">{{ bmi.bmi }}</p>
+                    </div>
+                    <hr>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-secondary">Taille</dt>
+                        <dd class="col-sm-8">{{ bmi.height }} cm</dd>
+
+                        <dt class="col-sm-4 text-secondary">Poids</dt>
+                        <dd class="col-sm-8">{{ bmi.weight }} kg</dd>
+
+                        <dt class="col-sm-4 text-secondary">Date</dt>
+                        <dd class="col-sm-8">{{ bmi.createdAt ? bmi.createdAt|date('d/m/Y H:i') : '—' }}</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                {{ include('MonPoids/bmi/_delete_form.html.twig', {from: app.request.query.get('from')}) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

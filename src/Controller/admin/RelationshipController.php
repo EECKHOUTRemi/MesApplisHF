@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/relationship'), IsGranted('ROLE_ADMIN')]
+#[Route('admin/relationship'), IsGranted('ROLE_ADMIN')]
 final class RelationshipController extends AbstractController
 {
     #[Route(name: 'app_relationship_index', methods: ['GET'])]

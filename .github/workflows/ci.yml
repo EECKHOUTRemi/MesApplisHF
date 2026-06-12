@@ -1,0 +1,151 @@
+# .github/workflows/ci.yml
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop, 'release/**']
+  pull_request:
+
+env:
+  # GHCR exige un nom en minuscules ; github.repository donne "EECKHOUTRemi/MesApplisHF"
+  IMAGE: ghcr.io/eeckhoutremi/mesapplishf
+
+jobs:
+  # ── Stage 1: build ──────────────────────────────────────────────
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build prod image (load locally, don't push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: prod
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+          outputs: type=docker,dest=/tmp/image.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/image.tar
+
+  # ── Stage 2: test ───────────────────────────────────────────────
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    services:
+      database:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: app
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U app -d app"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, pdo_pgsql, zip, opcache
+          coverage: xdebug                 # needed for Sonar coverage
+      - run: composer install --prefer-dist --no-progress --no-interaction
+      # En env "test", Doctrine suffixe le nom de base avec "_test" (config/packages/doctrine.yaml)
+      # -> tout tourne sur "app_test", créée ici plutôt que par POSTGRES_DB
+      - name: Prepare test database
+        run: |
+          php bin/console --env=test doctrine:database:create --if-not-exists
+          php bin/console --env=test doctrine:migrations:migrate --no-interaction
+        env:
+          DATABASE_URL: postgresql://app:app@127.0.0.1:5432/app?serverVersion=16
+      - run: php bin/phpunit --coverage-clover=coverage.xml
+        env:
+          DATABASE_URL: postgresql://app:app@127.0.0.1:5432/app?serverVersion=16
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+
+  # ── Stage 3a: scan — Trivy (runs parallel with Sonar) ───────────
+  scan-trivy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+      - run: docker load --input /tmp/image.tar
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}:${{ github.sha }}
+          format: table
+          exit-code: '1'                   # fail the job on findings
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+
+  # ── Stage 3b: scan — SonarQube (runs parallel with Trivy) ───────
+  scan-sonar:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0                   # Sonar needs full history for blame
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage
+      - name: Vérifier la présence des secrets Sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          if [ -n "$SONAR_HOST_URL" ]; then echo "SONAR_HOST_URL: défini (${#SONAR_HOST_URL} caractères)"; else echo "SONAR_HOST_URL: VIDE"; fi
+          if [ -n "$SONAR_TOKEN" ]; then echo "SONAR_TOKEN: défini (${#SONAR_TOKEN} caractères)"; else echo "SONAR_TOKEN: VIDE"; fi
+      - uses: SonarSource/sonarqube-scan-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  # ── Stage 4: push (only on main/release/develop) ────────────────
+  push:
+    needs: [scan-trivy, scan-sonar]        # waits for BOTH scans
+    if: github.event_name == 'push' &&
+        (github.ref == 'refs/heads/main' ||
+         github.ref == 'refs/heads/develop' ||
+         startsWith(github.ref, 'refs/heads/release/'))
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write                       # for GHCR
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp
+      - run: docker load --input /tmp/image.tar
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tag & push
+        run: |
+          # "release/1.0" -> "release-1.0" : les "/" sont interdits dans un tag Docker
+          BRANCH_TAG="${GITHUB_REF_NAME//\//-}"
+          docker tag $IMAGE:${{ github.sha }} $IMAGE:$BRANCH_TAG
+          docker push $IMAGE:${{ github.sha }}
+          docker push $IMAGE:$BRANCH_TAG
+
+  # ── (conditional) deploy ────────────────────────────────────────
+  deploy:
+    needs: push
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}     # per-branch env + approvals
+    steps:
+      - run: echo "Deploy ${{ env.IMAGE }}:${{ github.ref_name }} to ${{ github.ref_name }}"

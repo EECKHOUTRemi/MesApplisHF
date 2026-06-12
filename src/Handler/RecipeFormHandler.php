@@ -2,10 +2,13 @@
 
 namespace App\Handler;
 
-use App\Entity\macuisine\Ingredient;
-use App\Entity\macuisine\Recipe;
-use App\Entity\macuisine\RefRecipeIngredient;
-use App\Repository\macuisine\IngredientRepository;
+use App\Entity\MaCuisine\Ingredient;
+use App\Entity\MaCuisine\Recipe;
+use App\Entity\MaCuisine\RefRecipeIngredient;
+use App\Entity\MaCuisine\Utensil;
+use App\Repository\MaCuisine\IngredientRepository;
+use App\Repository\MaCuisine\UtensilRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -13,12 +16,14 @@ class RecipeFormHandler
 {
     private EntityManagerInterface $em;
     private IngredientRepository $ingredientRepository;
+    private UtensilRepository $utensilRepository;
     private TokenStorageInterface $tokenStorage;
 
-    public function __construct(EntityManagerInterface $em, IngredientRepository $ingredientRepository, TokenStorageInterface $tokenStorage)
+    public function __construct(EntityManagerInterface $em, IngredientRepository $ingredientRepository, UtensilRepository $utensilRepository, TokenStorageInterface $tokenStorage)
     {
         $this->em = $em;
         $this->ingredientRepository = $ingredientRepository;
+        $this->utensilRepository = $utensilRepository;
         $this->tokenStorage = $tokenStorage;
     }
 
@@ -45,29 +50,31 @@ class RecipeFormHandler
                 $newIngredient = new Ingredient();
                 $newIngredient->setName($ingredient);
                 $this->em->persist($newIngredient);
+                }
             }
-        }
-        $this->em->flush();
-
-        // index existing refs by ingredient id
+        
+            $this->em->flush();
+            
+        # index existing refs by ingredient id
         $existing = [];
         foreach ($recipe->getRefRecipeIngredients() as $ref) {
             $existing[$ref->getIngredient()->getId()] = $ref;
-        }
-
+            }
+            
+        # Persist refRecipeIngredients
         $submittedIds = [];
         foreach (($submittedData['extras'] ?? []) as $ingredient => $datas) {
             $ingredientObj = is_numeric($ingredient)
-                ? $this->ingredientRepository->find($ingredient)
-                : $this->ingredientRepository->findNameLike($ingredient)[0];
-
+            ? $this->ingredientRepository->find($ingredient)
+            : $this->ingredientRepository->findNameLike($ingredient)[0];
+            
             $id = $ingredientObj->getId();
             $submittedIds[$id] = true;
-
+            
             $ref = $existing[$id] ?? (new RefRecipeIngredient())
-                ->setRecipe($recipe)
-                ->setIngredient($ingredientObj);
-
+            ->setRecipe($recipe)
+            ->setIngredient($ingredientObj);
+            
             $ref->setUnite($datas['unit']);
             $ref->setQuantity((int) $datas['qty'] ?? null);
 
@@ -75,11 +82,39 @@ class RecipeFormHandler
                 $this->em->persist($ref);
             }
         }
-
-        // drop refs the user removed (orphanRemoval on Recipe handles the DELETE)
+        
+        # Drop refs the user removed (orphanRemoval on Recipe handles the DELETE)
         foreach ($existing as $id => $ref) {
             if (!isset($submittedIds[$id])) {
                 $recipe->getRefRecipeIngredients()->removeElement($ref);
+            }
+        }
+
+        # Sync recipe utensils: numeric -> existing; non-numeric -> new entity
+        $previousUtensils = [];
+        foreach ($recipe->getUtensil() as $u) {
+            $previousUtensils[spl_object_id($u)] = $u;
+        }
+        $keptObjIds = [];
+        foreach (($submittedData['recipe']['utensil'] ?? []) as $utensilValue) {
+            if (is_numeric($utensilValue)) {
+                $utensil = $this->utensilRepository->find($utensilValue);
+                if ($utensil === null) {
+                    continue;
+                }
+                $keptObjIds[spl_object_id($utensil)] = true;
+            } else {
+                $utensil = new Utensil();
+                $utensil->setName($utensilValue)
+                    ->setCreatedAt(new DateTimeImmutable())
+                    ->setCreatedBy($this->getUser());
+                $this->em->persist($utensil);
+            }
+            $recipe->addUtensil($utensil);
+        }
+        foreach ($previousUtensils as $objId => $u) {
+            if (!isset($keptObjIds[$objId])) {
+                $recipe->removeUtensil($u);
             }
         }
 

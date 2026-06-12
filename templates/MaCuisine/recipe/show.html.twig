@@ -1,0 +1,170 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ recipe.name }} · MaCuisine{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .recipe-hero {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            color: #fff;
+            border-radius: 1rem;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.08);
+        }
+        .recipe-hero .recipe-emoji {
+            font-size: 4rem;
+            opacity: .9;
+        }
+        .author-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #ff7e5f;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        .recipe-description {
+            white-space: pre-line;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        .meta-pill {
+            background: #fff5ef;
+            color: #b3502f;
+            border-radius: 999px;
+            padding: .35rem .9rem;
+            font-size: .875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+{% set isAuthor = app.user and recipe.author and app.user.id == recipe.author.id %}
+{% set unitLabels = {
+    'kg': 'kg',
+    'g':  'g',
+    'mg': 'mg',
+    'l':  'l',
+    'ml': 'ml',
+    'cc': 'cuillère(s) à café',
+    'cs': 'cuillère(s) à soupe',
+    'p':  'pincée(s)',
+    'u':  'unité(s)',
+} %}
+
+<div class="container py-4" style="max-width: 820px;">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0 small">
+            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_recipe_index') }}" class="text-decoration-none">Recettes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ recipe.name }}</li>
+        </ol>
+    </nav>
+
+    <section class="recipe-hero mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col-md-9">
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                    <span class="badge bg-light text-dark"><i class="bi bi-egg-fried me-1" aria-hidden="true"></i>Recette</span>
+                    {% if recipe.category %}
+                        <span class="badge text-bg-warning"><i class="bi bi-tag-fill me-1" aria-hidden="true"></i>{{ recipe.category.name }}</span>
+                    {% endif %}
+                </div>
+                <h1 class="display-5 fw-bold mb-2">{{ recipe.name }}</h1>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="author-avatar">{{ recipe.author.username|first|upper }}</span>
+                        <span>par <strong>{{ recipe.author.username }}</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 text-center d-none d-md-block">
+                <span class="recipe-emoji"><i class="bi bi-cup-hot" aria-hidden="true"></i></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                {% if recipe.createdAt %}
+                    <span class="meta-pill">
+                        <i class="bi bi-calendar3" aria-hidden="true"></i>Publiée le {{ recipe.createdAt|date('d/m/Y') }}
+                    </span>
+                {% endif %}
+                {% if recipe.updatedAt %}
+                    <span class="meta-pill">
+                        <i class="bi bi-pencil" aria-hidden="true"></i>Mise à jour le {{ recipe.updatedAt|date('d/m/Y') }}
+                    </span>
+                {% endif %}
+            </div>
+
+            {% if recipe.utensil|length > 0 %}
+                <h2 class="h5 fw-bold mb-2"><i class="bi bi-tools text-primary me-1" aria-hidden="true"></i>Ustensiles</h2>
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                    {% for utensil in recipe.utensil %}
+                        <span class="badge rounded-pill text-bg-light border">{{ utensil.name }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if recipe.refRecipeIngredients|length > 0 %}
+                <h2 class="h5 fw-bold mb-3"><i class="bi bi-basket text-primary me-1" aria-hidden="true"></i>Ingrédients</h2>
+                <ul class="list-group list-group-flush">
+                    {% for ri in recipe.refRecipeIngredients %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span>{{ ri.ingredient.name }}</span>
+                            <span class="text-secondary">
+                                {% if ri.quantity > 0 %}
+                                    {{ ri.quantity }} {{ unitLabels[ri.unite]|default(ri.unite) }}
+                                {% else %}
+                                    Pas de quantité précisée
+                                {% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h2 class="h5 fw-bold mb-2"><i class="bi bi-journal-text text-primary me-1" aria-hidden="true"></i>Description</h2>
+            <p class="recipe-description text-body mb-0">{{ recipe.description }}</p>
+            
+        </div>
+    </section>
+
+    <div class="d-flex flex-wrap gap-2 justify-content-between">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour en arrière
+        </a>
+
+        {% if isAuthor %}
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_macuisine_recipe_edit', {'id': recipe.id}) }}" class="btn btn-warning">
+                    <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Modifier
+                </a>
+                <form method="post" action="{{ path('app_macuisine_recipe_delete', {'id': recipe.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette recette ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ recipe.id) }}">
+                    <button class="btn btn-outline-danger">
+                        <i class="bi bi-trash3 me-1" aria-hidden="true"></i>Supprimer
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

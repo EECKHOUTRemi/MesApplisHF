@@ -1,0 +1,55 @@
+# One Compose file serves every environment. The environment is selected by the
+# --env-file passed at deploy time (.env.docker.prod / .test / .dev), which sets
+# BUILD_TARGET, ports, secrets, and the DB credentials. Run via bin/deploy-docker.sh.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # "prod" target => APP_ENV=prod (production + test stages).
+      # "dev" target  => APP_ENV=dev  (develop stage, with debug tooling).
+      target: ${BUILD_TARGET:-prod}
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      # APP_ENV is baked into the image by the build target; this keeps runtime
+      # consistent with it. Always deploy with --env-file so Compose does NOT read
+      # Symfony's .env for interpolation.
+      APP_ENV: ${APP_ENV:-prod}
+      APP_SECRET: ${SYMFONY_APP_SECRET:?SYMFONY_APP_SECRET must be set}
+      # "database" resolves to the Postgres service on this stack's private network.
+      DATABASE_URL: postgresql://${POSTGRES_USER:?POSTGRES_USER must be set}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@database:5432/${POSTGRES_DB:?POSTGRES_DB must be set}?serverVersion=16&charset=utf8
+      MAILER_DSN: ${SYMFONY_MAILER_DSN:-null://null}
+      # URL generation in CLI/emails (e.g. mesapplishf.fr, test.mesapplishf.fr).
+      DEFAULT_URI: ${DEFAULT_URI:-http://localhost}
+      # FrankenPHP listens on :80 inside the container; the host proxy terminates TLS.
+      SERVER_NAME: ":80"
+      # Trust the host reverse proxy so Symfony reads the real client IP/scheme.
+      SYMFONY_TRUSTED_PROXIES: ${SYMFONY_TRUSTED_PROXIES:-127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
+    # Published only on loopback; the host's Nginx/Caddy reverse-proxies the domain here.
+    ports:
+      - "127.0.0.1:${HTTP_PORT:?HTTP_PORT must be set}:80"
+    restart: unless-stopped
+
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB must be set}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:?POSTGRES_USER must be set} -d ${POSTGRES_DB:?POSTGRES_DB must be set}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # No host port: the DB is reachable only by the app over the stack's private
+    # network. (Add "127.0.0.1:55432:5432" temporarily if you need host access.)
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+# Scoped per stack by the Compose project name (e.g. mesapplishf-prod_database_data),
+# so prod/test/dev never share data.
+volumes:
+  database_data:
