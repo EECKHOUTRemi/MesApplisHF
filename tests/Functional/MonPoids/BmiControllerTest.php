@@ -102,6 +102,41 @@ class BmiControllerTest extends AppWebTestCase
         $this->assertSame(27.78, $this->em()->find(Bmi::class, $bmi->getId())->getBmi());
     }
 
+    public function testShowingSomeoneElsesEntryRedirectsToIndex(): void
+    {
+        $other = $this->createUser();
+        $bmi = $this->createBmi($other, 180.0, 80.0);
+
+        $this->login($this->createUser());
+        $this->client->request('GET', '/monpoids/bmi/' . $bmi->getId());
+
+        $this->assertResponseRedirects('/monpoids/bmi/');
+    }
+
+    public function testEditingSomeoneElsesEntryRedirectsToIndex(): void
+    {
+        $other = $this->createUser();
+        $bmi = $this->createBmi($other, 180.0, 80.0);
+
+        $this->login($this->createUser());
+        $this->client->request('GET', '/monpoids/bmi/' . $bmi->getId() . '/edit');
+
+        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->em()->clear();
+        $this->assertSame(24.69, $this->em()->find(Bmi::class, $bmi->getId())->getBmi(), "L'IMC ne doit pas être modifié");
+    }
+
+    public function testOwnerCanShowOwnEntry(): void
+    {
+        $user = $this->createUser();
+        $bmi = $this->createBmi($user, 180.0, 80.0);
+        $this->login($user);
+
+        $this->client->request('GET', '/monpoids/bmi/' . $bmi->getId());
+
+        $this->assertResponseIsSuccessful();
+    }
+
     public function testIndexOnlyShowsOwnEntries(): void
     {
         $other = $this->createUser();

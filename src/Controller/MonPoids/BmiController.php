@@ -137,9 +137,9 @@ final class BmiController extends AbstractController
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]
-    public function show(int $id, Bmi $bmi): Response
+    public function show(Bmi $bmi): Response
     {
-        if ($this->getUser()->getUserIdentifier() != $id) {
+        if ($bmi->getUser()->getUserIdentifier() !== $this->getUser()->getUserIdentifier()) {
             return $this->redirectToRoute('app_MonPoids_bmi_index');
         }
 
@@ -149,9 +149,9 @@ final class BmiController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(int $id, Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
     {
-        if ($this->getUser()->getUserIdentifier() != $id) {
+        if ($bmi->getUser()->getUserIdentifier() !== $this->getUser()->getUserIdentifier()) {
             return $this->redirectToRoute('app_MonPoids_bmi_index');
         }
 
@@ -172,9 +172,9 @@ final class BmiController extends AbstractController
     }
 
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
-    public function delete(int $id, Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
     {
-        if ($this->getUser()->getUserIdentifier() != $id) {
+        if ($bmi->getUser()->getUserIdentifier() !== $this->getUser()->getUserIdentifier()) {
             return $this->redirectToRoute('app_MonPoids_bmi_index');
         }
 

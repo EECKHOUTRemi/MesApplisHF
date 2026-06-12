@@ -31,6 +31,7 @@
 !bin/symfony_requirements
 !bin/deploy.sh
 !bin/deploy-docker.sh
+!bin/phpunit
 /vendor/
 
 # Assets and user uploads
