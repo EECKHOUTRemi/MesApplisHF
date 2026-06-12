@@ -1,6 +1,7 @@
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
 
 {{ form_start(form) }}
+    {{ form_errors(form) }}
     {{ form_label(form.chest, 'Poitrine (cm)') }}
     {{ form_widget(form.chest) }}
     {{ form_label(form.hips, 'Hanches (cm)') }}

@@ -122,7 +122,7 @@ final class BmiController extends AbstractController
                 $user->setHeight($bmi->getHeight());
                 $entityManager->persist($user);
             }
-            $bmi->setCreatedAt(new \DateTimeImmutable());
+            $bmi->setCreatedAt($bmi->getCreatedAt() ?? new \DateTimeImmutable());
             $bmi->setUser($this->getUser());
             $bmi->setBmi($bmi->getHeight(), $bmi->getWeight());
             $entityManager->persist($bmi);
@@ -182,6 +182,10 @@ final class BmiController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$bmi->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($bmi);
             $entityManager->flush();
+        }
+
+        if ($request->query->get('from') === 'admin') {
+            return $this->redirectToRoute('app_admin_monpoids_bmi_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->redirectToRoute('app_MonPoids_bmi_index', [], Response::HTTP_SEE_OTHER);
