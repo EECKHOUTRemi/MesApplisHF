@@ -8,6 +8,19 @@ use App\Tests\Functional\AppWebTestCase;
 
 class BmiControllerTest extends AppWebTestCase
 {
+    private const INDEX_PATH = '/monpoids/bmi/';
+    private const NEW_PATH = '/monpoids/bmi/new';
+
+    private function showPath(Bmi $bmi): string
+    {
+        return self::INDEX_PATH . $bmi->getId();
+    }
+
+    private function editPath(Bmi $bmi): string
+    {
+        return $this->showPath($bmi) . '/edit';
+    }
+
     private function createBmi(User $user, float $height, float $weight): Bmi
     {
         $bmi = new Bmi();
@@ -28,7 +41,7 @@ class BmiControllerTest extends AppWebTestCase
     {
         $this->login($this->createUser());
 
-        $this->client->request('GET', '/monpoids/bmi/');
+        $this->client->request('GET', self::INDEX_PATH);
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('tbody', 'Aucun enregistrement');
@@ -39,7 +52,7 @@ class BmiControllerTest extends AppWebTestCase
         $user = $this->createUser();
         $this->login($user);
 
-        $this->client->request('GET', '/monpoids/bmi/new');
+        $this->client->request('GET', self::NEW_PATH);
         $this->assertResponseIsSuccessful();
 
         $this->client->submitForm('Enregistrer', [
@@ -48,7 +61,7 @@ class BmiControllerTest extends AppWebTestCase
             'bmi[createdAt]' => '2026-06-12',
         ]);
 
-        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->assertResponseRedirects(self::INDEX_PATH);
 
         $saved = $this->em()->getRepository(Bmi::class)->findOneBy(['user' => $user]);
         $this->assertNotNull($saved);
@@ -64,7 +77,7 @@ class BmiControllerTest extends AppWebTestCase
         $user = $this->createUser(); // sans taille renseignée
         $this->login($user);
 
-        $this->client->request('GET', '/monpoids/bmi/new');
+        $this->client->request('GET', self::NEW_PATH);
         $this->client->submitForm('Enregistrer', [
             'bmi[height]' => '172',
             'bmi[weight]' => '65',
@@ -80,7 +93,7 @@ class BmiControllerTest extends AppWebTestCase
     {
         $this->login($this->createUser(height: 168.0));
 
-        $crawler = $this->client->request('GET', '/monpoids/bmi/new');
+        $crawler = $this->client->request('GET', self::NEW_PATH);
 
         $this->assertSame('168', $crawler->filter('#bmi_height')->attr('value'));
     }
@@ -91,13 +104,13 @@ class BmiControllerTest extends AppWebTestCase
         $bmi = $this->createBmi($user, 180.0, 80.0);
         $this->login($user);
 
-        $this->client->request('GET', '/monpoids/bmi/' . $bmi->getId() . '/edit');
+        $this->client->request('GET', $this->editPath($bmi));
         $this->client->submitForm('Mettre à jour', [
             'bmi[height]' => '180',
             'bmi[weight]' => '90',
         ]);
 
-        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->assertResponseRedirects(self::INDEX_PATH);
         $this->em()->clear();
         $this->assertSame(27.78, $this->em()->find(Bmi::class, $bmi->getId())->getBmi());
     }
@@ -108,9 +121,9 @@ class BmiControllerTest extends AppWebTestCase
         $bmi = $this->createBmi($other, 180.0, 80.0);
 
         $this->login($this->createUser());
-        $this->client->request('GET', '/monpoids/bmi/' . $bmi->getId());
+        $this->client->request('GET', $this->showPath($bmi));
 
-        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->assertResponseRedirects(self::INDEX_PATH);
     }
 
     public function testEditingSomeoneElsesEntryRedirectsToIndex(): void
@@ -119,9 +132,9 @@ class BmiControllerTest extends AppWebTestCase
         $bmi = $this->createBmi($other, 180.0, 80.0);
 
         $this->login($this->createUser());
-        $this->client->request('GET', '/monpoids/bmi/' . $bmi->getId() . '/edit');
+        $this->client->request('GET', $this->editPath($bmi));
 
-        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->assertResponseRedirects(self::INDEX_PATH);
         $this->em()->clear();
         $this->assertSame(24.69, $this->em()->find(Bmi::class, $bmi->getId())->getBmi(), "L'IMC ne doit pas être modifié");
     }
@@ -132,7 +145,7 @@ class BmiControllerTest extends AppWebTestCase
         $bmi = $this->createBmi($user, 180.0, 80.0);
         $this->login($user);
 
-        $this->client->request('GET', '/monpoids/bmi/' . $bmi->getId());
+        $this->client->request('GET', $this->showPath($bmi));
 
         $this->assertResponseIsSuccessful();
     }
@@ -150,7 +163,7 @@ class BmiControllerTest extends AppWebTestCase
         $form = $crawler->filter('form[action^="/monpoids/bmi/' . $bmiId . '"]')->form();
         $this->client->submit($form);
 
-        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->assertResponseRedirects(self::INDEX_PATH);
         $this->em()->clear();
         $this->assertNull($this->em()->find(Bmi::class, $bmiId));
     }
@@ -162,9 +175,9 @@ class BmiControllerTest extends AppWebTestCase
         $bmiId = $bmi->getId();
 
         $this->login($this->createUser());
-        $this->client->request('POST', '/monpoids/bmi/' . $bmiId);
+        $this->client->request('POST', $this->showPath($bmi));
 
-        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->assertResponseRedirects(self::INDEX_PATH);
         $this->em()->clear();
         $this->assertNotNull($this->em()->find(Bmi::class, $bmiId), "L'enregistrement ne doit pas être supprimé");
     }
@@ -175,7 +188,7 @@ class BmiControllerTest extends AppWebTestCase
         $this->createBmi($other, 190.0, 111.0); // IMC 30.75, valeur reconnaissable
 
         $this->login($this->createUser());
-        $this->client->request('GET', '/monpoids/bmi/');
+        $this->client->request('GET', self::INDEX_PATH);
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextNotContains('tbody', '30.75');
