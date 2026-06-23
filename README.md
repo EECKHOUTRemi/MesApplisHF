@@ -1,6 +1,6 @@
 # MesApplisHF
 
-A Symfony 8 application skeleton powering the **HF apps portal**.
+A Symfony 7.4 application powering the **HF apps portal**.
 
 It hosts a collection of small personal apps:
 
@@ -9,28 +9,31 @@ It hosts a collection of small personal apps:
 
 Each sub-app exposes both a regular user area and an `/admin/...` section gated by `ROLE_ADMIN`.
 
+📚 **[Documentation](https://eeckhoutremi.github.io/MesApplisHF)** — generated with phpDocumentor.
+
 > Status: early development.
 
 ---
 
 ## Tech stack
 
-| Layer       | Choice                          |
-| ----------- | ------------------------------- |
-| Language    | PHP **8.4+**                    |
-| Framework   | Symfony **8.0.\***              |
-| Runtime     | `symfony/runtime`               |
-| ORM         | Doctrine ORM + Migrations       |
-| Frontend    | Twig, Bootstrap 5, Stimulus     |
-| Charts      | Symfony UX Chartjs (Chart.js)   |
-| Dependency  | Composer (managed via Flex)     |
-| Autoloading | PSR-4 — `App\` → `src/`         |
+| Layer       | Choice                              |
+| ----------- | ----------------------------------- |
+| Language    | PHP **8.4+**                        |
+| Framework   | Symfony **7.4.\***                  |
+| Database    | PostgreSQL via Doctrine ORM **3**   |
+| Runtime     | FrankenPHP (`symfony/runtime`)      |
+| Deployment  | Docker (multi-stage `Dockerfile`)   |
+| Dependency  | Composer (managed via Flex)         |
+| Autoloading | PSR-4 — `App\` → `src/`             |
 
 ## Requirements
 
-- PHP **>= 8.4** with `ext-ctype` and `ext-iconv`
+- PHP **>= 8.4** with `ext-ctype`, `ext-iconv`, `intl` and `pdo_pgsql`
+- **PostgreSQL** (the app uses `pdo_pgsql`)
 - [Composer](https://getcomposer.org/) 2.x
 - (Optional) the [Symfony CLI](https://symfony.com/download) for the local web server
+- (Optional) Docker — the production image is built from the multi-stage `Dockerfile`
 
 ## Getting started
 
@@ -43,9 +46,13 @@ cd MesApplisHF
 composer install
 
 # 3. Configure environment
-cp .env .env.local      # then edit .env.local
+cp .env .env.local      # then set DATABASE_URL (PostgreSQL) in .env.local
 
-# 4. Run the dev server
+# 4. Set up the database
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate --no-interaction
+
+# 5. Run the dev server
 symfony serve -d        # http://127.0.0.1:8000
 # — or, without the Symfony CLI:
 php -S 127.0.0.1:8000 -t public
@@ -86,7 +93,7 @@ php -S 127.0.0.1:8000 -t public
 └── symfony.lock
 ```
 
-> Folder casing note: the sub-app folders use **PascalCase** (`MaCuisine`, `MonPoids`) to match the PSR-4 namespaces. URL slugs and route names stay lowercase (`/macuisine/...`, `app_macuisine_recipe_index`).
+> Folder casing note: the sub-app folders use **PascalCase** (`MaCuisine`, `MonPoids`) to match the PSR-4 namespaces. URL slugs stay lowercase (`/macuisine/...`, `/monpoids/...`); existing route names are kept as-is and never renamed (e.g. `app_macuisine_recipe_index`, `app_MonPoids_bmi_index`).
 
 ## Database schema
 
@@ -135,10 +142,10 @@ erDiagram
     MEASUREMENT {
         int             id PK
         int             user_id FK
-        float           chest "nullable"
-        float           hips "nullable"
-        float           thigh "nullable"
-        float           waist "nullable"
+        float           chest
+        float           hips
+        float           thigh
+        float           waist
         datetime_immut  createdAt
     }
 
@@ -186,19 +193,31 @@ erDiagram
 ## Common commands
 
 ```bash
-php bin/console list                       # all available commands
-php bin/console debug:router               # registered routes
-php bin/console cache:clear                # clear the cache
-php bin/console about                      # environment summary
-php bin/console make:migration             # scaffold a Doctrine migration
-php bin/console doctrine:migrations:migrate # apply pending migrations
+php bin/console list                # all available commands
+php bin/console debug:router        # registered routes
+php bin/console cache:clear         # clear the cache
+php bin/console about               # environment summary
 ```
 
 ## Adding a controller
 
 ```bash
-composer require symfony/maker-bundle --dev
+# maker-bundle is already installed as a dev dependency
 php bin/console make:controller HelloController
+```
+
+## Documentation
+
+API documentation is generated from the source PHPDoc with
+[phpDocumentor](https://phpdoc.org/) and published to GitHub Pages:
+
+**📚 <https://eeckhoutremi.github.io/MesApplisHF>**
+
+It is rebuilt automatically on every push to `main` (the `docs` job in
+`.github/workflows/deploy.yml`). To build it locally:
+
+```bash
+vendor/bin/phpdoc        # outputs to docs/.build (git-ignored)
 ```
 
 ## License
