@@ -14,8 +14,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/macuisine/recipe'),
 IsGranted('ROLE_ADMIN')]
+/** CRUD admin des recettes MaCuisine (formulaire simplifié sans gestion d'ingrédients JS). */
 final class RecipeAdminController extends AbstractController
 {
+    /**
+     * @param RecipeRepository $recipeRepository
+     * @return Response
+     */
     #[Route(name: 'app_admin_macuisine_recipe_index', methods: ['GET'])]
     public function index(RecipeRepository $recipeRepository): Response
     {
@@ -44,6 +49,10 @@ final class RecipeAdminController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Recipe $recipe
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_admin_macuisine_recipe_show', methods: ['GET'])]
     public function show(Recipe $recipe): Response
     {
@@ -52,6 +61,12 @@ final class RecipeAdminController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Recipe $recipe
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'app_admin_macuisine_recipe_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response
     {
@@ -70,6 +85,12 @@ final class RecipeAdminController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Recipe $recipe
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_admin_macuisine_recipe_delete', methods: ['POST'])]
     public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response
     {

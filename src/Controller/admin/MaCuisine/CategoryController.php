@@ -15,8 +15,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/ma/cuisine/category'),
 IsGranted('ROLE_ADMIN')]
+/** CRUD admin des catégories MaCuisine. */
 final class CategoryController extends AbstractController
 {
+    /**
+     * @param CategoryRepository $categoryRepository
+     * @return Response
+     */
     #[Route(name: 'app_admin_ma_cuisine_category_index', methods: ['GET'])]
     public function index(CategoryRepository $categoryRepository): Response
     {
@@ -47,6 +52,10 @@ final class CategoryController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Category $category
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_admin_ma_cuisine_category_show', methods: ['GET'])]
     public function show(Category $category): Response
     {
@@ -55,6 +64,12 @@ final class CategoryController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Category $category
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'app_admin_ma_cuisine_category_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
@@ -74,6 +89,12 @@ final class CategoryController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Category $category
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_admin_ma_cuisine_category_delete', methods: ['POST'])]
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {

@@ -12,6 +12,12 @@ use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
+/**
+ * Orchestre la persistance d'une recette depuis le formulaire utilisateur.
+ * Gère la création à la volée d'ingrédients/ustensiles inconnus (valeurs non numériques),
+ * la synchronisation des RefRecipeIngredient (ajout, mise à jour, suppression des orphelins)
+ * et le remplacement de la liste d'ustensiles de la recette.
+ */
 class RecipeFormHandler
 {
     private EntityManagerInterface $em;
@@ -19,6 +25,12 @@ class RecipeFormHandler
     private UtensilRepository $utensilRepository;
     private TokenStorageInterface $tokenStorage;
 
+    /**
+     * @param EntityManagerInterface $em
+     * @param IngredientRepository $ingredientRepository
+     * @param UtensilRepository $utensilRepository
+     * @param TokenStorageInterface $tokenStorage
+     */
     public function __construct(EntityManagerInterface $em, IngredientRepository $ingredientRepository, UtensilRepository $utensilRepository, TokenStorageInterface $tokenStorage)
     {
         $this->em = $em;
@@ -27,12 +39,24 @@ class RecipeFormHandler
         $this->tokenStorage = $tokenStorage;
     }
 
+    /**
+     * Retourne l'utilisateur courant depuis le token de sécurité, ou null si non authentifié.
+     *
+     * @return \Symfony\Component\Security\Core\User\UserInterface|null
+     */
     private function getUser()
     {
         $token = $this->tokenStorage->getToken();
         return $token ? $token->getUser() : null;
     }
 
+    /**
+     * Persiste la recette avec ses ingrédients et ses ustensiles depuis les données brutes du formulaire.
+     *
+     * @param Recipe  $recipe        Entité à créer ou mettre à jour
+     * @param array<string, mixed> $submittedData Données brutes de la requête (clés `recipe` et `extras`)
+     * @return void
+     */
     public function persistAndFlush(Recipe $recipe, array $submittedData)
     {
         $isNew = $recipe->getId() === null;

@@ -9,8 +9,13 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/monpoids/bmi', name: 'app_admin_monpoids_bmi_'), IsGranted('ROLE_ADMIN')]
+/** Vue admin en lecture seule des enregistrements IMC de tous les utilisateurs. */
 final class BmiAdminController extends AbstractController
 {
+    /**
+     * @param BmiRepository $bmiRepository
+     * @return Response
+     */
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(BmiRepository $bmiRepository): Response
     {
