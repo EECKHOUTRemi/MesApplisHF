@@ -15,8 +15,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/ma/cuisine/utensil'),
 IsGranted('ROLE_ADMIN')]
+/** CRUD admin des ustensiles MaCuisine. */
 final class UtensilController extends AbstractController
 {
+    /**
+     * @param UtensilRepository $utensilRepository
+     * @return Response
+     */
     #[Route(name: 'app_admin_ma_cuisine_utensil_index', methods: ['GET'])]
     public function index(UtensilRepository $utensilRepository): Response
     {
@@ -47,6 +52,10 @@ final class UtensilController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Utensil $utensil
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_admin_ma_cuisine_utensil_show', methods: ['GET'])]
     public function show(Utensil $utensil): Response
     {
@@ -55,6 +64,12 @@ final class UtensilController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Utensil $utensil
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'app_admin_ma_cuisine_utensil_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Utensil $utensil, EntityManagerInterface $entityManager): Response
     {
@@ -74,6 +89,12 @@ final class UtensilController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Utensil $utensil
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_admin_ma_cuisine_utensil_delete', methods: ['POST'])]
     public function delete(Request $request, Utensil $utensil, EntityManagerInterface $entityManager): Response
     {

@@ -6,21 +6,39 @@ use App\Entity\MonPoids\Bmi;
 use App\Entity\User;
 use App\Tests\Functional\AppWebTestCase;
 
+/**
+ * Teste le CRUD IMC MonPoids : calcul de l'IMC, pré-remplissage de la taille depuis le profil,
+ * isolation des données par utilisateur et protection contre l'accès aux entrées d'autrui.
+ */
 class BmiControllerTest extends AppWebTestCase
 {
     private const INDEX_PATH = '/monpoids/bmi/';
     private const NEW_PATH = '/monpoids/bmi/new';
 
+    /**
+     * @param Bmi $bmi
+     * @return string
+     */
     private function showPath(Bmi $bmi): string
     {
         return self::INDEX_PATH . $bmi->getId();
     }
 
+    /**
+     * @param Bmi $bmi
+     * @return string
+     */
     private function editPath(Bmi $bmi): string
     {
         return $this->showPath($bmi) . '/edit';
     }
 
+    /**
+     * @param User $user
+     * @param float $height
+     * @param float $weight
+     * @return Bmi
+     */
     private function createBmi(User $user, float $height, float $weight): Bmi
     {
         $bmi = new Bmi();

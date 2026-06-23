@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * Increase recipe title length from 15 to 30 char
  */
 final class Version20260514145927 extends AbstractMigration
 {

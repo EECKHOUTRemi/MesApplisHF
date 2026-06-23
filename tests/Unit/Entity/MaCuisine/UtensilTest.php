@@ -6,6 +6,7 @@ use App\Entity\MaCuisine\Utensil;
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 
+/** Teste les accesseurs de l'entité Utensil. */
 class UtensilTest extends TestCase
 {
     public function testAccessors(): void

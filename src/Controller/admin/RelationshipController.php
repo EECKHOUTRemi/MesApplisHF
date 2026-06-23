@@ -13,8 +13,13 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('admin/relationship'), IsGranted('ROLE_ADMIN')]
+/** CRUD admin des relations entre utilisateurs. */
 final class RelationshipController extends AbstractController
 {
+    /**
+     * @param RelationshipRepository $relationshipRepository
+     * @return Response
+     */
     #[Route(name: 'app_relationship_index', methods: ['GET'])]
     public function index(RelationshipRepository $relationshipRepository): Response
     {
@@ -43,6 +48,10 @@ final class RelationshipController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Relationship $relationship
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_relationship_show', methods: ['GET'])]
     public function show(Relationship $relationship): Response
     {
@@ -51,6 +60,12 @@ final class RelationshipController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Relationship $relationship
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'app_relationship_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Relationship $relationship, EntityManagerInterface $entityManager): Response
     {
@@ -69,6 +84,12 @@ final class RelationshipController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Relationship $relationship
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_relationship_delete', methods: ['POST'])]
     public function delete(Request $request, Relationship $relationship, EntityManagerInterface $entityManager): Response
     {

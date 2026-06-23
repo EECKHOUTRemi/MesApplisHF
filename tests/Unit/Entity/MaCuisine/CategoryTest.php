@@ -6,6 +6,7 @@ use App\Entity\MaCuisine\Category;
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 
+/** Teste les accesseurs de l'entité Category. */
 class CategoryTest extends TestCase
 {
     public function testAccessors(): void

@@ -17,8 +17,18 @@ use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/monpoids/bmi', name: 'app_MonPoids_bmi_'),
 IsGranted('ROLE_USER')]
+/**
+ * CRUD des enregistrements IMC MonPoids côté utilisateur.
+ * L'index génère deux graphiques Chart.js (évolution IMC et poids) pour l'utilisateur connecté.
+ * Les actions show/edit/delete vérifient que l'entrée appartient bien à l'utilisateur courant.
+ */
 final class BmiController extends AbstractController
 {
+    /**
+     * @param BmiRepository $bmiRepository
+     * @param ChartBuilderInterface $chartBuilder
+     * @return Response
+     */
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(BmiRepository $bmiRepository, ChartBuilderInterface $chartBuilder): Response
     {
@@ -105,6 +115,12 @@ final class BmiController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param UserRepository $userRepo
+     * @return Response
+     */
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepo): Response
     {
@@ -137,6 +153,10 @@ final class BmiController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Bmi $bmi
+     * @return Response
+     */
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Bmi $bmi): Response
     {
@@ -149,6 +169,12 @@ final class BmiController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Bmi $bmi
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
     {
@@ -172,6 +198,12 @@ final class BmiController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Bmi $bmi
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Bmi $bmi, EntityManagerInterface $entityManager): Response
     {

@@ -5,6 +5,9 @@ namespace App\Entity;
 use App\Repository\RelationshipRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Relation sociale entre deux utilisateurs (amitié, demande, blocage, etc.).
+ */
 #[ORM\Entity(repositoryClass: RelationshipRepository::class)]
 class Relationship
 {
@@ -30,16 +33,22 @@ class Relationship
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    /** @return int|null */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /** @return User|null */
     public function getuser1(): ?User
     {
         return $this->user1;
     }
 
+    /**
+     * @param User|null $user1
+     * @return static
+     */
     public function setuser1(?User $user1): static
     {
         $this->user1 = $user1;
@@ -47,11 +56,16 @@ class Relationship
         return $this;
     }
 
+    /** @return User|null */
     public function getuser2(): ?User
     {
         return $this->user2;
     }
 
+    /**
+     * @param User|null $user2
+     * @return static
+     */
     public function setuser2(?User $user2): static
     {
         $this->user2 = $user2;
@@ -59,11 +73,16 @@ class Relationship
         return $this;
     }
 
+    /** @return string|null */
     public function getStatus(): ?string
     {
         return $this->status;
     }
 
+    /**
+     * @param string $status
+     * @return static
+     */
     public function setStatus(string $status): static
     {
         $this->status = $status;
@@ -71,11 +90,16 @@ class Relationship
         return $this;
     }
 
+    /** @return \DateTimeImmutable|null */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
+    /**
+     * @param \DateTimeImmutable $createdAt
+     * @return static
+     */
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
@@ -83,11 +107,16 @@ class Relationship
         return $this;
     }
 
+    /** @return \DateTimeImmutable|null */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
+    /**
+     * @param \DateTimeImmutable|null $updatedAt
+     * @return static
+     */
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;

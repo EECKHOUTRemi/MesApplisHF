@@ -5,6 +5,7 @@ namespace App\Tests\Functional\MaCuisine;
 use App\Entity\MaCuisine\Recipe;
 use App\Tests\Functional\AppWebTestCase;
 
+/** Teste le tableau de bord MaCuisine : recettes récentes et compteurs. */
 class MaCuisineControllerTest extends AppWebTestCase
 {
     public function testDashboardShowsRecentRecipesAndCounters(): void

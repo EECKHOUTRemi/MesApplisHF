@@ -25,6 +25,11 @@ class SimpleCrudAdminTest extends AppWebTestCase
         yield 'ingrédient' => ['/admin/macuisine/ingredient', 'ingredient', Ingredient::class];
     }
 
+    /**
+     * @param string $class
+     * @param string $name
+     * @return object
+     */
     private function createEntity(string $class, string $name): object
     {
         $entity = new $class();
@@ -41,12 +46,22 @@ class SimpleCrudAdminTest extends AppWebTestCase
         return $entity;
     }
 
+    /**
+     * @param string $prefix
+     * @return string
+     */
     private function uniqueName(string $prefix): string
     {
         // les noms sont limités à 32 caractères
         return substr($prefix . bin2hex(random_bytes(6)), 0, 30);
     }
 
+    /**
+     * @param string $basePath
+     * @param string $formPrefix
+     * @param string $class
+     * @return void
+     */
     #[DataProvider('crudProvider')]
     public function testIndexListsEntities(string $basePath, string $formPrefix, string $class): void
     {
@@ -59,6 +74,12 @@ class SimpleCrudAdminTest extends AppWebTestCase
         $this->assertSelectorTextContains('body', $entity->getName());
     }
 
+    /**
+     * @param string $basePath
+     * @param string $formPrefix
+     * @param string $class
+     * @return void
+     */
     #[DataProvider('crudProvider')]
     public function testCreatePersistsEntity(string $basePath, string $formPrefix, string $class): void
     {
@@ -78,6 +99,12 @@ class SimpleCrudAdminTest extends AppWebTestCase
         $this->assertNotNull($this->em()->getRepository($class)->findOneBy(['name' => $name]));
     }
 
+    /**
+     * @param string $basePath
+     * @param string $formPrefix
+     * @param string $class
+     * @return void
+     */
     #[DataProvider('crudProvider')]
     public function testShowDisplaysEntity(string $basePath, string $formPrefix, string $class): void
     {
@@ -90,6 +117,12 @@ class SimpleCrudAdminTest extends AppWebTestCase
         $this->assertSelectorTextContains('body', $entity->getName());
     }
 
+    /**
+     * @param string $basePath
+     * @param string $formPrefix
+     * @param string $class
+     * @return void
+     */
     #[DataProvider('crudProvider')]
     public function testEditUpdatesEntity(string $basePath, string $formPrefix, string $class): void
     {
@@ -111,6 +144,12 @@ class SimpleCrudAdminTest extends AppWebTestCase
         $this->assertSame($newName, $this->em()->find($class, $entity->getId())->getName());
     }
 
+    /**
+     * @param string $basePath
+     * @param string $formPrefix
+     * @param string $class
+     * @return void
+     */
     #[DataProvider('crudProvider')]
     public function testDeleteRemovesEntity(string $basePath, string $formPrefix, string $class): void
     {

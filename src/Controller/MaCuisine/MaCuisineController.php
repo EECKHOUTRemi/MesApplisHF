@@ -10,8 +10,14 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/macuisine', name: 'app_macuisine_'), IsGranted('ROLE_USER')]
+/** Tableau de bord MaCuisine : recettes récentes et compteurs globaux. */
 final class MaCuisineController extends AbstractController
 {
+    /**
+     * @param RecipeRepository $recipeRepository
+     * @param IngredientRepository $ingredientRepository
+     * @return Response
+     */
     #[Route('/', name: 'index')]
     public function index(RecipeRepository $recipeRepository, IngredientRepository $ingredientRepository): Response
     {
