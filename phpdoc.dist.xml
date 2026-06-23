@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor
+        configVersion="3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://www.phpdoc.org"
+>
+    <title>MesApplisHF</title>
+    <paths>
+        <output>docs/.build</output>
+    </paths>
+    <version number="3.0.0">
+        <api>
+            <ignore>
+                <path>vendor/**/*</path>
+                <path>var/**/*</path>
+                <path>templates/**/*</path>
+                <path>public/**/*</path>
+                <path>migrations/**/*</path>
+                <path>config/**/*</path>
+                <path>bin/**/*</path>
+                <path>assets/**/*</path>
+            </ignore>
+        </api>
+    </version>
+
+</phpdocumentor>
