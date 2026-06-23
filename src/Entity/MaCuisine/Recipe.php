@@ -35,23 +35,26 @@ class Recipe
     #[Assert\Length(max: 30, maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $name = null;
 
-    #[ORM\Column(length: 600)]
+    #[ORM\Column(length: 600, nullable: true)]
     private ?string $description = null;
 
     /**
      * @var Collection<int, RefRecipeIngredient>
      */
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: RefRecipeIngredient::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $refRecipeIngredients;
+    private ?Collection $refRecipeIngredients = null;
 
     /**
      * @var Collection<int, Utensil>
      */
     #[ORM\ManyToMany(targetEntity: Utensil::class)]
-    private Collection $utensil;
+    private ?Collection $utensil = null;
 
     #[ORM\ManyToOne]
     private ?Category $category = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $source = null;
 
     public function __construct()
     {
@@ -203,6 +206,18 @@ class Recipe
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    public function setSource(?string $source): static
+    {
+        $this->source = $source;
 
         return $this;
     }

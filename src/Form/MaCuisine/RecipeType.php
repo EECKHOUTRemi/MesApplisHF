@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Regex;
 
 /**
  * Formulaire utilisateur de recette MaCuisine.
@@ -29,6 +30,7 @@ class RecipeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('utensil', ChoiceType::class, [
+                'required' => false,
                 'mapped' => false,
                 'multiple' => true,
                 'choice_loader' => new PassthroughChoiceLoader(),
@@ -38,6 +40,7 @@ class RecipeType extends AbstractType
                 ],
             ])
             ->add('category', EntityType::class, [
+                'required' => false,
                 'class' => Category::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choisir une catégorie',
@@ -47,8 +50,21 @@ class RecipeType extends AbstractType
                     'maxLength' => 30
                 ]
             ])
-            ->add('description', TextareaType::class)
+            ->add('description', TextareaType::class, [
+                'required' => false,
+            ])
+            ->add('source', TextType::class, [
+                'required' => false,
+                'constraints' => [
+                    new Regex(
+                        pattern: '/\b((https?|ftp):\/\/)?([a-z0-9-]{2,}\.)+[a-z]{2,}(\/\S*)?/i',
+                        match: false,
+                        message: 'La source ne doit pas contenir de lien ou d\'adresse web.',
+                    ),
+                ],
+            ])
             ->add('ingredients', ChoiceType::class, [
+                'required' => false,
                 'mapped' => false,
                 'multiple' => true,
                 'choice_loader' => new PassthroughChoiceLoader(),

@@ -1,6 +1,7 @@
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
 
 {{ form_start(form, {'attr': {'class': 'recipe-form'}}) }}
+    {% include '_required_legend.html.twig' with { form: form } only %}
     <div class="row g-3">
         <div class="col-md-6">
             {{ form_row(form.utensil, {
@@ -19,6 +20,9 @@
         </div>
         <div class="col-12">
             {{ form_row(form.description, {'label': 'Description', 'attr': {'placeholder': 'Décrivez votre recette, les étapes, les astuces…', 'rows': 6}}) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.source, {'label': 'Source', 'attr': {'placeholder': 'Indiquez la source de cette recette'}}) }}
         </div>
         <div class="col-12">
             <label class="form-label">Ingrédients</label>

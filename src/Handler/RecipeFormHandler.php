@@ -62,11 +62,15 @@ class RecipeFormHandler
         $this->stampRecipe($recipe);
         $this->em->persist($recipe);
 
-        $this->createNewIngredients($submittedData['recipe']['ingredients']);
-        $this->em->flush();
+        if (isset($submittedData['recipe']['ingredients'])) {
+            $this->createNewIngredients($submittedData['recipe']['ingredients']);
+            $this->em->flush();
+            $this->syncIngredientRefs($recipe, $submittedData['extras'] ?? []);
+        }
 
-        $this->syncIngredientRefs($recipe, $submittedData['extras'] ?? []);
-        $this->syncUtensils($recipe, $submittedData['recipe']['utensil'] ?? []);
+        if (isset($submittedData['recipe']['utensil'])) {
+            $this->syncUtensils($recipe, $submittedData['recipe']['utensil'] ?? []);
+        }
 
         $this->em->flush();
     }
