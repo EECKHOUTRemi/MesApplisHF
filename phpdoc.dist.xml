@@ -9,18 +9,16 @@
         <output>docs/.build</output>
     </paths>
     <version number="3.0.0">
-        <api>
-            <ignore>
-                <path>vendor/**/*</path>
-                <path>var/**/*</path>
-                <path>templates/**/*</path>
-                <path>public/**/*</path>
-                <path>migrations/**/*</path>
-                <path>config/**/*</path>
-                <path>bin/**/*</path>
-                <path>assets/**/*</path>
-            </ignore>
-        </api>
+        <ignore>
+            <path>vendor/**/*</path>
+            <path>var/**/*</path>
+            <path>templates/**/*</path>
+            <path>public/**/*</path>
+            <path>migrations/**/*</path>
+            <path>config/**/*</path>
+            <path>bin/**/*</path>
+            <path>assets/**/*</path>
+        </ignore>
     </version>
 
 </phpdocumentor>

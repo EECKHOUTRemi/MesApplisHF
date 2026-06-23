@@ -39,3 +39,35 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
             "cd ${{ steps.map.outputs.dir }} && ./bin/deploy-docker.sh ${{ steps.map.outputs.env }}"
+
+  # Generate the phpDocumentor docs on main only, published later via GitHub Pages.
+  docs:
+    name: Generate docs
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, pdo_pgsql, zip, opcache
+
+      - name: Install Graphviz (phpDocumentor class diagrams)
+        run: sudo apt-get update && sudo apt-get install -y graphviz
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      # phpdoc.dist.xml drives the run and outputs HTML to docs/.build
+      - name: Generate documentation with phpDocumentor
+        run: vendor/bin/phpdoc --no-interaction
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: docs/.build
+          if-no-files-found: error
