@@ -76,6 +76,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4         # needed for the Trivy ignore policy
       - uses: actions/download-artifact@v4
         with:
           name: docker-image
@@ -89,6 +90,7 @@ jobs:
           exit-code: '1'                   # fail the job on findings
           severity: CRITICAL,HIGH
           ignore-unfixed: true
+          ignore-policy: .trivy/ignore-policy.rego   # kernel-header CVEs (see file)
 
   # ── Stage 3b: scan — SonarQube (runs parallel with Trivy) ───────
   scan-sonar:

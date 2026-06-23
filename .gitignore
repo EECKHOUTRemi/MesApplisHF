@@ -77,3 +77,8 @@
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+###> phpdocumentor ###
+.phpdoc/
+docs/
+###< phpdocumentor ###

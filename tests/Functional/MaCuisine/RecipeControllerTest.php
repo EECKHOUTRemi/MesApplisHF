@@ -10,10 +10,20 @@ use App\Entity\MaCuisine\Utensil;
 use App\Entity\User;
 use App\Tests\Functional\AppWebTestCase;
 
+/**
+ * Teste le CRUD utilisateur des recettes MaCuisine, incluant la synchronisation
+ * des ingrédients/ustensiles via RecipeFormHandler (soumission directe de la requête
+ * pour contourner les selects JS dynamiques).
+ */
 class RecipeControllerTest extends AppWebTestCase
 {
     private const INDEX_PATH = '/macuisine/recipe';
 
+    /**
+     * @param User $author
+     * @param string $name
+     * @return Recipe
+     */
     private function createRecipe(User $author, string $name): Recipe
     {
         $recipe = new Recipe();
@@ -29,6 +39,10 @@ class RecipeControllerTest extends AppWebTestCase
         return $recipe;
     }
 
+    /**
+     * @param string $prefix
+     * @return string
+     */
     private function uniqueName(string $prefix): string
     {
         // Recipe.name est limité à 30 caractères
@@ -113,6 +127,10 @@ class RecipeControllerTest extends AppWebTestCase
         $this->assertNull($this->em()->find(Recipe::class, $recipeId));
     }
 
+    /**
+     * @param string $name
+     * @return Ingredient
+     */
     private function createIngredient(string $name): Ingredient
     {
         $ingredient = new Ingredient();
@@ -123,6 +141,11 @@ class RecipeControllerTest extends AppWebTestCase
         return $ingredient;
     }
 
+    /**
+     * @param User $user
+     * @param string $name
+     * @return Utensil
+     */
     private function createUtensil(User $user, string $name): Utensil
     {
         $utensil = new Utensil();
@@ -139,6 +162,9 @@ class RecipeControllerTest extends AppWebTestCase
      * Le formulaire recette est dynamique (selects remplis en JS) : on poste
      * directement la requête, comme le navigateur le ferait, avec le token
      * CSRF récupéré sur la page.
+     *
+     * @param string $path
+     * @return string
      */
     private function csrfToken(string $path): string
     {

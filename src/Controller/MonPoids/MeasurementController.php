@@ -16,8 +16,17 @@ use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/monpoids/measurement', name: 'app_MonPoids_measurement_'),
 IsGranted('ROLE_USER')]
+/**
+ * CRUD des mensurations MonPoids côté utilisateur.
+ * L'index génère un graphique Chart.js multi-séries (poitrine, hanches, cuisse, taille).
+ */
 final class MeasurementController extends AbstractController
 {
+    /**
+     * @param MeasurementRepository $measurementRepository
+     * @param ChartBuilderInterface $chartBuilder
+     * @return Response
+     */
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(MeasurementRepository $measurementRepository, ChartBuilderInterface $chartBuilder): Response
     {
@@ -114,6 +123,10 @@ final class MeasurementController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Measurement $measurement
+     * @return Response
+     */
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Measurement $measurement): Response
     {
@@ -122,6 +135,12 @@ final class MeasurementController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Measurement $measurement
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Measurement $measurement, EntityManagerInterface $entityManager): Response
     {
@@ -140,6 +159,12 @@ final class MeasurementController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Measurement $measurement
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Measurement $measurement, EntityManagerInterface $entityManager): Response
     {

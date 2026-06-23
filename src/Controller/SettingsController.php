@@ -15,8 +15,16 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/settings', name: 'app_settings_'), IsGranted('ROLE_USER')]
+/**
+ * Paramètres du compte : mise à jour du profil, changement de mot de passe et suppression du compte.
+ */
 final class SettingsController extends AbstractController
 {
+    /**
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/', name: 'index', methods: ['GET', 'POST'])]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -41,6 +49,12 @@ final class SettingsController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param UserPasswordHasherInterface $passwordHasher
+     * @return Response
+     */
     #[Route('/password', name: 'password', methods: ['POST'])]
     public function changePassword(
         Request $request,
@@ -70,6 +84,12 @@ final class SettingsController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param TokenStorageInterface $tokenStorage
+     * @return Response
+     */
     #[Route('/delete', name: 'delete', methods: ['POST'])]
     public function deleteAccount(
         Request $request,

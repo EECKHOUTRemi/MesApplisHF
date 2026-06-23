@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * Create Utensil and Category entities in macuisine and link them to Recipe
  */
 final class Version20260518091624 extends AbstractMigration
 {

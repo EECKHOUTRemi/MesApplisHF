@@ -13,8 +13,13 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('admin/macuisine/ingredient', name:'app_macuisine_ingredient_'), IsGranted("ROLE_ADMIN")]
+/** CRUD admin des ingrédients MaCuisine. */
 final class IngredientController extends AbstractController
 {
+    /**
+     * @param IngredientRepository $ingredientRepository
+     * @return Response
+     */
     #[Route(name: 'index', methods: ['GET'])]
     public function index(IngredientRepository $ingredientRepository): Response
     {
@@ -43,6 +48,10 @@ final class IngredientController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Ingredient $ingredient
+     * @return Response
+     */
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Ingredient $ingredient): Response
     {
@@ -51,6 +60,12 @@ final class IngredientController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Ingredient $ingredient
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Ingredient $ingredient, EntityManagerInterface $entityManager): Response
     {
@@ -69,6 +84,12 @@ final class IngredientController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Ingredient $ingredient
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Ingredient $ingredient, EntityManagerInterface $entityManager): Response
     {

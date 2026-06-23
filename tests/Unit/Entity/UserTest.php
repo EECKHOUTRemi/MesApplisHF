@@ -5,6 +5,7 @@ namespace App\Tests\Unit\Entity;
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 
+/** Teste les invariants de l'entité User : rôles, identifiant et état de vérification. */
 class UserTest extends TestCase
 {
     public function testGetRolesAlwaysContainsRoleUser(): void

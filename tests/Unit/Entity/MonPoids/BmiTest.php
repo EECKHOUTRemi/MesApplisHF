@@ -6,6 +6,7 @@ use App\Entity\MonPoids\Bmi;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+/** Teste le calcul de l'IMC dans Bmi::setBmi() : formule, arrondi et écrasement de valeur. */
 class BmiTest extends TestCase
 {
     /**
@@ -22,6 +23,12 @@ class BmiTest extends TestCase
         yield 'taille avec décimale' => [172.5, 68.0, 22.85];
     }
 
+    /**
+     * @param float $height
+     * @param float $weight
+     * @param float $expected
+     * @return void
+     */
     #[DataProvider('bmiProvider')]
     public function testSetBmiComputesBodyMassIndex(float $height, float $weight, float $expected): void
     {

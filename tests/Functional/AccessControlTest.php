@@ -4,6 +4,10 @@ namespace App\Tests\Functional;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 
+/**
+ * Vérifie les règles d'accès : anonymes redirigés vers /login, pages légales publiques,
+ * pages admin interdites aux utilisateurs simples et accessibles aux admins.
+ */
 class AccessControlTest extends AppWebTestCase
 {
     /**
@@ -21,6 +25,10 @@ class AccessControlTest extends AppWebTestCase
         yield 'MonPoids mensurations' => ['/monpoids/measurement/'];
     }
 
+    /**
+     * @param string $path
+     * @return void
+     */
     #[DataProvider('protectedPathProvider')]
     public function testAnonymousIsRedirectedToLogin(string $path): void
     {
@@ -40,6 +48,10 @@ class AccessControlTest extends AppWebTestCase
         yield 'confidentialité' => ['/confidentialite'];
     }
 
+    /**
+     * @param string $path
+     * @return void
+     */
     #[DataProvider('publicPathProvider')]
     public function testLegalPagesArePublic(string $path): void
     {
@@ -63,6 +75,10 @@ class AccessControlTest extends AppWebTestCase
         yield 'mensurations admin' => ['/admin/monpoids/measurement/'];
     }
 
+    /**
+     * @param string $path
+     * @return void
+     */
     #[DataProvider('adminPathProvider')]
     public function testAdminPagesAreForbiddenForRegularUser(string $path): void
     {
@@ -73,6 +89,10 @@ class AccessControlTest extends AppWebTestCase
         $this->assertResponseStatusCodeSame(403);
     }
 
+    /**
+     * @param string $path
+     * @return void
+     */
     #[DataProvider('adminPathProvider')]
     public function testAdminPagesAreAccessibleForAdmin(string $path): void
     {

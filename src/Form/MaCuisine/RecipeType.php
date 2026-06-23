@@ -13,8 +13,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Formulaire utilisateur de recette MaCuisine.
+ * Les champs `utensil` et `ingredients` sont non mappés et utilisent PassthroughChoiceLoader
+ * pour accepter des valeurs librement soumises par JS (ids existants ou noms libres).
+ * Le mapping réel est géré par RecipeFormHandler::persistAndFlush().
+ */
 class RecipeType extends AbstractType
 {
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('utensil', ChoiceType::class, [
@@ -49,6 +60,10 @@ class RecipeType extends AbstractType
         ;
     }
 
+    /**
+     * @param OptionsResolver $resolver
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

@@ -10,8 +10,16 @@ use Symfony\Component\Mailer\MailerInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
+/**
+ * Service d'envoi et de validation des e-mails de confirmation de compte.
+ */
 class EmailVerifier
 {
+    /**
+     * @param VerifyEmailHelperInterface $verifyEmailHelper
+     * @param MailerInterface $mailer
+     * @param EntityManagerInterface $entityManager
+     */
     public function __construct(
         private VerifyEmailHelperInterface $verifyEmailHelper,
         private MailerInterface $mailer,
@@ -19,6 +27,14 @@ class EmailVerifier
     ) {
     }
 
+    /**
+     * Génère l'URL signée de vérification et l'injecte dans le contexte du template avant envoi.
+     *
+     * @param string $verifyEmailRouteName
+     * @param User $user
+     * @param TemplatedEmail $email
+     * @return void
+     */
     public function sendEmailConfirmation(string $verifyEmailRouteName, User $user, TemplatedEmail $email): void
     {
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
@@ -38,6 +54,9 @@ class EmailVerifier
     }
 
     /**
+     * @param Request $request
+     * @param User $user
+     * @return void
      * @throws VerifyEmailExceptionInterface
      */
     public function handleEmailConfirmation(Request $request, User $user): void

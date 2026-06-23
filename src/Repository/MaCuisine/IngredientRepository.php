@@ -8,14 +8,29 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Ingredient>
+ *
+ * Repository des ingrédients MaCuisine avec recherche insensible aux accents et à la casse.
  */
 class IngredientRepository extends ServiceEntityRepository
 {
+    /**
+     * @param ManagerRegistry $registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Ingredient::class);
     }
 
+    /**
+     * Recherche les ingrédients dont le nom contient $term, sans tenir compte des accents ni de la casse
+     * (via la fonction DQL UNACCENT + UPPER côté PostgreSQL).
+     *
+     * @param string        $term   Fragment de nom recherché
+     * @param string[]|null $select Colonnes à sélectionner (noms de champs Doctrine validés contre les métadonnées)
+     * @param array{string,string}|null $order [$field, $direction] — direction 'ASC' ou 'DESC'
+     * @return Ingredient[]|array<array<string, mixed>>
+     * @throws \InvalidArgumentException Si un champ inconnu ou une direction invalide est transmis
+     */
     public function findNameLike(string $term, ?array $select = null, ?array $order = null): array
     {
         $allowedFields = $this->getClassMetadata()->getFieldNames();
@@ -32,8 +47,6 @@ class IngredientRepository extends ServiceEntityRepository
             $qb->select(array_map(static fn (string $c) => 'i.'.$assertField($c), $select));
         }
 
-        // UNACCENT d'abord : UPPER ne met pas en majuscule les lettres accentuées
-        // sur une base en locale C ('ê' reste 'ê'), alors qu'après UNACCENT tout est ASCII
         $qb->andWhere('UPPER(UNACCENT(i.name)) LIKE UPPER(UNACCENT(:term))')
             ->setParameter('term', '%'.$term.'%')
         ;

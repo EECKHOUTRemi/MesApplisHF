@@ -6,6 +6,9 @@ use App\Entity\User;
 use App\Repository\MaCuisine\CategoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Catégorie de recette MaCuisine (ex. : entrée, plat, dessert).
+ */
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
 {
@@ -27,16 +30,22 @@ class Category
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
+    /** @return int|null */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /** @return string|null */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     * @return static
+     */
     public function setName(string $name): static
     {
         $this->name = $name;
@@ -44,11 +53,16 @@ class Category
         return $this;
     }
 
+    /** @return \DateTimeImmutable|null */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
+    /**
+     * @param \DateTimeImmutable $createdAt
+     * @return static
+     */
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
@@ -56,11 +70,16 @@ class Category
         return $this;
     }
 
+    /** @return \DateTimeImmutable|null */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
+    /**
+     * @param \DateTimeImmutable|null $updatedAt
+     * @return static
+     */
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
@@ -68,11 +87,16 @@ class Category
         return $this;
     }
 
+    /** @return User|null */
     public function getCreatedBy(): ?User
     {
         return $this->createdBy;
     }
 
+    /**
+     * @param User|null $createdBy
+     * @return static
+     */
     public function setCreatedBy(?User $createdBy): static
     {
         $this->createdBy = $createdBy;

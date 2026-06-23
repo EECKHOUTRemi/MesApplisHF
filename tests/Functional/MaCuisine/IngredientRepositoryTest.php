@@ -7,6 +7,10 @@ use App\Repository\MaCuisine\IngredientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
+/**
+ * Teste IngredientRepository::findNameLike() : insensibilité aux accents et à la casse,
+ * projection de colonnes, tri, et rejet de champs/directions invalides.
+ */
 class IngredientRepositoryTest extends KernelTestCase
 {
     private const ASCII_NAME_SUFFIX = '-banane';

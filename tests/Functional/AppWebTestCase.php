@@ -23,6 +23,7 @@ abstract class AppWebTestCase extends WebTestCase
         $this->client = static::createClient();
     }
 
+    /** @return EntityManagerInterface */
     protected function em(): EntityManagerInterface
     {
         return static::getContainer()->get(EntityManagerInterface::class);
@@ -30,6 +31,9 @@ abstract class AppWebTestCase extends WebTestCase
 
     /**
      * @param list<string> $roles
+     * @param string $password
+     * @param float|null $height
+     * @return User
      */
     protected function createUser(
         array $roles = [],
@@ -56,11 +60,16 @@ abstract class AppWebTestCase extends WebTestCase
         return $user;
     }
 
+    /** @return User */
     protected function createAdmin(): User
     {
         return $this->createUser(['ROLE_ADMIN']);
     }
 
+    /**
+     * @param User $user
+     * @return void
+     */
     protected function login(User $user): void
     {
         $this->client->loginUser($user);
