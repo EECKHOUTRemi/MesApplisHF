@@ -6,10 +6,15 @@ use App\Entity\MonPoids\Measurement;
 use App\Entity\User;
 use App\Tests\Functional\AppWebTestCase;
 
+/** Teste le CRUD des mensurations MonPoids : création, affichage, édition et suppression. */
 class MeasurementControllerTest extends AppWebTestCase
 {
     private const INDEX_PATH = '/monpoids/measurement/';
 
+    /**
+     * @param User $user
+     * @return Measurement
+     */
     private function createMeasurement(User $user): Measurement
     {
         $measurement = new Measurement();

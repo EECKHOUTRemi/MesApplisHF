@@ -18,8 +18,16 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/macuisine/recipe', name:'app_macuisine_recipe_'),
 IsGranted('ROLE_USER')]
+/**
+ * CRUD des recettes MaCuisine côté utilisateur.
+ * L'endpoint AJAX /ajax/ingredients alimente l'autocomplete d'ingrédients dans le formulaire.
+ */
 final class RecipeController extends AbstractController
 {
+    /**
+     * @param RecipeRepository $recipeRepository
+     * @return Response
+     */
     #[Route(name: 'index', methods: ['GET'])]
     public function index(RecipeRepository $recipeRepository): Response
     {
@@ -29,6 +37,10 @@ final class RecipeController extends AbstractController
         ]);
     }
 
+    /**
+     * @param RecipeRepository $recipeRepository
+     * @return Response
+     */
     #[Route('/mine', name:'mine')]
     public function mine(RecipeRepository $recipeRepository){
         return $this->render('MaCuisine/recipe/index.html.twig', [
@@ -61,6 +73,10 @@ final class RecipeController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Recipe $recipe
+     * @return Response
+     */
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Recipe $recipe): Response
     {
@@ -69,6 +85,13 @@ final class RecipeController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Recipe $recipe
+     * @param RecipeFormHandler $recipeFormHandler
+     * @param UtensilRepository $utensilRepository
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Recipe $recipe, RecipeFormHandler $recipeFormHandler, UtensilRepository $utensilRepository): Response
     {
@@ -110,6 +133,12 @@ final class RecipeController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Recipe $recipe
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response
     {
@@ -121,6 +150,11 @@ final class RecipeController extends AbstractController
         return $this->redirectToRoute('app_macuisine_recipe_index', [], Response::HTTP_SEE_OTHER);
     }
 
+    /**
+     * @param Request $request
+     * @param IngredientRepository $ingredientRepository
+     * @return JsonResponse
+     */
     #[Route('/ajax/ingredients', name: 'ingredients_ajax', methods: ['GET'])]
     public function ingredientsAjax(Request $request, IngredientRepository $ingredientRepository): JsonResponse
     {

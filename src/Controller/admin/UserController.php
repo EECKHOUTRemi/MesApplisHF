@@ -13,8 +13,13 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('admin/user'), IsGranted('ROLE_ADMIN')]
+/** CRUD admin des comptes utilisateurs (gestion des rôles incluse). */
 final class UserController extends AbstractController
 {
+    /**
+     * @param UserRepository $userRepository
+     * @return Response
+     */
     #[Route(name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
@@ -43,6 +48,10 @@ final class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * @param User $user
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
@@ -51,6 +60,12 @@ final class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param User $user
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
@@ -69,6 +84,12 @@ final class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param User $user
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {

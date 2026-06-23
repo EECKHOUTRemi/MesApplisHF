@@ -7,6 +7,7 @@ use App\Entity\MaCuisine\Recipe;
 use App\Entity\MaCuisine\RefRecipeIngredient;
 use PHPUnit\Framework\TestCase;
 
+/** Teste les accesseurs de l'entité RefRecipeIngredient. */
 class RefRecipeIngredientTest extends TestCase
 {
     public function testAccessors(): void

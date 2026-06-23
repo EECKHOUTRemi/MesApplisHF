@@ -6,10 +6,16 @@ use App\Entity\MaCuisine\Recipe;
 use App\Entity\User;
 use App\Tests\Functional\AppWebTestCase;
 
+/** CRUD admin des recettes MaCuisine : liste, création, affichage, édition et suppression. */
 class RecipeAdminControllerTest extends AppWebTestCase
 {
     private const BASE_PATH = '/admin/macuisine/recipe';
 
+    /**
+     * @param User $author
+     * @param string $name
+     * @return Recipe
+     */
     private function createRecipe(User $author, string $name): Recipe
     {
         $recipe = new Recipe();
@@ -25,6 +31,10 @@ class RecipeAdminControllerTest extends AppWebTestCase
         return $recipe;
     }
 
+    /**
+     * @param string $prefix
+     * @return string
+     */
     private function uniqueName(string $prefix): string
     {
         return substr($prefix . bin2hex(random_bytes(6)), 0, 30);

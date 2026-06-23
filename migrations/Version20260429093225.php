@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * Add tables for Recipe, Ingredient and RefRecipeIngredient entities
  */
 final class Version20260429093225 extends AbstractMigration
 {

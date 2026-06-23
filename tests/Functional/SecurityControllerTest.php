@@ -2,6 +2,10 @@
 
 namespace App\Tests\Functional;
 
+/**
+ * Teste les flux d'authentification : affichage des pages, connexion valide/invalide,
+ * inscription avec hachage du mot de passe et envoi d'e-mail de vérification.
+ */
 class SecurityControllerTest extends AppWebTestCase
 {
     public function testLoginPageIsPublic(): void

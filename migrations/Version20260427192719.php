@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * Add Bmi and Measurement entities with relations to User entity
  */
 final class Version20260427192719 extends AbstractMigration
 {

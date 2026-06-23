@@ -10,6 +10,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Recette MaCuisine : nom, description, catégorie, ingrédients (via RefRecipeIngredient) et ustensiles.
+ */
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 class Recipe
 {
@@ -64,16 +67,22 @@ class Recipe
         return $this->refRecipeIngredients;
     }
 
+    /** @return int|null */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /** @return User|null */
     public function getAuthor(): ?User
     {
         return $this->author;
     }
 
+    /**
+     * @param User|null $author
+     * @return static
+     */
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
@@ -81,11 +90,16 @@ class Recipe
         return $this;
     }
 
+    /** @return \DateTimeImmutable|null */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
+    /**
+     * @param \DateTimeImmutable $createdAt
+     * @return static
+     */
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
@@ -93,11 +107,16 @@ class Recipe
         return $this;
     }
 
+    /** @return \DateTimeImmutable|null */
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
+    /**
+     * @param \DateTimeImmutable|null $updatedAt
+     * @return static
+     */
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
@@ -105,11 +124,16 @@ class Recipe
         return $this;
     }
 
+    /** @return string|null */
     public function getName(): ?string
     {
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     * @return static
+     */
     public function setName(string $name): static
     {
         $this->name = $name;
@@ -117,11 +141,16 @@ class Recipe
         return $this;
     }
 
+    /** @return string|null */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
+    /**
+     * @param string $description
+     * @return static
+     */
     public function setDescription(string $description): static
     {
         $this->description = $description;
@@ -137,6 +166,10 @@ class Recipe
         return $this->utensil;
     }
 
+    /**
+     * @param Utensil $utensil
+     * @return static
+     */
     public function addUtensil(Utensil $utensil): static
     {
         if (!$this->utensil->contains($utensil)) {
@@ -146,6 +179,10 @@ class Recipe
         return $this;
     }
 
+    /**
+     * @param Utensil $utensil
+     * @return static
+     */
     public function removeUtensil(Utensil $utensil): static
     {
         $this->utensil->removeElement($utensil);
@@ -153,11 +190,16 @@ class Recipe
         return $this;
     }
 
+    /** @return Category|null */
     public function getCategory(): ?Category
     {
         return $this->category;
     }
 
+    /**
+     * @param Category|null $category
+     * @return static
+     */
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
