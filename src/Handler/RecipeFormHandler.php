@@ -33,48 +33,87 @@ class RecipeFormHandler
         return $token ? $token->getUser() : null;
     }
 
+    /**
+     * @param Recipe $recipe
+     * @param array $submittedData
+     * @return void
+     */
     public function persistAndFlush(Recipe $recipe, array $submittedData)
     {
-        $isNew = $recipe->getId() === null;
-        if ($isNew) {
+        $this->stampRecipe($recipe);
+        $this->em->persist($recipe);
+
+        $this->createNewIngredients($submittedData['recipe']['ingredients']);
+        $this->em->flush();
+
+        $this->syncIngredientRefs($recipe, $submittedData['extras'] ?? []);
+        $this->syncUtensils($recipe, $submittedData['recipe']['utensil'] ?? []);
+
+        $this->em->flush();
+    }
+
+    /**
+     * Set the author/createdAt on a new recipe, or the updatedAt on an existing one.
+     *
+     * @param Recipe $recipe
+     * @return void
+     */
+    private function stampRecipe(Recipe $recipe): void
+    {
+        if ($recipe->getId() === null) {
             $recipe->setAuthor($this->getUser());
             $recipe->setCreatedAt(new \DateTimeImmutable());
         } else {
             $recipe->setUpdatedAt(new \DateTimeImmutable());
         }
-        $this->em->persist($recipe);
+    }
 
-        # Create ingredient if is an id (non existant in db)
-        foreach ($submittedData['recipe']['ingredients'] as $ingredient) {
+    /**
+     * Persist a new Ingredient for each non-numeric (not yet in db) value.
+     *
+     * @param array $ingredients
+     * @return void
+     */
+    private function createNewIngredients(array $ingredients): void
+    {
+        foreach ($ingredients as $ingredient) {
             if (!is_numeric($ingredient)) {
                 $newIngredient = new Ingredient();
                 $newIngredient->setName($ingredient);
                 $this->em->persist($newIngredient);
-                }
             }
-        
-            $this->em->flush();
-            
+        }
+    }
+
+    /**
+     * Create or update the recipe's ingredient refs from the submitted extras,
+     * dropping the refs the user removed (orphanRemoval handles the DELETE).
+     *
+     * @param Recipe $recipe
+     * @param array $extras
+     * @return void
+     */
+    private function syncIngredientRefs(Recipe $recipe, array $extras): void
+    {
         # index existing refs by ingredient id
         $existing = [];
         foreach ($recipe->getRefRecipeIngredients() as $ref) {
             $existing[$ref->getIngredient()->getId()] = $ref;
-            }
-            
-        # Persist refRecipeIngredients
+        }
+
         $submittedIds = [];
-        foreach (($submittedData['extras'] ?? []) as $ingredient => $datas) {
+        foreach ($extras as $ingredient => $datas) {
             $ingredientObj = is_numeric($ingredient)
-            ? $this->ingredientRepository->find($ingredient)
-            : $this->ingredientRepository->findNameLike($ingredient)[0];
-            
+                ? $this->ingredientRepository->find($ingredient)
+                : $this->ingredientRepository->findNameLike($ingredient)[0];
+
             $id = $ingredientObj->getId();
             $submittedIds[$id] = true;
-            
+
             $ref = $existing[$id] ?? (new RefRecipeIngredient())
-            ->setRecipe($recipe)
-            ->setIngredient($ingredientObj);
-            
+                ->setRecipe($recipe)
+                ->setIngredient($ingredientObj);
+
             $ref->setUnite($datas['unit']);
             $ref->setQuantity((int) $datas['qty'] ?? null);
 
@@ -82,43 +121,67 @@ class RecipeFormHandler
                 $this->em->persist($ref);
             }
         }
-        
-        # Drop refs the user removed (orphanRemoval on Recipe handles the DELETE)
+
         foreach ($existing as $id => $ref) {
             if (!isset($submittedIds[$id])) {
                 $recipe->getRefRecipeIngredients()->removeElement($ref);
             }
         }
+    }
 
-        # Sync recipe utensils: numeric -> existing; non-numeric -> new entity
+    /**
+     * Sync recipe utensils: numeric -> existing entity; non-numeric -> new entity.
+     *
+     * @param Recipe $recipe
+     * @param array $submittedUtensils
+     * @return void
+     */
+    private function syncUtensils(Recipe $recipe, array $submittedUtensils): void
+    {
         $previousUtensils = [];
         foreach ($recipe->getUtensil() as $u) {
             $previousUtensils[spl_object_id($u)] = $u;
         }
+
         $keptObjIds = [];
-        foreach (($submittedData['recipe']['utensil'] ?? []) as $utensilValue) {
+        foreach ($submittedUtensils as $utensilValue) {
+            $utensil = $this->resolveUtensil($utensilValue);
+            if ($utensil === null) {
+                continue;
+            }
             if (is_numeric($utensilValue)) {
-                $utensil = $this->utensilRepository->find($utensilValue);
-                if ($utensil === null) {
-                    continue;
-                }
                 $keptObjIds[spl_object_id($utensil)] = true;
-            } else {
-                $utensil = new Utensil();
-                $utensil->setName($utensilValue)
-                    ->setCreatedAt(new DateTimeImmutable())
-                    ->setCreatedBy($this->getUser());
-                $this->em->persist($utensil);
             }
             $recipe->addUtensil($utensil);
         }
+
         foreach ($previousUtensils as $objId => $u) {
             if (!isset($keptObjIds[$objId])) {
                 $recipe->removeUtensil($u);
             }
         }
+    }
 
-        $this->em->flush();
+    /**
+     * Resolve a submitted utensil value to an entity: look up a numeric id, or
+     * create and persist a new Utensil for a free-text value.
+     *
+     * @param mixed $utensilValue
+     * @return Utensil|null
+     */
+    private function resolveUtensil($utensilValue): ?Utensil
+    {
+        if (is_numeric($utensilValue)) {
+            return $this->utensilRepository->find($utensilValue);
+        }
+
+        $utensil = new Utensil();
+        $utensil->setName($utensilValue)
+            ->setCreatedAt(new DateTimeImmutable())
+            ->setCreatedBy($this->getUser());
+        $this->em->persist($utensil);
+
+        return $utensil;
     }
 }
 
