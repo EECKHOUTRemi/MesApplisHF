@@ -3,6 +3,12 @@
 {{ form_start(form, {'attr': {'class': 'recipe-form'}}) }}
     {% include '_required_legend.html.twig' with { form: form } only %}
     <div class="row g-3">
+        <div class="col-12">
+            {{ form_row(form.name, {'label': 'Nom de la recette', 'attr': {'placeholder': 'Ex. Tarte aux pommes de mamie'}}) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.image, {'label': 'Image de la recette', 'attr': {'placeholder': 'Ex. Tarte aux pommes de mamie'}}) }}
+        </div>
         <div class="col-md-6">
             {{ form_row(form.utensil, {
                 'label': 'Ustensiles nécessaires',
@@ -14,9 +20,6 @@
         </div>
         <div class="col-md-6">
             {{ form_row(form.category, {'label': 'Catégorie'}) }}
-        </div>
-        <div class="col-12">
-            {{ form_row(form.name, {'label': 'Nom de la recette', 'attr': {'placeholder': 'Ex. Tarte aux pommes de mamie'}}) }}
         </div>
         <div class="col-12">
             {{ form_row(form.description, {'label': 'Description', 'attr': {'placeholder': 'Décrivez votre recette, les étapes, les astuces…', 'rows': 6}}) }}

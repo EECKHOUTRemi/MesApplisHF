@@ -10,6 +10,9 @@ use App\Repository\MaCuisine\IngredientRepository;
 use App\Repository\MaCuisine\UtensilRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
@@ -24,19 +27,27 @@ class RecipeFormHandler
     private IngredientRepository $ingredientRepository;
     private UtensilRepository $utensilRepository;
     private TokenStorageInterface $tokenStorage;
+    private string $recipesImagesDirectory;
 
     /**
      * @param EntityManagerInterface $em
      * @param IngredientRepository $ingredientRepository
      * @param UtensilRepository $utensilRepository
      * @param TokenStorageInterface $tokenStorage
+     * @param string $recipesImagesDirectory Chemin absolu du dossier de stockage des images de recettes
      */
-    public function __construct(EntityManagerInterface $em, IngredientRepository $ingredientRepository, UtensilRepository $utensilRepository, TokenStorageInterface $tokenStorage)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        IngredientRepository $ingredientRepository,
+        UtensilRepository $utensilRepository,
+        TokenStorageInterface $tokenStorage,
+        #[Autowire(param: 'recipes_images_directory')] string $recipesImagesDirectory,
+    ) {
         $this->em = $em;
         $this->ingredientRepository = $ingredientRepository;
         $this->utensilRepository = $utensilRepository;
         $this->tokenStorage = $tokenStorage;
+        $this->recipesImagesDirectory = $recipesImagesDirectory;
     }
 
     /**
@@ -205,6 +216,26 @@ class RecipeFormHandler
         $this->em->persist($utensil);
 
         return $utensil;
+    }
+
+    /**
+     * Déplace l'image téléversée dans le dossier des recettes, enregistre son nom
+     * sur la recette, et supprime l'ancien fichier le cas échéant (mise à jour).
+     *
+     * @param UploadedFile $imageFile    Fichier image validé issu du formulaire
+     * @param Recipe       $recipe       Recette à mettre à jour avec le nouveau nom de fichier
+     * @param string|null  $currentImage Nom de l'image à remplacer, ou null lors d'une création
+     * @return void
+     */
+    public function handleImage(UploadedFile $imageFile, Recipe $recipe, ?string $currentImage = null): void
+    {
+        if ($currentImage !== null) {
+            (new Filesystem())->remove($this->recipesImagesDirectory . '/' . $currentImage);
+        }
+        
+        $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+        $imageFile->move($this->recipesImagesDirectory, $newFilename);
+        $recipe->setImage($newFilename);
     }
 }
 

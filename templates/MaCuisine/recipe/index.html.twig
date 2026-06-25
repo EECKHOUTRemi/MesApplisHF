@@ -55,7 +55,7 @@
             color: #ff7e5f;
         }
         .post-banner {
-            height: 140px;
+            height: 300px;
             border-radius: .75rem;
             background: linear-gradient(135deg, #ffe5d9 0%, #ffc9b0 100%);
             display: flex;
@@ -64,6 +64,31 @@
             font-size: 3rem;
             color: #ff7e5f;
             margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        .post-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .3s ease;
+        }
+        .feed-post:hover .post-banner img {
+            transform: scale(1.04);
+        }
+        .banner-fallback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .4rem;
+            color: #d98a6c;
+        }
+        .banner-fallback i {
+            font-size: 2.75rem;
+            opacity: .8;
+        }
+        .banner-fallback span {
+            font-size: .9rem;
+            font-weight: 500;
         }
         .post-actions .btn {
             color: #6c757d;
@@ -164,7 +189,19 @@
 
                     <a href="{{ path('app_macuisine_recipe_show', {'id': recipe.id}) }}" class="text-decoration-none">
                         <div class="post-banner">
-                            <i class="bi bi-cup-hot" aria-hidden="true"></i>
+                        {% if recipe.image %}
+                            {% set imgPath = 'uploads/recipes/' ~ recipe.image %}
+                            {% if imgPath is ondisk %}
+                                <img src="{{ asset(imgPath) }}" alt="{{ recipe.name }}" loading="lazy">
+                            {% else %}
+                                <div class="banner-fallback">
+                                    <i class="bi bi-image-alt" aria-hidden="true"></i>
+                                    <span>Image indisponible</span>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <span class="recipe-emoji"><i class="bi bi-fork-knife" aria-hidden="true"></i></span>
+                        {% endif %}
                         </div>
                         <h2 class="post-title">{{ recipe.name }}</h2>
                     </a>

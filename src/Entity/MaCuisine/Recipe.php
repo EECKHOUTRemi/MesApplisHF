@@ -36,6 +36,7 @@ class Recipe
     private ?string $name = null;
 
     #[ORM\Column(length: 600, nullable: true)]
+    #[Assert\Length(max: 600, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $description = null;
 
     /**
@@ -55,6 +56,9 @@ class Recipe
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $source = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
     public function __construct()
     {
@@ -218,6 +222,18 @@ class Recipe
     public function setSource(?string $source): static
     {
         $this->source = $source;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
