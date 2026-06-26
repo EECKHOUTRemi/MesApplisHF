@@ -19,7 +19,7 @@ class AccessControlTest extends AppWebTestCase
         yield 'profil' => ['/profil/'];
         yield 'paramètres' => ['/settings/'];
         yield 'MaCuisine accueil' => ['/macuisine/'];
-        yield 'MaCuisine recettes' => ['/macuisine/recipe'];
+        yield 'MaCuisine recettes' => ['/macuisine/feed'];
         yield 'MonPoids accueil' => ['/monpoids/'];
         yield 'MonPoids IMC' => ['/monpoids/bmi/'];
         yield 'MonPoids mensurations' => ['/monpoids/measurement/'];

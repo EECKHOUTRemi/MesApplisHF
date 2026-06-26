@@ -5,6 +5,7 @@ namespace App\Controller\MaCuisine;
 use App\Entity\MaCuisine\Recipe;
 use App\Form\MaCuisine\RecipeType;
 use App\Handler\RecipeFormHandler;
+use App\Repository\MaCuisine\CategoryRepository;
 use App\Repository\MaCuisine\IngredientRepository;
 use App\Repository\MaCuisine\RecipeRepository;
 use App\Repository\MaCuisine\UtensilRepository;
@@ -26,12 +27,32 @@ IsGranted('ROLE_USER')]
 final class MaCuisineController extends AbstractController
 {
     /**
+     * Options communes des filtres du fil (catégories + ustensiles) injectées dans le template.
+     *
+     * @param CategoryRepository $categoryRepository
+     * @param UtensilRepository $utensilRepository
+     * @return array<string, mixed>
+     */
+    private function feedFilterOptions(CategoryRepository $categoryRepository, UtensilRepository $utensilRepository): array
+    {
+        return [
+            'categories' => $categoryRepository->findAll(),
+            'utensils' => array_map(
+                fn ($u) => ['id' => $u->getId(), 'name' => $u->getName()],
+                $utensilRepository->findAll()
+            ),
+        ];
+    }
+
+    /**
+     * Tableau de bord MaCuisine : recettes récentes et compteurs globaux.
+     *
      * @param RecipeRepository $recipeRepository
      * @param IngredientRepository $ingredientRepository
      * @return Response
      */
     #[Route('/', name: 'index')]
-    public function index(RecipeRepository $recipeRepository, IngredientRepository $ingredientRepository): Response
+    public function dashboard(RecipeRepository $recipeRepository, IngredientRepository $ingredientRepository): Response
     {
         $recentRecipes = $recipeRepository->createQueryBuilder('r')
             ->orderBy('r.createdAt', 'DESC')
@@ -39,39 +60,54 @@ final class MaCuisineController extends AbstractController
             ->getQuery()
             ->getResult();
 
-        $myRecipesCount = $recipeRepository->count(['author' => $this->getUser()]);
-
-        return $this->render("MaCuisine/index.html.twig", [
+        return $this->render('MaCuisine/index.html.twig', [
             'recentRecipes' => $recentRecipes,
             'totalRecipes' => $recipeRepository->count([]),
             'totalIngredients' => $ingredientRepository->count([]),
-            'myRecipesCount' => $myRecipesCount,
+            'myRecipesCount' => $recipeRepository->count(['author' => $this->getUser()]),
         ]);
     }
 
     /**
+     * @param Request $request
      * @param RecipeRepository $recipeRepository
+     * @param CategoryRepository $categoryRepository
+     * @param UtensilRepository $utensilRepository
      * @return Response
      */
-    #[Route('/recipe', name: 'recipes', methods: ['GET'])]
-    public function recipes(RecipeRepository $recipeRepository): Response
+    #[Route('/feed', name: 'feed', methods: ['GET'])]
+    public function index(Request $request, RecipeRepository $recipeRepository, CategoryRepository $categoryRepository, UtensilRepository $utensilRepository): Response
     {
-        return $this->render('MaCuisine/recipe/index.html.twig', [
-            'recipes' => $recipeRepository->findAll(['createdAt' => 'DESC']),
-            'mine' => false
-        ]);
+        $query = $request->query->get("q");
+        $ingredients = $request->query->all("ingredients");
+        $utensils = $request->query->all("utensils");
+        $category = $request->query->all("categories");
+
+        if ($query || $ingredients || $utensils || $category) {
+            $recipes = $recipeRepository->findWithQuery($query, $ingredients, $utensils, $category);
+        } else {
+            $recipes = $recipeRepository->findAll();
+        }
+
+        return $this->render('MaCuisine/recipe/feed.html.twig', [
+            'recipes' => $recipes,
+            'mine' => false,
+        ] + $this->feedFilterOptions($categoryRepository, $utensilRepository));
     }
 
     /**
      * @param RecipeRepository $recipeRepository
+     * @param CategoryRepository $categoryRepository
+     * @param UtensilRepository $utensilRepository
      * @return Response
      */
-    #[Route('/mine', name:'recipe_mine')]
-    public function mine(RecipeRepository $recipeRepository){
-        return $this->render('MaCuisine/recipe/index.html.twig', [
+    #[Route('/mine', name:'mine')]
+    public function mine(RecipeRepository $recipeRepository, CategoryRepository $categoryRepository, UtensilRepository $utensilRepository): Response
+    {
+        return $this->render('MaCuisine/recipe/feed.html.twig', [
             'recipes' => $recipeRepository->findBy(['author' => $this->getUser()]),
-            'mine' => true
-        ]);
+            'mine' => true,
+        ] + $this->feedFilterOptions($categoryRepository, $utensilRepository));
     }
 
     #[Route('/new', name: 'recipe_new', methods: ['GET', 'POST'])]
@@ -90,7 +126,7 @@ final class MaCuisineController extends AbstractController
             $submittedData = $request->request->all();
             $recipeFormHandler->persistAndFlush($recipe, $submittedData);
 
-            return $this->redirectToRoute('app_macuisine_recipes', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_macuisine_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('MaCuisine/recipe/new.html.twig', [
@@ -139,7 +175,7 @@ final class MaCuisineController extends AbstractController
             $submittedData = $request->request->all();
             $recipeFormHandler->persistAndFlush($recipe, $submittedData);
 
-            return $this->redirectToRoute('app_macuisine_recipes', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_macuisine_index', [], Response::HTTP_SEE_OTHER);
         }
 
         $refs = $recipe->getRefRecipeIngredients();
@@ -184,7 +220,7 @@ final class MaCuisineController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_macuisine_recipes', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_macuisine_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**

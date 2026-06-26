@@ -141,7 +141,7 @@
 
         <section class="card feed-post shadow-sm mb-3">
             <div class="card-body">
-                <form method="get" action="{{ path('app_macuisine_recipe_index') }}" class="recipe-search">
+                <form method="get" action="{{ path('app_macuisine_feed') }}" class="recipe-search">
                     <div class="d-flex align-items-center gap-2">
                         <div class="input-group">
                             <span class="input-group-text bg-light border-0 rounded-pill rounded-end-0">
@@ -195,7 +195,7 @@
 
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             {% if searchQuery or activeFilterCount > 0 %}
-                                <a href="{{ path('app_macuisine_recipe_index') }}" class="btn btn-link text-secondary text-decoration-none">
+                                <a href="{{ path('app_macuisine_feed') }}" class="btn btn-link text-secondary text-decoration-none">
                                     <i class="bi bi-x-circle me-1" aria-hidden="true"></i>Réinitialiser
                                 </a>
                             {% endif %}
