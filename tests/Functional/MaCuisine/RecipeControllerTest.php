@@ -9,6 +9,8 @@ use App\Entity\MaCuisine\RefRecipeIngredient;
 use App\Entity\MaCuisine\Utensil;
 use App\Entity\User;
 use App\Tests\Functional\AppWebTestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Teste le CRUD utilisateur des recettes MaCuisine, incluant la synchronisation
@@ -17,7 +19,8 @@ use App\Tests\Functional\AppWebTestCase;
  */
 class RecipeControllerTest extends AppWebTestCase
 {
-    private const INDEX_PATH = '/macuisine/recipe';
+    private const INDEX_PATH = '/macuisine';
+    private const RECIPES_PATH = self::INDEX_PATH . '/recipe';
 
     /**
      * @param User $author
@@ -55,7 +58,7 @@ class RecipeControllerTest extends AppWebTestCase
         $recipe = $this->createRecipe($user, $this->uniqueName('Tarte-'));
         $this->login($user);
 
-        $this->client->request('GET', self::INDEX_PATH);
+        $this->client->request('GET', self::RECIPES_PATH);
 
         $this->assertResponseIsSuccessful();
         $this->assertAnySelectorTextContains('.post-title', $recipe->getName());
@@ -118,7 +121,7 @@ class RecipeControllerTest extends AppWebTestCase
         $this->login($user);
 
         // le formulaire de suppression (token CSRF inclus) est dans le fil des recettes
-        $crawler = $this->client->request('GET', self::INDEX_PATH);
+        $crawler = $this->client->request('GET', self::RECIPES_PATH);
         $form = $crawler->filter('form[action="' . self::INDEX_PATH . '/' . $recipeId . '"]')->form();
         $this->client->submit($form);
 
@@ -174,6 +177,31 @@ class RecipeControllerTest extends AppWebTestCase
         return $crawler->filter('input[name="recipe[_token]"]')->attr('value');
     }
 
+    /** @return string */
+    private function recipesImagesDirectory(): string
+    {
+        return (string) static::getContainer()->getParameter('recipes_images_directory');
+    }
+
+    /**
+     * Construit un upload PNG 1x1 valide : la contrainte File vérifie le type réel
+     * du fichier, on a donc besoin d'octets PNG authentiques, pas d'un fichier vide.
+     *
+     * @param string $originalName
+     * @return UploadedFile
+     */
+    private function pngUpload(string $originalName = 'photo.png'): UploadedFile
+    {
+        $bytes = base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M8AAAMBAQDJ/pLvAAAAAElFTkSuQmCC'
+        );
+        $path = tempnam(sys_get_temp_dir(), 'recipe_png_');
+        file_put_contents($path, $bytes);
+
+        // dernier argument à true : mode test, court-circuite la vérification is_uploaded_file()
+        return new UploadedFile($path, $originalName, 'image/png', null, true);
+    }
+
     public function testNewCreatesRecipeWithIngredientsAndUtensils(): void
     {
         $user = $this->createUser();
@@ -206,7 +234,7 @@ class RecipeControllerTest extends AppWebTestCase
             ],
         ]);
 
-        $this->assertResponseRedirects(self::INDEX_PATH);
+        $this->assertResponseRedirects(self::RECIPES_PATH);
 
         $this->em()->clear();
         $recipe = $this->em()->getRepository(Recipe::class)->findOneBy(['name' => $name]);
@@ -268,7 +296,7 @@ class RecipeControllerTest extends AppWebTestCase
             ],
         ]);
 
-        $this->assertResponseRedirects(self::INDEX_PATH);
+        $this->assertResponseRedirects(self::RECIPES_PATH);
 
         $this->em()->clear();
         $reloaded = $this->em()->find(Recipe::class, $recipe->getId());
@@ -281,5 +309,134 @@ class RecipeControllerTest extends AppWebTestCase
 
         $utensilNames = array_map(fn (Utensil $u) => $u->getName(), $reloaded->getUtensil()->toArray());
         $this->assertSame(['Maryse-' . $suffix], $utensilNames);
+    }
+
+    public function testNewPersistsPlainTextSource(): void
+    {
+        $user = $this->createUser();
+        $this->login($user);
+
+        $name = $this->uniqueName('Source-');
+        $source = 'Carnet de recettes de ma grand-mère';
+        $this->client->request('POST', self::INDEX_PATH . '/new', [
+            'recipe' => [
+                '_token' => $this->csrfToken(self::INDEX_PATH . '/new'),
+                'name' => $name,
+                'description' => 'Une recette avec une source en texte libre.',
+                'category' => '',
+                'source' => $source,
+            ],
+        ]);
+
+        $this->assertResponseRedirects(self::RECIPES_PATH);
+
+        $this->em()->clear();
+        $recipe = $this->em()->getRepository(Recipe::class)->findOneBy(['name' => $name]);
+        $this->assertNotNull($recipe);
+        $this->assertSame($source, $recipe->getSource());
+    }
+
+    public function testNewRejectsUrlLikeSource(): void
+    {
+        $user = $this->createUser();
+        $this->login($user);
+
+        $name = $this->uniqueName('BadSrc-');
+        $this->client->request('POST', self::INDEX_PATH . '/new', [
+            'recipe' => [
+                '_token' => $this->csrfToken(self::INDEX_PATH . '/new'),
+                'name' => $name,
+                'category' => '',
+                'source' => 'https://www.marmiton.org/recettes/tarte',
+            ],
+        ]);
+
+        // formulaire ré-affiché (pas de redirection) avec l'erreur de validation
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorTextContains('body', 'La source ne doit pas contenir de lien');
+
+        $this->em()->clear();
+        $this->assertNull($this->em()->getRepository(Recipe::class)->findOneBy(['name' => $name]));
+    }
+
+    public function testNewStoresUploadedImage(): void
+    {
+        $user = $this->createUser();
+        $this->login($user);
+
+        $name = $this->uniqueName('Image-');
+        $this->client->request(
+            'POST',
+            self::INDEX_PATH . '/new',
+            [
+                'recipe' => [
+                    '_token' => $this->csrfToken(self::INDEX_PATH . '/new'),
+                    'name' => $name,
+                    'category' => '',
+                ],
+            ],
+            [
+                'recipe' => ['image' => $this->pngUpload()],
+            ],
+        );
+
+        $this->assertResponseRedirects(self::RECIPES_PATH);
+
+        $this->em()->clear();
+        $recipe = $this->em()->getRepository(Recipe::class)->findOneBy(['name' => $name]);
+        $this->assertNotNull($recipe);
+        $this->assertStringEndsWith('.png', (string) $recipe->getImage());
+
+        $storedFile = $this->recipesImagesDirectory() . '/' . $recipe->getImage();
+        $this->assertFileExists($storedFile);
+
+        // nettoyage du fichier déposé pendant le test
+        (new Filesystem())->remove($storedFile);
+    }
+
+    public function testEditReplacesImageAndRemovesOldFile(): void
+    {
+        $user = $this->createUser();
+        $this->login($user);
+
+        $dir = $this->recipesImagesDirectory();
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($dir);
+        $oldImage = 'old_' . bin2hex(random_bytes(6)) . '.png';
+        file_put_contents($dir . '/' . $oldImage, 'fake-old-image');
+
+        $recipe = $this->createRecipe($user, $this->uniqueName('EditImg-'));
+        $recipe->setImage($oldImage);
+        $this->em()->flush();
+
+        $editPath = self::INDEX_PATH . '/' . $recipe->getId() . '/edit';
+        $this->client->request(
+            'POST',
+            $editPath,
+            [
+                'recipe' => [
+                    '_token' => $this->csrfToken($editPath),
+                    'name' => $recipe->getName(),
+                    'category' => '',
+                ],
+            ],
+            [
+                'recipe' => ['image' => $this->pngUpload()],
+            ],
+        );
+
+        $this->assertResponseRedirects(self::RECIPES_PATH);
+
+        $this->em()->clear();
+        $reloaded = $this->em()->find(Recipe::class, $recipe->getId());
+        $newImage = (string) $reloaded->getImage();
+        $this->assertNotSame($oldImage, $newImage);
+        $this->assertStringEndsWith('.png', $newImage);
+
+        // l'ancien fichier est supprimé, le nouveau est bien déposé
+        $this->assertFileDoesNotExist($dir . '/' . $oldImage);
+        $this->assertFileExists($dir . '/' . $newImage);
+
+        $filesystem->remove($dir . '/' . $newImage);
     }
 }
