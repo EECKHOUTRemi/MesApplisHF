@@ -198,6 +198,20 @@ composer require symfony/maker-bundle --dev
 php bin/console make:controller HelloController
 ```
 
+## Documentation
+
+API documentation is generated from the source PHPDoc with
+[phpDocumentor](https://phpdoc.org/) and published to GitHub Pages:
+
+**📚 <https://eeckhoutremi.github.io/MesApplisHF>**
+
+It is rebuilt automatically on every push to `main` (the `docs` job in
+`.github/workflows/deploy.yml`). To build it locally:
+
+```bash
+vendor/bin/phpdoc        # outputs to docs/.build (git-ignored)
+```
+
 ## License
 
 Proprietary — all rights reserved.
