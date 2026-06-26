@@ -20,7 +20,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class RecipeControllerTest extends AppWebTestCase
 {
     private const INDEX_PATH = '/macuisine';
-    private const RECIPES_PATH = self::INDEX_PATH . '/recipe';
+    // le fil des recettes
+    private const RECIPES_PATH = self::INDEX_PATH . '/feed';
+    // cible de redirection après création/édition/suppression (tableau de bord)
+    private const REDIRECT_PATH = self::INDEX_PATH . '/';
 
     /**
      * @param User $author
@@ -234,7 +237,7 @@ class RecipeControllerTest extends AppWebTestCase
             ],
         ]);
 
-        $this->assertResponseRedirects(self::RECIPES_PATH);
+        $this->assertResponseRedirects(self::REDIRECT_PATH);
 
         $this->em()->clear();
         $recipe = $this->em()->getRepository(Recipe::class)->findOneBy(['name' => $name]);
@@ -296,7 +299,7 @@ class RecipeControllerTest extends AppWebTestCase
             ],
         ]);
 
-        $this->assertResponseRedirects(self::RECIPES_PATH);
+        $this->assertResponseRedirects(self::REDIRECT_PATH);
 
         $this->em()->clear();
         $reloaded = $this->em()->find(Recipe::class, $recipe->getId());
@@ -328,7 +331,7 @@ class RecipeControllerTest extends AppWebTestCase
             ],
         ]);
 
-        $this->assertResponseRedirects(self::RECIPES_PATH);
+        $this->assertResponseRedirects(self::REDIRECT_PATH);
 
         $this->em()->clear();
         $recipe = $this->em()->getRepository(Recipe::class)->findOneBy(['name' => $name]);
@@ -380,7 +383,7 @@ class RecipeControllerTest extends AppWebTestCase
             ],
         );
 
-        $this->assertResponseRedirects(self::RECIPES_PATH);
+        $this->assertResponseRedirects(self::REDIRECT_PATH);
 
         $this->em()->clear();
         $recipe = $this->em()->getRepository(Recipe::class)->findOneBy(['name' => $name]);
@@ -425,7 +428,7 @@ class RecipeControllerTest extends AppWebTestCase
             ],
         );
 
-        $this->assertResponseRedirects(self::RECIPES_PATH);
+        $this->assertResponseRedirects(self::REDIRECT_PATH);
 
         $this->em()->clear();
         $reloaded = $this->em()->find(Recipe::class, $recipe->getId());
