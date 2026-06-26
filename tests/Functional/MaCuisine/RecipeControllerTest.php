@@ -17,7 +17,7 @@ use App\Tests\Functional\AppWebTestCase;
  */
 class RecipeControllerTest extends AppWebTestCase
 {
-    private const INDEX_PATH = '/macuisine/recipe';
+    private const INDEX_PATH = '/macuisine';
 
     /**
      * @param User $author
@@ -55,7 +55,7 @@ class RecipeControllerTest extends AppWebTestCase
         $recipe = $this->createRecipe($user, $this->uniqueName('Tarte-'));
         $this->login($user);
 
-        $this->client->request('GET', self::INDEX_PATH);
+        $this->client->request('GET', self::INDEX_PATH . '/recipe');
 
         $this->assertResponseIsSuccessful();
         $this->assertAnySelectorTextContains('.post-title', $recipe->getName());
