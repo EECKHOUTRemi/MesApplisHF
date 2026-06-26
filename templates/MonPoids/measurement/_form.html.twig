@@ -2,6 +2,7 @@
 
 {{ form_start(form) }}
     {{ form_errors(form) }}
+    {% include '_required_legend.html.twig' with { form: form } only %}
     {{ form_label(form.chest, 'Poitrine (cm)') }}
     {{ form_widget(form.chest) }}
     {{ form_label(form.hips, 'Hanches (cm)') }}
