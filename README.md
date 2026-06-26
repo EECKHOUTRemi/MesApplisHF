@@ -83,7 +83,7 @@ php -S 127.0.0.1:8000 -t public
 └── symfony.lock
 ```
 
-> Folder casing note: the sub-app folders use **PascalCase** (`MaCuisine`, `MonPoids`) to match the PSR-4 namespaces. URL slugs and route names stay lowercase (`/macuisine/...`, `app_macuisine_recipe_index`).
+> Folder casing note: the sub-app folders use **PascalCase** (`MaCuisine`, `MonPoids`) to match the PSR-4 namespaces. URL slugs and route names stay lowercase (`/macuisine/feed`, `app_macuisine_feed`).
 
 ## Database schema
 
