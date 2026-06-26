@@ -8,7 +8,8 @@ FROM dunglas/frankenphp:1-php8.4 AS base
 WORKDIR /app
 
 # System packages and PHP extensions required by the app.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# apt-get upgrade pulls in base-image security patches (e.g. libssh2 CVEs).
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         git \
         unzip \
         libicu-dev \
