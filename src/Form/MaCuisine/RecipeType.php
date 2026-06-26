@@ -42,11 +42,11 @@ class RecipeType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [
-                    new Assert\File([
-                        'maxSize' => '1024k',
-                        'extensions' => ['avif', 'webp', 'jpeg', 'jpg', 'png'],
-                        'extensionsMessage' => 'Veuillez fournir une image valide.'
-                    ])
+                    new Assert\File(
+                        maxSize: '1024k',
+                        extensions: ['avif', 'webp', 'jpeg', 'jpg', 'png'],
+                        extensionsMessage: 'Veuillez fournir une image valide.',
+                    )
                 ]
             ])
             ->add('utensil', ChoiceType::class, [

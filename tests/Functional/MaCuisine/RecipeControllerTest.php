@@ -351,8 +351,8 @@ class RecipeControllerTest extends AppWebTestCase
             ],
         ]);
 
-        // formulaire ré-affiché (pas de redirection) avec l'erreur de validation
-        $this->assertResponseStatusCodeSame(200);
+        // formulaire ré-affiché avec l'erreur de validation (422 sur form invalide)
+        $this->assertResponseIsUnprocessable();
         $this->assertSelectorTextContains('body', 'La source ne doit pas contenir de lien');
 
         $this->em()->clear();

@@ -155,10 +155,10 @@ class Recipe
     }
 
     /**
-     * @param string $description
+     * @param string|null $description
      * @return static
      */
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 
