@@ -132,8 +132,8 @@
             </div>
         </section>
 
-        {# Future searchbar #}
-        {# <section class="card feed-post shadow-sm mb-3">
+        {# Searchbar #}
+        <section class="card feed-post shadow-sm mb-3">
             <div class="card-body d-flex align-items-center gap-3">
                 <span class="post-avatar">{{ app.user.username|first|upper }}</span>
                 <a href="{{ path('app_macuisine_recipe_new') }}" class="flex-grow-1 text-decoration-none">
@@ -145,7 +145,7 @@
                     <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Nouvelle recette
                 </a>
             </div>
-        </section> #}
+        </section>
 
         {% for recipe in recipes %}
             {% set isAuthor = app.user and recipe.author and app.user.id == recipe.author.id %}
