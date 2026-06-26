@@ -9,6 +9,8 @@ It hosts a collection of small personal apps:
 
 Each sub-app exposes both a regular user area and an `/admin/...` section gated by `ROLE_ADMIN`.
 
+📚 **[Documentation](https://eeckhoutremi.github.io/MesApplisHF)** — generated with phpDocumentor.
+
 > Status: early development.
 
 ---
