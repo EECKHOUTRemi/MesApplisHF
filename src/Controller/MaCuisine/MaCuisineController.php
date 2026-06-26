@@ -57,7 +57,7 @@ final class MaCuisineController extends AbstractController
     public function recipes(RecipeRepository $recipeRepository): Response
     {
         return $this->render('MaCuisine/recipe/index.html.twig', [
-            'recipes' => $recipeRepository->findAll(),
+            'recipes' => $recipeRepository->findAll(['createdAt' => 'DESC']),
             'mine' => false
         ]);
     }
