@@ -66,6 +66,11 @@
             margin-bottom: 1rem;
             overflow: hidden;
         }
+        .post-banner picture {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
         .post-banner img {
             width: 100%;
             height: 100%;
@@ -192,7 +197,14 @@
                         {% if recipe.image %}
                             {% set imgPath = 'uploads/recipes/' ~ recipe.image %}
                             {% if imgPath is ondisk %}
-                                <img src="{{ asset(imgPath) }}" alt="{{ recipe.name }}" loading="lazy">
+                                <picture>
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('big_avif') }}" type="image/avif">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('big_webp') }}" type="image/webp">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('big_png') }}" type="image/png">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('big_jpeg') }}" type="image/jpeg">
+                                    <img src="{{ asset(imgPath)}}" alt="{{ recipe.name }}" loading="lazy">
+                                </picture>
+                                
                             {% else %}
                                 <div class="banner-fallback">
                                     <i class="bi bi-image-alt" aria-hidden="true"></i>

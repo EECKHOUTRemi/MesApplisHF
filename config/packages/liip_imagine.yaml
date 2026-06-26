@@ -1,0 +1,76 @@
+liip_imagine:
+    driver: "gd"
+
+    filter_sets:
+
+        # Big size (for feed)
+        big_png:
+            format: png
+            filters:
+                thumbnail: { size: [1200, 1200], mode: inset, allow_upscale: false }
+
+        big_jpeg:
+            quality: 82
+            format: jpeg
+            filters:
+                thumbnail: { size: [1200, 1200], mode: inset, allow_upscale: false }
+
+        big_webp:
+            quality: 82
+            format: webp
+            filters:
+                thumbnail: { size: [1200, 1200], mode: inset, allow_upscale: false }
+
+        big_avif:
+            quality: 60
+            format: avif
+            filters:
+                thumbnail: { size: [1200, 1200], mode: inset, allow_upscale: false }
+        
+        # Big size (for feed)
+        med_png:
+            format: png
+            filters:
+                thumbnail: { size: [500, 500], mode: inset, allow_upscale: false }
+
+        med_jpeg:
+            quality: 82
+            format: jpeg
+            filters:
+                thumbnail: { size: [500, 500], mode: inset, allow_upscale: false }
+
+        med_webp:
+            quality: 82
+            format: webp
+            filters:
+                thumbnail: { size: [500, 500], mode: inset, allow_upscale: false }
+
+        med_avif:
+            quality: 60
+            format: avif
+            filters:
+                thumbnail: { size: [500, 500], mode: inset, allow_upscale: false }
+        
+        # Little size (for show recipe)
+        lil_png:
+            format: png
+            filters:
+                thumbnail: { size: [223, 223], mode: inset, allow_upscale: false }
+
+        lil_jpeg:
+            quality: 82
+            format: jpeg
+            filters:
+                thumbnail: { size: [223, 223], mode: inset, allow_upscale: false }
+
+        lil_webp:
+            quality: 82
+            format: webp
+            filters:
+                thumbnail: { size: [223, 223], mode: inset, allow_upscale: false }
+
+        lil_avif:
+            quality: 60
+            format: avif
+            filters:
+                thumbnail: { size: [223, 223], mode: inset, allow_upscale: false }
