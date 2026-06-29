@@ -13,7 +13,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class BrochureController extends AbstractController
 {
     /** @return Response */
-    #[Route('/', name: 'app_brochure_index', methods: ['GET'])]
+    #[Route('/', name: 'app_root', methods: ['GET'])]
+    public function root(): Response
+    {
+        // Connecté : tableau de bord ; sinon : page vitrine publique.
+        return $this->redirectToRoute($this->isGranted('ROLE_USER') ? 'app_index' : 'app_brochure_index');
+    }
+
+    /** @return Response */
+    #[Route('/discover', name: 'app_brochure_index', methods: ['GET'])]
     public function index(): Response
     {
         return $this->render('brochure/index.html.twig');

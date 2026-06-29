@@ -23,6 +23,8 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
+                # Après connexion directe (sans page protégée demandée), aller au tableau de bord.
+                default_target_path: app_index
             logout:
                 path: app_logout
                 # where to redirect after logout
