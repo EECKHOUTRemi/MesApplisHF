@@ -1,0 +1,35 @@
+{# Barre de navigation publique des pages vitrine.
+   Masquée pour les utilisateurs connectés, qui disposent déjà de la navbar principale (_navbar.html.twig). #}
+{% if not is_granted('ROLE_USER') %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ path('app_brochure_index') }}">
+                <img src="{{ asset('icons/logo.png') }}" alt="MAHF logo" style="height: 40px; width: auto;">
+                <span class="fw-bold">MesApplisHF</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#brochureNavbar" aria-controls="brochureNavbar" aria-expanded="false" aria-label="Ouvrir le menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="brochureNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.attributes.get('_route') == 'app_brochure_macuisine' ? 'active' }}" href="{{ path('app_brochure_macuisine') }}">MaCuisine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.attributes.get('_route') == 'app_brochure_monpoids' ? 'active' }}" href="{{ path('app_brochure_monpoids') }}">MonPoids</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_login') }}">Se connecter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary" href="{{ path('app_register') }}">S'inscrire</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

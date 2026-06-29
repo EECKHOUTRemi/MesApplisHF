@@ -56,7 +56,8 @@
         <footer class="border-top bg-light mt-auto py-3">
             <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 small text-secondary">
                 <span>&copy; {{ "now"|date("Y") }} MesApplisHF</span>
-                <nav aria-label="Liens légaux">
+                <nav aria-label="Liens du site">
+                    <a href="{{ path('app_brochure_index') }}" class="text-secondary text-decoration-none me-3">Découvrir</a>
                     <a href="{{ path('app_terms') }}" class="text-secondary text-decoration-none me-3">CGU</a>
                     <a href="{{ path('app_privacy') }}" class="text-secondary text-decoration-none">Confidentialité</a>
                 </nav>

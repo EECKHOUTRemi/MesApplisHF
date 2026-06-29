@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MonPoids · Suivez votre IMC et vos mesures · MesApplisHF{% endblock %}
+
+{% block body %}
+{% include 'brochure/_nav.html.twig' %}
+
+{# Hero #}
+<section class="bg-dark text-white py-5">
+    <div class="container text-center py-3">
+        <div class="display-3 text-primary mb-2"><i class="bi bi-speedometer2" aria-hidden="true"></i></div>
+        <h1 class="display-5 fw-bold mb-3">MonPoids</h1>
+        <p class="lead text-white-50 mx-auto" style="max-width: 620px;">
+            Votre suivi corporel personnel. Enregistrez votre poids et vos mensurations,
+            et suivez votre évolution sur des graphiques clairs.
+        </p>
+    </div>
+</section>
+
+{# Fonctionnalités #}
+<section class="container py-5">
+    <h2 class="h3 fw-bold text-center mb-5">Ce que vous pouvez suivre</h2>
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-calculator fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">IMC calculé automatiquement</h3>
+                    <p class="text-secondary small mb-0">Saisissez votre poids ; votre taille est mémorisée et l'IMC est calculé pour vous.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-graph-up fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Courbes d'évolution</h3>
+                    <p class="text-secondary small mb-0">Visualisez votre IMC et votre poids dans le temps, avec la zone d'IMC « normal » repérée.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-rulers fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Mensurations</h3>
+                    <p class="text-secondary small mb-0">Notez poitrine, taille, hanches et cuisse, et suivez-les sur un graphique multi-courbes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-clock-history fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Historique complet</h3>
+                    <p class="text-secondary small mb-0">Chaque enregistrement est conservé et daté ; consultez, modifiez ou supprimez vos entrées.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-columns-gap fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Vue de synthèse</h3>
+                    <p class="text-secondary small mb-0">Une page globale regroupe l'essentiel de votre IMC et de vos mensurations.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-shield-lock fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Données privées</h3>
+                    <p class="text-secondary small mb-0">Vos mesures n'appartiennent qu'à vous : elles ne sont jamais partagées avec d'autres utilisateurs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Comment l'utiliser #}
+<section class="bg-light border-top py-5">
+    <div class="container" style="max-width: 760px;">
+        <h2 class="h3 fw-bold text-center mb-5">Comment l'utiliser</h2>
+        <ol class="list-group list-group-numbered list-group-flush">
+            <li class="list-group-item bg-transparent border-0 px-0">
+                <span class="fw-semibold">Ouvrez MonPoids</span> depuis le tableau de bord après connexion.
+            </li>
+            <li class="list-group-item bg-transparent border-0 px-0">
+                <span class="fw-semibold">Ajoutez une entrée IMC</span> en saisissant votre poids (et votre taille la première fois).
+            </li>
+            <li class="list-group-item bg-transparent border-0 px-0">
+                <span class="fw-semibold">Notez vos mensurations</span> quand vous le souhaitez pour enrichir votre suivi.
+            </li>
+            <li class="list-group-item bg-transparent border-0 px-0">
+                <span class="fw-semibold">Suivez vos courbes</span> au fil des semaines et observez votre progression.
+            </li>
+        </ol>
+    </div>
+</section>
+
+{# Appel à l'action #}
+<section class="container text-center py-5">
+    {% if is_granted('ROLE_USER') %}
+        <a href="{{ path('app_mon_poids_global') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-speedometer2 me-1" aria-hidden="true"></i>Ouvrir MonPoids
+        </a>
+    {% else %}
+        <h2 class="h4 fw-bold mb-3">Envie de suivre votre forme ?</h2>
+        <a href="{{ path('app_register') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-person-plus me-1" aria-hidden="true"></i>Créer un compte gratuit
+        </a>
+    {% endif %}
+    <div class="mt-4">
+        <a href="{{ path('app_brochure_index') }}" class="text-secondary text-decoration-none">
+            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour à la présentation
+        </a>
+    </div>
+</section>
+{% endblock %}

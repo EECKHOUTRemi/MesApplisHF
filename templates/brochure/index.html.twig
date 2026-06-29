@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MesApplisHF · Cuisinez et suivez votre forme{% endblock %}
+
+{% block body %}
+{% include 'brochure/_nav.html.twig' %}
+
+{# Hero #}
+<section class="bg-dark text-white py-5">
+    <div class="container text-center py-4">
+        <h1 class="display-4 fw-bold mb-3">
+            Deux outils simples, un seul compte
+            <i class="bi bi-stars text-warning" aria-hidden="true"></i>
+        </h1>
+        <p class="lead text-white-50 mx-auto mb-4" style="max-width: 640px;">
+            <strong class="text-white">MesApplisHF</strong> réunit <strong class="text-white">MaCuisine</strong>,
+            un réseau social de partage de recettes, et <strong class="text-white">MonPoids</strong>,
+            un suivi personnel de votre IMC et de vos mesures corporelles.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            {% if is_granted('ROLE_USER') %}
+                <a href="{{ path('app_index') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>Ouvrir l'application
+                </a>
+            {% else %}
+                <a href="{{ path('app_register') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-person-plus me-1" aria-hidden="true"></i>Créer un compte gratuit
+                </a>
+                <a href="{{ path('app_login') }}" class="btn btn-outline-light btn-lg">Se connecter</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{# Les deux outils #}
+<section class="container py-5">
+    <div class="row justify-content-center g-4">
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="display-5 text-primary mb-2"><i class="bi bi-egg-fried" aria-hidden="true"></i></div>
+                    <h2 class="h4 card-title">MaCuisine</h2>
+                    <p class="card-text text-secondary">
+                        Publiez vos recettes, parcourez le fil des recettes de la communauté
+                        et retrouvez-les par ingrédient, ustensile ou catégorie.
+                    </p>
+                    <a href="{{ path('app_brochure_macuisine') }}" class="btn btn-outline-primary mt-auto align-self-start">
+                        En savoir plus <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-5">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="display-5 text-primary mb-2"><i class="bi bi-speedometer2" aria-hidden="true"></i></div>
+                    <h2 class="h4 card-title">MonPoids</h2>
+                    <p class="card-text text-secondary">
+                        Enregistrez votre poids et vos mensurations, calculez votre IMC
+                        et visualisez votre évolution sur des graphiques clairs.
+                    </p>
+                    <a href="{{ path('app_brochure_monpoids') }}" class="btn btn-outline-primary mt-auto align-self-start">
+                        En savoir plus <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Comment ça marche #}
+<section class="bg-light border-top py-5">
+    <div class="container">
+        <h2 class="text-center h3 fw-bold mb-5">Comment ça marche ?</h2>
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="display-6 text-primary mb-2"><i class="bi bi-person-plus" aria-hidden="true"></i></div>
+                <h3 class="h5">1. Créez votre compte</h3>
+                <p class="text-secondary">Une adresse e-mail suffit. L'inscription est gratuite et prend moins d'une minute.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="display-6 text-primary mb-2"><i class="bi bi-grid-1x2" aria-hidden="true"></i></div>
+                <h3 class="h5">2. Choisissez un outil</h3>
+                <p class="text-secondary">Accédez à MaCuisine, à MonPoids ou aux deux depuis un tableau de bord unique.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="display-6 text-primary mb-2"><i class="bi bi-rocket-takeoff" aria-hidden="true"></i></div>
+                <h3 class="h5">3. C'est parti !</h3>
+                <p class="text-secondary">Partagez vos recettes ou enregistrez votre première mesure dès maintenant.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Appel à l'action final #}
+{% if not is_granted('ROLE_USER') %}
+    <section class="container text-center py-5">
+        <h2 class="h3 fw-bold mb-3">Prêt·e à commencer ?</h2>
+        <p class="text-secondary mb-4">Rejoignez MesApplisHF et profitez des deux outils dès aujourd'hui.</p>
+        <a href="{{ path('app_register') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-person-plus me-1" aria-hidden="true"></i>Créer un compte gratuit
+        </a>
+    </section>
+{% endif %}
+{% endblock %}

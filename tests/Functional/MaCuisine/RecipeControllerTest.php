@@ -23,7 +23,7 @@ class RecipeControllerTest extends AppWebTestCase
     // le fil des recettes
     private const RECIPES_PATH = self::INDEX_PATH . '/feed';
     // cible de redirection après création/édition/suppression (tableau de bord)
-    private const REDIRECT_PATH = self::INDEX_PATH . '/';
+    private const REDIRECT_PATH = self::INDEX_PATH;
 
     /**
      * @param User $author
