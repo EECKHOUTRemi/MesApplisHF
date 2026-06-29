@@ -210,6 +210,7 @@
 
         {% for recipe in recipes %}
             {% set isAuthor = app.user and recipe.author and app.user.id == recipe.author.id %}
+            {% set isAdmin = app.user and 'ROLE_ADMIN' in app.user.roles %}
             <article class="card feed-post shadow-sm mb-3">
                 <div class="card-body">
                     <header class="d-flex align-items-center justify-content-between mb-3">
@@ -228,7 +229,7 @@
                             </div>
                         </div>
 
-                        {% if isAuthor %}
+                        {% if isAuthor or isAdmin %}
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
                                     <i class="bi bi-three-dots" aria-hidden="true"></i>
@@ -318,7 +319,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center py-5">
                     <i class="bi bi-journal-plus display-4 text-secondary mb-3" aria-hidden="true"></i>
-                    <h5>Le fil est encore vide</h5>
+                    <h5>Le fil est vide</h5>
                     <p class="text-secondary mb-3">Soyez le premier à partager une recette avec la communauté&nbsp;!</p>
                     <a href="{{ path('app_macuisine_recipe_new') }}" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Publier ma première recette
