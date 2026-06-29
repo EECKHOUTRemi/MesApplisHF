@@ -16,13 +16,13 @@ class AccessControlTest extends AppWebTestCase
     public static function protectedPathProvider(): iterable
     {
         yield 'accueil' => ['/'];
-        yield 'profil' => ['/profil/'];
-        yield 'paramètres' => ['/settings/'];
-        yield 'MaCuisine accueil' => ['/macuisine/'];
+        yield 'profil' => ['/profil'];
+        yield 'paramètres' => ['/settings'];
+        yield 'MaCuisine accueil' => ['/macuisine'];
         yield 'MaCuisine recettes' => ['/macuisine/feed'];
-        yield 'MonPoids accueil' => ['/monpoids/'];
+        yield 'MonPoids accueil' => ['/monpoids'];
         yield 'MonPoids IMC' => ['/monpoids/bmi/'];
-        yield 'MonPoids mensurations' => ['/monpoids/measurement/'];
+        yield 'MonPoids mensurations' => ['/monpoids/measurement'];
     }
 
     /**

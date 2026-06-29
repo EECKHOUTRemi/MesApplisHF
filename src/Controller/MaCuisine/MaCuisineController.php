@@ -51,7 +51,7 @@ final class MaCuisineController extends AbstractController
      * @param IngredientRepository $ingredientRepository
      * @return Response
      */
-    #[Route('/', name: 'index')]
+    #[Route(name: 'index')]
     public function dashboard(RecipeRepository $recipeRepository, IngredientRepository $ingredientRepository): Response
     {
         $recentRecipes = $recipeRepository->createQueryBuilder('r')

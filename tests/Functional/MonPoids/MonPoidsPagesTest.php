@@ -11,16 +11,16 @@ class MonPoidsPagesTest extends AppWebTestCase
     {
         $this->login($this->createUser());
 
-        $this->client->request('GET', '/monpoids/');
+        $this->client->request('GET', '/monpoids');
 
-        $this->assertResponseRedirects('/monpoids/global');
+        $this->assertResponseRedirects('/monpoids');
     }
 
     public function testGlobalPageLoadsForLoggedUser(): void
     {
         $this->login($this->createUser());
 
-        $this->client->request('GET', '/monpoids/global');
+        $this->client->request('GET', '/monpoids');
 
         $this->assertResponseIsSuccessful();
     }
