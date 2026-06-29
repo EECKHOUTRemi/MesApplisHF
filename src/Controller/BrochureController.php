@@ -10,24 +10,25 @@ use Symfony\Component\Routing\Attribute\Route;
  * Pages vitrine publiques présentant MesApplisHF et ses deux outils (MaCuisine, MonPoids).
  * Accessibles sans authentification : point d'entrée pour les visiteurs avant inscription.
  */
+#[Route('/', name: 'app_brochure_', methods: ['GET'])]
 final class BrochureController extends AbstractController
 {
     /** @return Response */
-    #[Route('/decouvrir', name: 'app_brochure_index', methods: ['GET'])]
+    #[Route(name: 'index', methods: ['GET'])]
     public function index(): Response
     {
         return $this->render('brochure/index.html.twig');
     }
 
     /** @return Response */
-    #[Route('/decouvrir/macuisine', name: 'app_brochure_macuisine', methods: ['GET'])]
+    #[Route('macuisine', name: 'macuisine', methods: ['GET'])]
     public function maCuisine(): Response
     {
         return $this->render('brochure/macuisine.html.twig');
     }
 
     /** @return Response */
-    #[Route('/decouvrir/monpoids', name: 'app_brochure_monpoids', methods: ['GET'])]
+    #[Route('monpoids', name: 'monpoids', methods: ['GET'])]
     public function monPoids(): Response
     {
         return $this->render('brochure/monpoids.html.twig');
