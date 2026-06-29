@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Images · Admin MaCuisine{% endblock %}
+
+{% block body %}
+<style>
+    /* Tuile d'image : l'overlay (fond + boutons) apparaît au survol/focus, par-dessus l'image. */
+    .img-tile { overflow: hidden; border-top-left-radius: var(--bs-card-inner-border-radius); border-top-right-radius: var(--bs-card-inner-border-radius); }
+    .img-tile__overlay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        background: rgba(0, 0, 0, .45);
+        opacity: 0;
+        transition: opacity .15s ease-in-out;
+    }
+    .img-tile:hover .img-tile__overlay,
+    .img-tile:focus-within .img-tile__overlay { opacity: 1; }
+</style>
+<div class="container py-4" style="max-width: 1100px;">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0 small">
+            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Images</li>
+        </ol>
+    </nav>
+
+    {% for label, messages in app.flashes(['success', 'danger']) %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
+        <div>
+            <h1 class="h4 mb-1 fw-bold"><i class="bi bi-images me-2" aria-hidden="true"></i>Images des recettes</h1>
+            <p class="text-secondary mb-0 small">{{ images|length }} image(s) dans <code>public/uploads/recipes</code>.</p>
+        </div>
+    </div>
+
+    {% if images is empty %}
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center text-secondary py-5">
+                <i class="bi bi-inbox d-block fs-3 mb-2" aria-hidden="true"></i>
+                Aucune image enregistrée.
+            </div>
+        </div>
+    {% else %}
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3">
+            {% for filename in images %}
+                {% set imgPath = 'uploads/recipes/' ~ filename %}
+                <div class="col">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="img-tile ratio ratio-1x1">
+                            <picture>
+                                <source srcset="{{ asset(imgPath) | imagine_filter('lil_avif') }}" type="image/avif">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('lil_png') }}" type="image/png">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
+                                <img src="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" alt="{{ filename }}"
+                                     class="w-100 h-100" style="object-fit: cover;" loading="lazy">
+                            </picture>
+                            <div class="img-tile__overlay">
+                                <a href="{{ asset(imgPath) }}" target="_blank" rel="noopener"
+                                   class="btn btn-sm btn-light" title="Ouvrir dans un nouvel onglet"
+                                   aria-label="Ouvrir {{ filename }} dans un nouvel onglet">
+                                    <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                                </a>
+                                {# Suppression : bouton visuel uniquement, à brancher sur un endpoint dédié. #}
+                                <a type="button" class="btn btn-sm btn-danger" data-image="{{ filename }}"
+                                        title="Supprimer" aria-label="Supprimer {{ filename }}" 
+                                        href="{{ path('app_admin_macuisine_images_delete', {'imageToDelete': filename}) }}">
+                                    <i class="bi bi-trash" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body p-2">
+                            <p class="small text-secondary text-truncate mb-0" title="{{ filename }}">{{ filename }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
