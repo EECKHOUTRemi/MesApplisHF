@@ -4,12 +4,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2" href="{{ path('app_brochure_index') }}">
-                <picture>
-                    <source srcset="{{ asset('icons/logo.png') | imagine_filter('logo_avif') }}">
-                    <source srcset="{{ asset('icons/logo.png') | imagine_filter('logo_webp') }}">
-                    <source srcset="{{ asset('icons/logo.png') | imagine_filter('logo_png') }}">
-                    <img src="{{ asset('icons/logo.png') }}" alt="MAHF logo">
-                </picture>
+                <img src="{{ asset('icons/logo.png') }}" alt="MAHF logo" style="height: 40px; width: auto;">
                 <span class="fw-bold">MesApplisHF</span>
             </a>
 
