@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Controller\Admin\MaCuisine;
+namespace App\Tests\Functional\Admin\MaCuisine;
 
 use App\Tests\Functional\AppWebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
