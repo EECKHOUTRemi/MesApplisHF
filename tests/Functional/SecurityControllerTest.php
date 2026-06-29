@@ -50,7 +50,7 @@ class SecurityControllerTest extends AppWebTestCase
         $this->assertResponseRedirects();
         $crawler = $this->client->followRedirect();
         $this->assertResponseIsSuccessful();
-        $this->assertSame('/', parse_url($crawler->getUri(), PHP_URL_PATH));
+        $this->assertSame('/home', parse_url($crawler->getUri(), PHP_URL_PATH));
     }
 
     public function testRegistrationCreatesUserWithHashedPassword(): void
@@ -64,7 +64,7 @@ class SecurityControllerTest extends AppWebTestCase
             'registration_form[plainPassword]' => 'MotDePasse123',
         ]);
 
-        $this->assertResponseRedirects('/');
+        $this->assertResponseRedirects('/home');
 
         $user = $this->em()->getRepository(\App\Entity\User::class)->findOneBy(['email' => $email]);
         $this->assertNotNull($user, "L'utilisateur doit exister après l'inscription");

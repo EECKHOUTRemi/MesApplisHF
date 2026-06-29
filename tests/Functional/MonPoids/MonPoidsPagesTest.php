@@ -11,7 +11,8 @@ class MonPoidsPagesTest extends AppWebTestCase
     {
         $this->login($this->createUser());
 
-        $this->client->request('GET', '/monpoids');
+        // /monpoids/ (index) redirige vers la vue globale, désormais servie à /monpoids.
+        $this->client->request('GET', '/monpoids/');
 
         $this->assertResponseRedirects('/monpoids');
     }
