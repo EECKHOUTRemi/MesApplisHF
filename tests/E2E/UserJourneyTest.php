@@ -4,6 +4,7 @@ namespace App\Tests\E2E;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Mime\Email;
 
 /**
  * Parcours utilisateur complet, du point de vue HTTP (sans JavaScript) :
@@ -33,14 +34,19 @@ class UserJourneyTest extends WebTestCase
         ]);
         $this->assertResponseRedirects('/login');
 
-        // 2. Pas encore connecté : l'accueil renvoie vers la connexion
-        $crawler = $this->client->followRedirect();
-        while ($this->client->getResponse()->isRedirect()) {
-            $crawler = $this->client->followRedirect();
-        }
-        $this->assertSame('/login', parse_url($crawler->getUri(), PHP_URL_PATH));
+        // 2. Confirmation de l'adresse e-mail via le lien reçu par e-mail
+        $confirmationEmail = $this->getMailerMessage();
+        $this->assertInstanceOf(Email::class, $confirmationEmail, 'Un e-mail de confirmation doit être envoyé à l\'inscription.');
+        $this->assertSame(
+            1,
+            preg_match('#href="(https?://[^"]+/verify/email\?[^"]+)"#', (string) $confirmationEmail->getHtmlBody(), $matches),
+            'Le lien de confirmation doit figurer dans l\'e-mail.'
+        );
+        $this->client->request('GET', $matches[1]);
+        $this->assertResponseRedirects('/login');
+        $this->client->followRedirect();
 
-        // 3. Connexion avec le compte fraîchement créé
+        // 3. Connexion avec le compte désormais vérifié
         $this->client->submitForm('Se connecter', [
             '_username' => $email,
             '_password' => $password,
