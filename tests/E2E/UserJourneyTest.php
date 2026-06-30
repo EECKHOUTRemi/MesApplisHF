@@ -31,7 +31,7 @@ class UserJourneyTest extends WebTestCase
             'registration_form[username]' => 'voyageur',
             'registration_form[plainPassword]' => $password,
         ]);
-        $this->assertResponseRedirects('/home');
+        $this->assertResponseRedirects('/login');
 
         // 2. Pas encore connecté : l'accueil renvoie vers la connexion
         $crawler = $this->client->followRedirect();
