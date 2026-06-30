@@ -13,6 +13,10 @@
                         Connexion
                     </h1>
 
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success" role="alert">{{ message }}</div>
+                    {% endfor %}
+
                     <form method="post">
                         {% if error %}
                             <div class="alert alert-danger" role="alert">
