@@ -51,7 +51,7 @@ liip_imagine:
             filters:
                 thumbnail: { size: [500, 500], mode: inset, allow_upscale: false }
         
-        # Little size (for show recipe)
+        # Little size (for show recipe & show pfp)
         lil_png:
             format: png
             filters:
@@ -98,3 +98,27 @@ liip_imagine:
             format: avif
             filters:
                 thumbnail: { size: [50, 50], mode: inset, allow_upscale: false }
+        
+        # Pfp navbar
+        pfp_navbar_png:
+            format: png
+            filters:
+                thumbnail: { size: [30, 30], mode: inset, allow_upscale: false }
+
+        pfp_navbar_jpeg:
+            quality: 82
+            format: jpeg
+            filters:
+                thumbnail: { size: [30, 30], mode: inset, allow_upscale: false }
+
+        pfp_navbar_webp:
+            quality: 82
+            format: webp
+            filters:
+                thumbnail: { size: [30, 30], mode: inset, allow_upscale: false }
+
+        pfp_navbar_avif:
+            quality: 60
+            format: avif
+            filters:
+                thumbnail: { size: [30, 30], mode: inset, allow_upscale: false }
