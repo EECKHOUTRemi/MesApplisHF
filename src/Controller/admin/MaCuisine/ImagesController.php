@@ -2,12 +2,14 @@
 
 namespace App\Controller\admin\MaCuisine;
 
+use App\Handler\ImageHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Filesystem\Filesystem;
 
 #[Route('/admin/macuisine/images', name: 'app_admin_macuisine_images_'),
 IsGranted('ROLE_ADMIN')]
@@ -48,14 +50,14 @@ final class ImagesController extends AbstractController
         string $imageToDelete,
         #[Autowire(param: 'recipes_images_directory')] string $recipesImagesDirectory,
         Filesystem $filesystem,
+        ImageHandler $imgHandler
     ): Response {
         $filename = basename($imageToDelete);
-        $path = $recipesImagesDirectory . '/' . $filename;
 
-        if (is_file($path)) {
-            $filesystem->remove($path);
+        try {
+            $imgHandler->removeImage($filename, $filesystem, $recipesImagesDirectory);
             $this->addFlash('success', sprintf('Image « %s » supprimée.', $filename));
-        } else {
+        } catch (FileNotFoundException $e) {
             $this->addFlash('danger', sprintf('Image « %s » introuvable.', $filename));
         }
 

@@ -4,6 +4,7 @@ namespace App\Controller\MaCuisine;
 
 use App\Entity\MaCuisine\Recipe;
 use App\Form\MaCuisine\RecipeType;
+use App\Handler\ImageHandler;
 use App\Handler\RecipeFormHandler;
 use App\Repository\MaCuisine\CategoryRepository;
 use App\Repository\MaCuisine\IngredientRepository;
@@ -120,7 +121,7 @@ final class MaCuisineController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
-                $recipeFormHandler->handleImage($imageFile, $recipe);
+                $recipeFormHandler->addImage($imageFile, $recipe);
             }
 
             $submittedData = $request->request->all();
@@ -169,7 +170,7 @@ final class MaCuisineController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
-                $recipeFormHandler->handleImage($imageFile, $recipe, $currentImage);
+                $recipeFormHandler->addImage($imageFile, $recipe, $currentImage);
             }
 
             $submittedData = $request->request->all();
@@ -213,9 +214,14 @@ final class MaCuisineController extends AbstractController
      * @return Response
      */
     #[Route('/{id}', name: 'recipe_delete', methods: ['POST'])]
-    public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager, ImageHandler $imgHandler): Response
     {
         if ($this->isCsrfTokenValid('delete'.$recipe->getId(), $request->getPayload()->getString('_token'))) {
+            $filename = $recipe->getImage();
+            if ($filename) {
+                $imgHandler->removeImage($filename);
+            }
+
             $entityManager->remove($recipe);
             $entityManager->flush();
         }

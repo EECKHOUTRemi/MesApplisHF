@@ -57,21 +57,27 @@
                 <div class="col">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="img-tile ratio ratio-1x1">
-                            <picture>
-                                <source srcset="{{ asset(imgPath) | imagine_filter('lil_avif') }}" type="image/avif">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('lil_png') }}" type="image/png">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
-                                <img src="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" alt="{{ filename }}"
-                                     class="w-100 h-100" style="object-fit: cover;" loading="lazy">
-                            </picture>
+                            {% if imgPath is ondisk %}
+                                <picture>
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('lil_avif') }}" type="image/avif">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('lil_png') }}" type="image/png">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
+                                    <img src="{{ asset(imgPath) | imagine_filter('original_jpeg') }}" alt="{{ filename }}"
+                                        class="w-100 h-100" style="object-fit: cover;" loading="lazy">
+                                </picture>
+                            {% else %}
+                                <div class="banner-fallback">
+                                    <i class="bi bi-image-alt" aria-hidden="true"></i>
+                                    <span>Image indisponible</span>
+                                </div>
+                            {% endif %}
                             <div class="img-tile__overlay">
                                 <a href="{{ asset(imgPath) }}" target="_blank" rel="noopener"
-                                   class="btn btn-sm btn-light" title="Ouvrir dans un nouvel onglet"
-                                   aria-label="Ouvrir {{ filename }} dans un nouvel onglet">
+                                    class="btn btn-sm btn-light" title="Ouvrir dans un nouvel onglet"
+                                    aria-label="Ouvrir {{ filename }} dans un nouvel onglet">
                                     <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
                                 </a>
-                                {# Suppression : bouton visuel uniquement, à brancher sur un endpoint dédié. #}
                                 <a type="button" class="btn btn-sm btn-danger" data-image="{{ filename }}"
                                         title="Supprimer" aria-label="Supprimer {{ filename }}" 
                                         href="{{ path('app_admin_macuisine_images_delete', {'imageToDelete': filename}) }}">
