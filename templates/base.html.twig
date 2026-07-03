@@ -19,14 +19,24 @@
             </style>
             {% if is_granted('ROLE_USER') %}
                 <style>
-                    body { 
-                        padding-top: 70px; 
+                    body {
+                        padding-top: 70px;
                     }
+                    /* Couleurs des icônes de la navbar — :hover et :focus-visible
+                       pour donner le même retour visuel au clavier qu'à la souris */
                     #logout-icon {
                         color: red;
                     }
-                    #logout-icon:hover {
-                        color: darkred;
+                    a:hover #logout-icon,
+                    a:focus-visible #logout-icon {
+                        color: pink;
+                    }
+                    #adminDropdown {
+                        color: yellow;
+                    }
+                    #adminDropdown:hover,
+                    #adminDropdown:focus-visible {
+                        color: #fffbb2;
                     }
                 </style>
             {% endif %}

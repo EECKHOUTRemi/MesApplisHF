@@ -28,10 +28,11 @@
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 {% if is_granted('ROLE_ADMIN') %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link d-flex align-items-center gap-2" href="#" id="adminDropdown" style="color: yellow;" onmouseover="this.style.color='#fffbb2'" onmouseout="this.style.color='yellow'" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Administration" aria-label="Administration">
+                        <button class="nav-link d-flex align-items-center gap-2" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Administration">
                             <i class="bi bi-shield-lock-fill fs-4" aria-hidden="true"></i>
                             <span class="d-lg-none">Admin</span>
-                        </a>
+                            <span class="visually-hidden d-none d-lg-inline">Administration</span>
+                        </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
                             <li><h6 class="dropdown-header">Administration</h6></li>
                             <li>
@@ -84,23 +85,41 @@
                         </ul>
                     </li>
                 {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2" href="{{ path('app_settings_index') }}" title="Paramètres" aria-label="Paramètres">
-                        <i class="bi bi-gear-fill fs-4" aria-hidden="true"></i>
-                        <span class="d-lg-none">Paramètres</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2" href="{{ path('app_profil_index') }}" title="Profil" aria-label="Profil">
-                        <i class="bi bi-person-circle fs-4" aria-hidden="true"></i>
+                <li class="nav-item dropdown">
+                    <button class="nav-link d-flex align-items-center gap-2 mt-1" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profil">
+                        {% set imgPath = app.user and app.user.image ? 'uploads/pfp/' ~ app.user.image : null %}
+                        {% if imgPath and imgPath is ondisk %}
+                            <picture>
+                                <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_avif') }}" type="image/avif">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
+                                <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle">
+                            </picture>
+                        {% else %}
+                            <i class="bi bi-person-circle fs-4" aria-hidden="true"></i>
+                        {% endif %}
                         <span class="d-lg-none">Profil</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2" href="{{ path('app_logout') }}" title="Déconnexion" aria-label="Déconnexion">
-                        <i id="logout-icon" class="bi bi-door-open-fill fs-4" style="color: red;" onmouseover="this.style.color='pink'" onmouseout="this.style.color='red'" aria-hidden="true"></i>
-                        <span class="d-lg-none">Déconnexion</span>
-                    </a>
+                        <span class="visually-hidden d-none d-lg-inline">Profil</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_profil_index') }}">
+                                <i class="bi bi-person-circle" aria-hidden="true"></i> Profil
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_settings_index') }}">
+                                <i class="bi bi-pencil-square" aria-hidden="true"></i> Modifier le profil
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="{{ path('app_logout') }}">
+                                <i class="bi bi-door-open-fill" aria-hidden="true"></i> Se déconnecter
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>

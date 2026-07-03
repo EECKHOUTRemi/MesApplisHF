@@ -227,13 +227,13 @@ class RecipeFormHandler
      * @param string|null  $currentImage Nom de l'image à remplacer, ou null lors d'une création
      * @return void
      */
-    public function handleImage(UploadedFile $imageFile, Recipe $recipe, ?string $currentImage = null): void
+    public function addImage(UploadedFile $imageFile, Recipe $recipe, ?string $currentImage = null): void
     {
         if ($currentImage !== null) {
             (new Filesystem())->remove($this->recipesImagesDirectory . '/' . $currentImage);
         }
         
-        $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+        $newFilename = uniqid() . '.' . strtolower($imageFile->getClientOriginalExtension());
         $imageFile->move($this->recipesImagesDirectory, $newFilename);
         $recipe->setImage($newFilename);
     }
