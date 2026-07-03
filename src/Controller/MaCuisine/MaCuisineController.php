@@ -12,6 +12,7 @@ use App\Repository\MaCuisine\RecipeRepository;
 use App\Repository\MaCuisine\UtensilRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -219,7 +220,11 @@ final class MaCuisineController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$recipe->getId(), $request->getPayload()->getString('_token'))) {
             $filename = $recipe->getImage();
             if ($filename) {
-                $imgHandler->removeImage($filename);
+                try {
+                    $imgHandler->removeImage($filename);
+                } catch (FileNotFoundException  $th) {
+                    $filename = null;
+                }
             }
 
             $entityManager->remove($recipe);

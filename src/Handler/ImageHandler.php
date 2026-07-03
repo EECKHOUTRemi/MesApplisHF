@@ -9,7 +9,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class ImageHandler {
     private Filesystem $filesystem;
 
-    #[Autowire(param: 'recipes_images_directory')] private string $recipesImagesDirectory;
+    private string $recipesImagesDirectory;
 
     public function __construct(Filesystem $filesystem, #[Autowire(param: 'recipes_images_directory')] string $recipesImagesDirectory)
     {

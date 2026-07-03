@@ -63,7 +63,7 @@
                                     <source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
                                     <source srcset="{{ asset(imgPath) | imagine_filter('lil_png') }}" type="image/png">
                                     <source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
-                                    <img src="{{ asset(imgPath) | imagine_filter('original_jpeg') }}" alt="{{ filename }}"
+                                    <img src="{{ asset(imgPath) }}" alt="{{ filename }}"
                                         class="w-100 h-100" style="object-fit: cover;" loading="lazy">
                                 </picture>
                             {% else %}
