@@ -44,7 +44,15 @@ class RecipeType extends AbstractType
                 'constraints' => [
                     new Assert\File(
                         maxSize: '1024k',
-                        extensions: ['avif', 'webp', 'jpeg', 'jpg', 'png'],
+                        extensions: [
+                            // Certains convertisseurs (ex. convertio.co) écrivent l'AVIF avec un
+                            // major_brand ISOBMFF générique ; libmagic le détecte alors comme HEIF.
+                            'avif' => ['image/avif', 'image/heif', 'image/heic'],
+                            'webp',
+                            'jpeg',
+                            'jpg',
+                            'png',
+                        ],
                         extensionsMessage: 'Veuillez fournir une image valide.',
                     )
                 ]
