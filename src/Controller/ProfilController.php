@@ -56,7 +56,7 @@ final class ProfilController extends AbstractController
                 (new Filesystem())->remove($this->profileImagesDirectory.'/'.$user->getImage());
             }
 
-            $newFilename = uniqid().'.'.$imageFile->guessExtension();
+            $newFilename = uniqid().'.'.strtolower($imageFile->getClientOriginalExtension());
             $imageFile->move($this->profileImagesDirectory, $newFilename);
             $user->setImage($newFilename);
             $entityManager->flush();
