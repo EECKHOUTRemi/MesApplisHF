@@ -116,6 +116,28 @@ final class ProfilControllerTest extends AppWebTestCase
         $this->assertSelectorExists('input[name="profile_picture[image]"]');
     }
 
+    public function testNavbarShowsProfileDropdown(): void
+    {
+        $this->login($this->createUser());
+
+        $crawler = $this->client->request('GET', self::INDEX_PATH);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('nav #profileDropdown[data-bs-toggle="dropdown"]');
+
+        $menu = $crawler->filter('nav ul[aria-labelledby="profileDropdown"]');
+        $this->assertSame(1, $menu->count());
+        $this->assertStringContainsString('Profil', $menu->text());
+        $this->assertStringContainsString('Modifier le profil', $menu->text());
+        $this->assertStringContainsString('Se déconnecter', $menu->text());
+
+        // chaque entrée pointe au bon endroit et porte son icône bootstrap
+        $this->assertSame(1, $menu->filter('a[href="' . self::INDEX_PATH . '"]')->count());
+        $this->assertSame(1, $menu->filter('a[href="/settings/"]')->count());
+        $this->assertSame(1, $menu->filter('a[href="/logout"]')->count());
+        $this->assertCount(3, $menu->filter('a.dropdown-item i.bi'));
+    }
+
     public function testUpdatePictureStoresFileAndUpdatesUser(): void
     {
         $user = $this->createUser();
