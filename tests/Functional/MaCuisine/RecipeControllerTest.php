@@ -133,6 +133,34 @@ class RecipeControllerTest extends AppWebTestCase
         $this->assertNull($this->em()->find(Recipe::class, $recipeId));
     }
 
+    public function testDeleteRemovesStoredImageFile(): void
+    {
+        $user = $this->createUser();
+        $recipe = $this->createRecipe($user, $this->uniqueName('SupprImg-'));
+
+        $dir = $this->recipesImagesDirectory();
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($dir);
+        $image = 'del_' . bin2hex(random_bytes(6)) . '.png';
+        file_put_contents($dir . '/' . $image, 'fake-image');
+        $recipe->setImage($image);
+        $this->em()->flush();
+
+        $recipeId = $recipe->getId();
+        $this->login($user);
+
+        $crawler = $this->client->request('GET', self::RECIPES_PATH);
+        $form = $crawler->filter('form[action="' . self::INDEX_PATH . '/' . $recipeId . '"]')->form();
+        $this->client->submit($form);
+
+        $this->assertResponseRedirects();
+        $this->em()->clear();
+        $this->assertNull($this->em()->find(Recipe::class, $recipeId));
+
+        // le fichier image de la recette est supprimé avec elle
+        $this->assertFileDoesNotExist($dir . '/' . $image);
+    }
+
     /**
      * @param string $name
      * @return Ingredient
