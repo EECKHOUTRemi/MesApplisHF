@@ -6,7 +6,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ImageHandler {
+class ImageHandler
+{
     private Filesystem $filesystem;
 
     private string $recipesImagesDirectory;
@@ -21,7 +22,8 @@ class ImageHandler {
      * @param string $filename Nom du fichier image à supprimer
      * @return void
      */
-    public function removeImage(string $filename){
+    public function removeImage(string $filename)
+    {
         $path = $this->recipesImagesDirectory . '/' . $filename;
         if (is_file($path)) {
             $this->filesystem->remove($path);

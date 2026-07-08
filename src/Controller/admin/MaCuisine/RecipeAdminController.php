@@ -94,7 +94,7 @@ final class RecipeAdminController extends AbstractController
     #[Route('/{id}', name: 'app_admin_macuisine_recipe_delete', methods: ['POST'])]
     public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$recipe->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $recipe->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($recipe);
             $entityManager->flush();
         }

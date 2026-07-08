@@ -20,7 +20,6 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
  */
 class SecurityController extends AbstractController
 {
-
     /**
      * @param EmailVerifier $emailVerifier
      */
@@ -80,7 +79,7 @@ class SecurityController extends AbstractController
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
             $user->setCreatedAt(new \DateTimeImmutable());
-            
+
             $entityManager->persist($user);
             $entityManager->flush();
 

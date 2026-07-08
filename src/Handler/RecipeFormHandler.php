@@ -232,10 +232,9 @@ class RecipeFormHandler
         if ($currentImage !== null) {
             (new Filesystem())->remove($this->recipesImagesDirectory . '/' . $currentImage);
         }
-        
+
         $newFilename = uniqid() . '.' . strtolower($imageFile->getClientOriginalExtension());
         $imageFile->move($this->recipesImagesDirectory, $newFilename);
         $recipe->setImage($newFilename);
     }
 }
-

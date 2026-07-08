@@ -217,7 +217,7 @@ final class MaCuisineController extends AbstractController
     #[Route('/{id}', name: 'recipe_delete', methods: ['POST'])]
     public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager, ImageHandler $imgHandler): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$recipe->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $recipe->getId(), $request->getPayload()->getString('_token'))) {
             $filename = $recipe->getImage();
             if ($filename) {
                 try {
@@ -244,13 +244,13 @@ final class MaCuisineController extends AbstractController
     {
         $term = $request->query->get('term');
 
-        if ($term === null){
+        if ($term === null) {
             $rawIngredients = $ingredientRepository->findAll();
         } else {
             $rawIngredients = $ingredientRepository->findNameLike($term);
         }
         $handeledIngredients = [];
-        foreach ($rawIngredients as $ingredient){
+        foreach ($rawIngredients as $ingredient) {
             array_push($handeledIngredients, [
                 'id' => $ingredient->getId(),
                 'name' => $ingredient->getName(),

@@ -36,7 +36,9 @@ class EmailVerifier
      */
     public function sendConfirmationEmail(User $user): void
     {
-        $this->sendEmailConfirmation('app_verify_email', $user,
+        $this->sendEmailConfirmation(
+            'app_verify_email',
+            $user,
             (new TemplatedEmail())
                 ->from(new Address('register@mesapplishf.fr', 'Mes Applis HF - Validation du compte'))
                 ->to((string) $user->getEmail())
