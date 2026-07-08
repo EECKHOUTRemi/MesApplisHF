@@ -233,7 +233,8 @@ class RecipeFormHandler
             (new Filesystem())->remove($this->recipesImagesDirectory . '/' . $currentImage);
         }
 
-        $newFilename = uniqid() . '.' . strtolower($imageFile->getClientOriginalExtension());
+        $extension = strtolower($imageFile->getClientOriginalExtension());
+        $newFilename = bin2hex(random_bytes(16)) . '.' . $extension;
         $imageFile->move($this->recipesImagesDirectory, $newFilename);
         $recipe->setImage($newFilename);
     }
