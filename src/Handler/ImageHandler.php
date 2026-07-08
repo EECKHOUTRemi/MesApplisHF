@@ -12,8 +12,10 @@ class ImageHandler
 
     private string $recipesImagesDirectory;
 
-    public function __construct(Filesystem $filesystem, #[Autowire(param: 'recipes_images_directory')] string $recipesImagesDirectory)
-    {
+    public function __construct(
+        Filesystem $filesystem,
+        #[Autowire(param: 'recipes_images_directory')] string $recipesImagesDirectory
+    ) {
         $this->filesystem = $filesystem;
         $this->recipesImagesDirectory = $recipesImagesDirectory;
     }

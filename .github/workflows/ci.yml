@@ -22,8 +22,6 @@ jobs:
           extensions: intl, pdo_pgsql, zip, opcache
           coverage: none
       - run: composer validate --strict
-      # composer install exécute cache:clear (auto-scripts) -> génère
-      # var/cache/dev/App_KernelDevDebugContainer.xml, requis par PHPStan
       - run: composer install --prefer-dist --no-progress --no-interaction
       - name: Linters Symfony (YAML, Twig, container)
         run: |

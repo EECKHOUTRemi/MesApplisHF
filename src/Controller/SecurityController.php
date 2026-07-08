@@ -55,7 +55,8 @@ class SecurityController extends AbstractController
      */
     public function logout(): void
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        throw new \LogicException('This method can be blank - 
+        it will be intercepted by the logout key on your firewall.');
     }
 
     /**
@@ -65,8 +66,11 @@ class SecurityController extends AbstractController
      * @return Response
      */
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
-    {
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager
+    ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -86,7 +90,11 @@ class SecurityController extends AbstractController
             // generate a signed url and email it to the user
             $this->emailVerifier->sendConfirmationEmail($user);
 
-            $this->addFlash('success', 'Votre compte a été créé. Consultez votre boîte mail pour confirmer votre adresse e-mail avant de vous connecter.');
+            $this->addFlash(
+                'success',
+                "Votre compte a été créé. Consultez votre boîte mail pour confirmer 
+                votre adresse e-mail avant de vous connecter."
+            );
 
             return $this->redirectToRoute('app_login');
         }

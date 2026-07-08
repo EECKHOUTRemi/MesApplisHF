@@ -44,7 +44,8 @@ class UserChecker implements UserCheckerInterface
         $this->emailVerifier->sendConfirmationEmail($user);
 
         throw new CustomUserMessageAccountStatusException(
-            'Votre adresse e-mail n\'est pas encore confirmée. Un nouveau lien de confirmation vient de vous être envoyé.'
+            'Votre adresse e-mail n\'est pas encore confirmée. 
+            Un nouveau lien de confirmation vient de vous être envoyé.'
         );
     }
 }
