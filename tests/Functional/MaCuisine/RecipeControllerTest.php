@@ -62,7 +62,7 @@ class RecipeControllerTest extends AppWebTestCase
         $this->login($user);
 
         $this->client->request('GET', self::RECIPES_PATH);
-        
+
         $this->assertResponseIsSuccessful();
         $this->assertAnySelectorTextContains('.post-title', $recipe->getName());
     }

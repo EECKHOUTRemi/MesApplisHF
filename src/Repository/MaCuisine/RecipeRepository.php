@@ -38,7 +38,7 @@ class RecipeRepository extends ServiceEntityRepository
 
         if ($query) {
             $qb->andWhere('r.name LIKE :query')
-                ->setParameter('query', '%'.$query.'%');
+                ->setParameter('query', '%' . $query . '%');
         }
 
         if ($ingredients) {

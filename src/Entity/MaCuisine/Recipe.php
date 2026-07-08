@@ -42,7 +42,12 @@ class Recipe
     /**
      * @var Collection<int, RefRecipeIngredient>
      */
-    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: RefRecipeIngredient::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(
+        mappedBy: 'recipe',
+        targetEntity: RefRecipeIngredient::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private ?Collection $refRecipeIngredients = null;
 
     /**

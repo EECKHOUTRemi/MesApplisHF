@@ -154,7 +154,14 @@ class BmiControllerTest extends AppWebTestCase
 
         $this->assertResponseRedirects(self::INDEX_PATH);
         $this->em()->clear();
-        $this->assertSame(24.69, $this->em()->find(Bmi::class, $bmi->getId())->getBmi(), "L'IMC ne doit pas être modifié");
+        $this->assertSame(
+            24.69,
+            $this->em()->find(
+                Bmi::class,
+                $bmi->getId()
+            )->getBmi(),
+            "L'IMC ne doit pas être modifié"
+        );
     }
 
     public function testOwnerCanShowOwnEntry(): void

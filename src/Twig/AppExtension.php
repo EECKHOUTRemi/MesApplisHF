@@ -22,7 +22,11 @@ class AppExtension extends AbstractExtension
     public function getTests(): array
     {
         return [
-            new TwigTest('ondisk', fn (string $filename): bool => file_exists($this->projectDir . '/public/' . ltrim($filename, '/'))),
+            new TwigTest(
+                'ondisk',
+                fn (string $filename): bool =>
+                    file_exists($this->projectDir . '/public/' . ltrim($filename, '/'))
+            ),
         ];
     }
 }

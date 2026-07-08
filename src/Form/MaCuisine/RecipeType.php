@@ -16,7 +16,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 /**
  * Formulaire utilisateur de recette MaCuisine.
  * Les champs `utensil` et `ingredients` sont non mappés et utilisent PassthroughChoiceLoader

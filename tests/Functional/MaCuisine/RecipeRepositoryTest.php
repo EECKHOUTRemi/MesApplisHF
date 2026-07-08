@@ -58,9 +58,33 @@ class RecipeRepositoryTest extends KernelTestCase
 
         // r1 le plus ancien, r3 le plus récent (pour vérifier le tri décroissant)
         $base = new \DateTimeImmutable('2024-01-01 12:00:00');
-        $this->recipes['r1'] = $this->createRecipe($author, 'P1-' . $this->suffix, $base->modify('-2 hours'), [$tomate, $basilic], [$poele], $plat);
-        $this->recipes['r2'] = $this->createRecipe($author, 'P2-' . $this->suffix, $base->modify('-1 hour'), [$tomate], [$fouet], $dessert);
-        $this->recipes['r3'] = $this->createRecipe($author, 'P3-' . $this->suffix, $base, [$basilic], [], $plat);
+
+        $this->recipes['r1'] = $this->createRecipe(
+            $author,
+            'P1-' . $this->suffix,
+            $base->modify('-2 hours'),
+            [$tomate, $basilic],
+            [$poele],
+            $plat
+        );
+
+        $this->recipes['r2'] = $this->createRecipe(
+            $author,
+            'P2-' . $this->suffix,
+            $base->modify('-1 hour'),
+            [$tomate],
+            [$fouet],
+            $dessert
+        );
+
+        $this->recipes['r3'] = $this->createRecipe(
+            $author,
+            'P3-' . $this->suffix,
+            $base,
+            [$basilic],
+            [],
+            $plat
+        );
     }
 
     public function testFilterByNameReturnsMatchingRecipe(): void

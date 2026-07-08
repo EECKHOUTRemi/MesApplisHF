@@ -36,10 +36,18 @@ class UserJourneyTest extends WebTestCase
 
         // 2. Confirmation de l'adresse e-mail via le lien reçu par e-mail
         $confirmationEmail = $this->getMailerMessage();
-        $this->assertInstanceOf(Email::class, $confirmationEmail, 'Un e-mail de confirmation doit être envoyé à l\'inscription.');
+        $this->assertInstanceOf(
+            Email::class,
+            $confirmationEmail,
+            'Un e-mail de confirmation doit être envoyé à l\'inscription.'
+        );
         $this->assertSame(
             1,
-            preg_match('#href="(https?://[^"]+/verify/email\?[^"]+)"#', (string) $confirmationEmail->getHtmlBody(), $matches),
+            preg_match(
+                '#href="(https?://[^"]+/verify/email\?[^"]+)"#',
+                (string) $confirmationEmail->getHtmlBody(),
+                $matches
+            ),
             'Le lien de confirmation doit figurer dans l\'e-mail.'
         );
         $this->client->request('GET', $matches[1]);

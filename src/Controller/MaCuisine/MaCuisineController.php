@@ -35,8 +35,10 @@ final class MaCuisineController extends AbstractController
      * @param UtensilRepository $utensilRepository
      * @return array<string, mixed>
      */
-    private function feedFilterOptions(CategoryRepository $categoryRepository, UtensilRepository $utensilRepository): array
-    {
+    private function feedFilterOptions(
+        CategoryRepository $categoryRepository,
+        UtensilRepository $utensilRepository
+    ): array {
         return [
             'categories' => $categoryRepository->findAll(),
             'utensils' => array_map(
@@ -78,8 +80,12 @@ final class MaCuisineController extends AbstractController
      * @return Response
      */
     #[Route('/feed', name: 'feed', methods: ['GET'])]
-    public function index(Request $request, RecipeRepository $recipeRepository, CategoryRepository $categoryRepository, UtensilRepository $utensilRepository): Response
-    {
+    public function index(
+        Request $request,
+        RecipeRepository $recipeRepository,
+        CategoryRepository $categoryRepository,
+        UtensilRepository $utensilRepository
+    ): Response {
         $query = $request->query->get("q");
         $ingredients = $request->query->all("ingredients");
         $utensils = $request->query->all("utensils");
@@ -104,8 +110,11 @@ final class MaCuisineController extends AbstractController
      * @return Response
      */
     #[Route('/mine', name:'mine')]
-    public function mine(RecipeRepository $recipeRepository, CategoryRepository $categoryRepository, UtensilRepository $utensilRepository): Response
-    {
+    public function mine(
+        RecipeRepository $recipeRepository,
+        CategoryRepository $categoryRepository,
+        UtensilRepository $utensilRepository
+    ): Response {
         return $this->render('MaCuisine/recipe/feed.html.twig', [
             'recipes' => $recipeRepository->findBy(['author' => $this->getUser()]),
             'mine' => true,
@@ -113,8 +122,11 @@ final class MaCuisineController extends AbstractController
     }
 
     #[Route('/new', name: 'recipe_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, RecipeFormHandler $recipeFormHandler, UtensilRepository $utensilRepository): Response
-    {
+    public function new(
+        Request $request,
+        RecipeFormHandler $recipeFormHandler,
+        UtensilRepository $utensilRepository
+    ): Response {
         $recipe = new Recipe();
         $form = $this->createForm(RecipeType::class, $recipe);
         $form->handleRequest($request);
@@ -162,8 +174,12 @@ final class MaCuisineController extends AbstractController
      * @return Response
      */
     #[Route('/{id}/edit', name: 'recipe_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Recipe $recipe, RecipeFormHandler $recipeFormHandler, UtensilRepository $utensilRepository): Response
-    {
+    public function edit(
+        Request $request,
+        Recipe $recipe,
+        RecipeFormHandler $recipeFormHandler,
+        UtensilRepository $utensilRepository
+    ): Response {
         $currentImage = $recipe->getImage();
         $form = $this->createForm(RecipeType::class, $recipe);
         $form->handleRequest($request);
@@ -215,9 +231,13 @@ final class MaCuisineController extends AbstractController
      * @return Response
      */
     #[Route('/{id}', name: 'recipe_delete', methods: ['POST'])]
-    public function delete(Request $request, Recipe $recipe, EntityManagerInterface $entityManager, ImageHandler $imgHandler): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$recipe->getId(), $request->getPayload()->getString('_token'))) {
+    public function delete(
+        Request $request,
+        Recipe $recipe,
+        EntityManagerInterface $entityManager,
+        ImageHandler $imgHandler
+    ): Response {
+        if ($this->isCsrfTokenValid('delete' . $recipe->getId(), $request->getPayload()->getString('_token'))) {
             $filename = $recipe->getImage();
             if ($filename) {
                 try {
@@ -240,17 +260,19 @@ final class MaCuisineController extends AbstractController
      * @return JsonResponse
      */
     #[Route('/ajax/ingredients', name: 'recipe_ingredients_ajax', methods: ['GET'])]
-    public function ingredientsAjax(Request $request, IngredientRepository $ingredientRepository): JsonResponse
-    {
+    public function ingredientsAjax(
+        Request $request,
+        IngredientRepository $ingredientRepository
+    ): JsonResponse {
         $term = $request->query->get('term');
 
-        if ($term === null){
+        if ($term === null) {
             $rawIngredients = $ingredientRepository->findAll();
         } else {
             $rawIngredients = $ingredientRepository->findNameLike($term);
         }
         $handeledIngredients = [];
-        foreach ($rawIngredients as $ingredient){
+        foreach ($rawIngredients as $ingredient) {
             array_push($handeledIngredients, [
                 'id' => $ingredient->getId(),
                 'name' => $ingredient->getName(),
