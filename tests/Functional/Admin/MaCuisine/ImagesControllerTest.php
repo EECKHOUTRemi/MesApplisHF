@@ -113,7 +113,7 @@ final class ImagesControllerTest extends AppWebTestCase
 
     public function testDeleteRequiresAuthentication(): void
     {
-        $this->client->request('GET', self::INDEX_PATH . '/delete/whatever.png');
+        $this->client->request('POST', self::INDEX_PATH . '/delete/whatever.png');
 
         self::assertResponseStatusCodeSame(302);
     }
@@ -121,7 +121,7 @@ final class ImagesControllerTest extends AppWebTestCase
     public function testDeleteForbiddenForRegularUser(): void
     {
         $this->login($this->createUser());
-        $this->client->request('GET', self::INDEX_PATH . '/delete/whatever.png');
+        $this->client->request('POST', self::INDEX_PATH . '/delete/whatever.png');
 
         self::assertResponseStatusCodeSame(403);
     }
@@ -131,8 +131,9 @@ final class ImagesControllerTest extends AppWebTestCase
         $filename = $this->createImageFile();
         $path = $this->imagesDirectory() . '/' . $filename;
         $this->login($this->createAdmin());
+        $token = static::getContainer()->get('security.csrf.token_manager')->getToken('delete-image')->getValue();
 
-        $this->client->request('GET', self::INDEX_PATH . '/delete/' . $filename);
+        $this->client->request('POST', self::INDEX_PATH . '/delete/' . $filename, ['_token' => $token]);
 
         self::assertResponseRedirects(self::INDEX_PATH);
         self::assertFileDoesNotExist($path);
@@ -145,8 +146,9 @@ final class ImagesControllerTest extends AppWebTestCase
     {
         $this->login($this->createAdmin());
         $filename = 'inexistante_' . bin2hex(random_bytes(4)) . '.png';
+        $token = static::getContainer()->get('security.csrf.token_manager')->getToken('delete-image')->getValue();
 
-        $this->client->request('GET', self::INDEX_PATH . '/delete/' . $filename);
+        $this->client->request('POST', self::INDEX_PATH . '/delete/' . $filename, ['_token' => $token]);
 
         self::assertResponseRedirects(self::INDEX_PATH);
 
