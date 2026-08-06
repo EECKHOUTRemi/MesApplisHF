@@ -78,11 +78,15 @@
                                     aria-label="Ouvrir {{ filename }} dans un nouvel onglet">
                                     <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
                                 </a>
-                                <a type="button" class="btn btn-sm btn-danger" data-image="{{ filename }}"
-                                        title="Supprimer" aria-label="Supprimer {{ filename }}" 
-                                        href="{{ path('app_admin_macuisine_images_delete', {'imageToDelete': filename}) }}">
-                                    <i class="bi bi-trash" aria-hidden="true"></i>
-                                </a>
+                                <form method="post"
+                                        action="{{ path('app_admin_macuisine_images_delete', {'imageToDelete': filename}) }}"
+                                        class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-image') }}">
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                            title="Supprimer" aria-label="Supprimer {{ filename }}">
+                                        <i class="bi bi-trash" aria-hidden="true"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                         <div class="card-body p-2">
