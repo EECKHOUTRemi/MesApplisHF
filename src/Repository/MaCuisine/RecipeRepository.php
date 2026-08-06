@@ -36,7 +36,7 @@ class RecipeRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('r');
 
-        if ($query) {
+        if ($query !== null && $query !== '') {
             $qb->andWhere('r.name LIKE :query')
                 ->setParameter('query', '%' . $query . '%');
         }
