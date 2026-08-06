@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MaCuisine · Partagez vos recettes · MesApplisHF{% endblock %}
+
+{% block body %}
+{% include 'brochure/_nav.html.twig' %}
+
+{# Hero #}
+<section class="bg-dark text-white py-5">
+    <div class="container text-center py-3">
+        <div class="display-3 text-primary mb-2"><i class="bi bi-egg-fried" aria-hidden="true"></i></div>
+        <h1 class="display-5 fw-bold mb-3">MaCuisine</h1>
+        <p class="lead text-white-50 mx-auto" style="max-width: 620px;">
+            Le réseau social de partage de recettes. Publiez vos plats, découvrez ceux des autres
+            et retrouvez l'inspiration en un coup d'œil.
+        </p>
+    </div>
+</section>
+
+{# Fonctionnalités #}
+<section class="container py-5">
+    <h2 class="h3 fw-bold text-center mb-5">Ce que vous pouvez faire</h2>
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-journal-plus fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Créer vos recettes</h3>
+                    <p class="text-secondary small mb-0">Ajoutez une photo, la liste des ingrédients avec quantités et unités, les ustensiles et les étapes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-rss fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Parcourir le fil</h3>
+                    <p class="text-secondary small mb-0">Découvrez toutes les recettes de la communauté dans un fil d'actualité unique.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-search fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Rechercher et filtrer</h3>
+                    <p class="text-secondary small mb-0">Filtrez par ingrédient, ustensile ou catégorie pour trouver exactement ce qu'il vous faut.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-collection fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Gérer « Mes recettes »</h3>
+                    <p class="text-secondary small mb-0">Retrouvez vos propres recettes au même endroit pour les modifier ou les supprimer.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-basket fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Ingrédients suggérés</h3>
+                    <p class="text-secondary small mb-0">L'autocomplétion vous aide à saisir les ingrédients rapidement, sans fautes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="d-flex gap-3">
+                <i class="bi bi-tags fs-3 text-primary" aria-hidden="true"></i>
+                <div>
+                    <h3 class="h6 mb-1">Catégories</h3>
+                    <p class="text-secondary small mb-0">Classez vos recettes par catégorie pour une navigation organisée.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Comment l'utiliser #}
+<section class="bg-light border-top py-5">
+    <div class="container" style="max-width: 760px;">
+        <h2 class="h3 fw-bold text-center mb-5">Comment l'utiliser</h2>
+        <ol class="list-group list-group-numbered list-group-flush">
+            <li class="list-group-item bg-transparent border-0 px-0">
+                <span class="fw-semibold">Ouvrez MaCuisine</span> depuis le tableau de bord après connexion.
+            </li>
+            <li class="list-group-item bg-transparent border-0 px-0">
+                <span class="fw-semibold">Cliquez sur « Nouvelle recette »</span>, ajoutez une photo, vos ingrédients et les étapes.
+            </li>
+            <li class="list-group-item bg-transparent border-0 px-0">
+                <span class="fw-semibold">Publiez</span> : votre recette apparaît dans le fil, visible par toute la communauté.
+            </li>
+            <li class="list-group-item bg-transparent border-0 px-0">
+                <span class="fw-semibold">Explorez le fil</span> et utilisez les filtres pour piocher des idées.
+            </li>
+        </ol>
+    </div>
+</section>
+
+{# Appel à l'action #}
+<section class="container text-center py-5">
+    {% if is_granted('ROLE_USER') %}
+        <a href="{{ path('app_macuisine_index') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-egg-fried me-1" aria-hidden="true"></i>Ouvrir MaCuisine
+        </a>
+    {% else %}
+        <h2 class="h4 fw-bold mb-3">Envie de partager vos recettes ?</h2>
+        <a href="{{ path('app_register') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-person-plus me-1" aria-hidden="true"></i>Créer un compte gratuit
+        </a>
+    {% endif %}
+    <div class="mt-4">
+        <a href="{{ path('app_brochure_index') }}" class="text-secondary text-decoration-none">
+            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour à la présentation
+        </a>
+    </div>
+</section>
+{% endblock %}

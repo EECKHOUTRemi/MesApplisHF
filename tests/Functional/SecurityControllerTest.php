@@ -50,7 +50,7 @@ class SecurityControllerTest extends AppWebTestCase
         $this->assertResponseRedirects();
         $crawler = $this->client->followRedirect();
         $this->assertResponseIsSuccessful();
-        $this->assertSame('/', parse_url($crawler->getUri(), PHP_URL_PATH));
+        $this->assertSame('/home', parse_url($crawler->getUri(), PHP_URL_PATH));
     }
 
     public function testRegistrationCreatesUserWithHashedPassword(): void
@@ -64,7 +64,8 @@ class SecurityControllerTest extends AppWebTestCase
             'registration_form[plainPassword]' => 'MotDePasse123',
         ]);
 
-        $this->assertResponseRedirects('/');
+        // L'utilisateur doit confirmer son e-mail avant de pouvoir se connecter.
+        $this->assertResponseRedirects('/login');
 
         $user = $this->em()->getRepository(\App\Entity\User::class)->findOneBy(['email' => $email]);
         $this->assertNotNull($user, "L'utilisateur doit exister après l'inscription");
@@ -83,5 +84,23 @@ class SecurityControllerTest extends AppWebTestCase
         ]);
 
         $this->assertEmailCount(1);
+    }
+
+    public function testUnverifiedUserCannotLoginAndReceivesNewEmail(): void
+    {
+        $user = $this->createUser(password: 'S3cret!!', isVerified: false);
+
+        $this->client->request('GET', '/login');
+        $this->client->submitForm('Se connecter', [
+            '_username' => $user->getEmail(),
+            '_password' => 'S3cret!!',
+        ]);
+
+        // Connexion refusée : retour sur /login et nouvel e-mail de confirmation envoyé.
+        $this->assertResponseRedirects('/login');
+        $this->assertEmailCount(1);
+
+        $this->client->followRedirect();
+        $this->assertSelectorExists('.alert-danger');
     }
 }

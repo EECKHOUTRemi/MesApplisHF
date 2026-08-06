@@ -34,15 +34,21 @@ final class BmiController extends AbstractController
     {
         $bmis = $bmiRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'ASC']);
         $dates = array_map(
-            function(Bmi $bmi) { return $bmi->getCreatedAt()->format('d/m/Y'); },
+            function (Bmi $bmi) {
+                return $bmi->getCreatedAt()->format('d/m/Y');
+            },
             $bmis,
         );
         $bmiData = array_map(
-            function(Bmi $bmi) { return $bmi->getBmi(); },
+            function (Bmi $bmi) {
+                return $bmi->getBmi();
+            },
             $bmis,
         );
         $weightData = array_map(
-            function(Bmi $bmi) { return $bmi->getWeight(); },
+            function (Bmi $bmi) {
+                return $bmi->getWeight();
+            },
             $bmis,
         );
         $count = count($dates);
@@ -211,7 +217,7 @@ final class BmiController extends AbstractController
             return $this->redirectToRoute('app_MonPoids_bmi_index');
         }
 
-        if ($this->isCsrfTokenValid('delete'.$bmi->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $bmi->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($bmi);
             $entityManager->flush();
         }

@@ -3,7 +3,7 @@ name: CI/CD
 
 on:
   push:
-    branches: [main, develop, 'release/**']
+    branches: [main, develop, "release/**"]
   pull_request:
 
 env:
@@ -11,6 +11,28 @@ env:
   IMAGE: ghcr.io/eeckhoutremi/mesapplishf
 
 jobs:
+  # ── Stage 0: lint & static analysis (parallel with build) ───────
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: intl, pdo_pgsql, zip, opcache, gd
+          coverage: none
+      - run: composer validate --strict
+      - run: composer install --prefer-dist --no-progress --no-interaction
+      - name: Linters Symfony (YAML, Twig, container)
+        run: |
+          php bin/console lint:yaml config --parse-tags
+          php bin/console lint:twig templates
+          php bin/console lint:container
+      - name: PHP_CodeSniffer (PSR-12, config phpcs.xml.dist)
+        run: vendor/bin/phpcs
+      - name: PHPStan (niveau 6 + baseline, config phpstan.dist.neon)
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
   # ── Stage 1: build ──────────────────────────────────────────────
   build:
     runs-on: ubuntu-latest
@@ -24,6 +46,7 @@ jobs:
           target: prod
           tags: ${{ env.IMAGE }}:${{ github.sha }}
           outputs: type=docker,dest=/tmp/image.tar
+          pull: true           # always resolve latest digest for floating base-image tags
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - uses: actions/upload-artifact@v4
@@ -51,9 +74,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           extensions: intl, pdo_pgsql, zip, opcache
-          coverage: xdebug                 # needed for Sonar coverage
+          coverage: xdebug # needed for Sonar coverage
       - run: composer install --prefer-dist --no-progress --no-interaction
       # En env "test", Doctrine suffixe le nom de base avec "_test" (config/packages/doctrine.yaml)
       # -> tout tourne sur "app_test", créée ici plutôt que par POSTGRES_DB
@@ -76,7 +99,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4         # needed for the Trivy ignore policy
+      - uses: actions/checkout@v4 # needed for the Trivy ignore policy
       - uses: actions/download-artifact@v4
         with:
           name: docker-image
@@ -87,10 +110,10 @@ jobs:
         with:
           image-ref: ${{ env.IMAGE }}:${{ github.sha }}
           format: table
-          exit-code: '1'                   # fail the job on findings
+          exit-code: "1" # fail the job on findings
           severity: CRITICAL,HIGH
           ignore-unfixed: true
-          ignore-policy: .trivy/ignore-policy.rego   # kernel-header CVEs (see file)
+          ignore-policy: .trivy/ignore-policy.rego # kernel-header CVEs (see file)
 
   # ── Stage 3b: scan — SonarQube (runs parallel with Trivy) ───────
   scan-sonar:
@@ -99,7 +122,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0                   # Sonar needs full history for blame
+          fetch-depth: 0 # Sonar needs full history for blame
       - uses: actions/download-artifact@v4
         with:
           name: coverage
@@ -117,14 +140,14 @@ jobs:
 
   # ── Stage 4: push (only on main/release/develop) ────────────────
   push:
-    needs: [scan-trivy, scan-sonar]        # waits for BOTH scans
+    needs: [lint, scan-trivy, scan-sonar] # waits for lint + BOTH scans
     if: github.event_name == 'push' &&
-        (github.ref == 'refs/heads/main' ||
-         github.ref == 'refs/heads/develop' ||
-         startsWith(github.ref, 'refs/heads/release/'))
+      (github.ref == 'refs/heads/main' ||
+      github.ref == 'refs/heads/develop' ||
+      startsWith(github.ref, 'refs/heads/release/'))
     runs-on: ubuntu-latest
     permissions:
-      packages: write                       # for GHCR
+      packages: write # for GHCR
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -148,6 +171,6 @@ jobs:
   deploy:
     needs: push
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name }}     # per-branch env + approvals
+    environment: ${{ github.ref_name }} # per-branch env + approvals
     steps:
       - run: echo "Deploy ${{ env.IMAGE }}:${{ github.ref_name }} to ${{ github.ref_name }}"

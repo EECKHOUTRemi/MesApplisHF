@@ -26,6 +26,7 @@
                 <div class="card-body">
                     {% form_theme profileForm 'bootstrap_5_layout.html.twig' %}
                     {{ form_start(profileForm) }}
+                        {% include '_required_legend.html.twig' with { form: profileForm } only %}
                         {{ form_row(profileForm.username) }}
                         {{ form_row(profileForm.email) }}
                         {{ form_row(profileForm.height) }}
@@ -45,6 +46,7 @@
                 <div class="card-body">
                     {% form_theme passwordForm 'bootstrap_5_layout.html.twig' %}
                     {{ form_start(passwordForm, { action: path('app_settings_password') }) }}
+                        {% include '_required_legend.html.twig' with { form: passwordForm } only %}
                         {{ form_row(passwordForm.currentPassword) }}
                         {{ form_row(passwordForm.plainPassword.first) }}
                         {{ form_row(passwordForm.plainPassword.second) }}

@@ -9,6 +9,8 @@ It hosts a collection of small personal apps:
 
 Each sub-app exposes both a regular user area and an `/admin/...` section gated by `ROLE_ADMIN`.
 
+📚 **[Documentation](https://eeckhoutremi.github.io/MesApplisHF)** — generated with phpDocumentor.
+
 > Status: early development.
 
 ---
@@ -86,7 +88,7 @@ php -S 127.0.0.1:8000 -t public
 └── symfony.lock
 ```
 
-> Folder casing note: the sub-app folders use **PascalCase** (`MaCuisine`, `MonPoids`) to match the PSR-4 namespaces. URL slugs and route names stay lowercase (`/macuisine/...`, `app_macuisine_recipe_index`).
+> Folder casing note: the sub-app folders use **PascalCase** (`MaCuisine`, `MonPoids`) to match the PSR-4 namespaces. URL slugs and route names stay lowercase (`/macuisine/feed`, `app_macuisine_feed`).
 
 ## Database schema
 
@@ -199,6 +201,20 @@ php bin/console doctrine:migrations:migrate # apply pending migrations
 ```bash
 composer require symfony/maker-bundle --dev
 php bin/console make:controller HelloController
+```
+
+## Documentation
+
+API documentation is generated from the source PHPDoc with
+[phpDocumentor](https://phpdoc.org/) and published to GitHub Pages:
+
+**📚 <https://eeckhoutremi.github.io/MesApplisHF>**
+
+It is rebuilt automatically on every push to `main` (the `docs` job in
+`.github/workflows/deploy.yml`). To build it locally:
+
+```bash
+vendor/bin/phpdoc        # outputs to docs/.build (git-ignored)
 ```
 
 ## License

@@ -99,7 +99,7 @@ final class SettingsController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$this->isCsrfTokenValid('delete-account-'.$user->getId(), $request->getPayload()->getString('_token'))) {
+        if (!$this->isCsrfTokenValid('delete-account-' . $user->getId(), $request->getPayload()->getString('_token'))) {
             $this->addFlash('danger', 'Jeton de sécurité invalide. Réessayez.');
 
             return $this->redirectToRoute('app_settings_index');

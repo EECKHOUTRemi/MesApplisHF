@@ -46,7 +46,8 @@ class MeasurementType extends AbstractType
             'data_class' => Measurement::class,
             'constraints' => [
                 new Callback(function (Measurement $measurement, ExecutionContextInterface $context) {
-                    if ($measurement->getChest() === null
+                    if (
+                        $measurement->getChest() === null
                         && $measurement->getHips() === null
                         && $measurement->getThigh() === null
                         && $measurement->getWaist() === null

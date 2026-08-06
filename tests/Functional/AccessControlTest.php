@@ -15,12 +15,11 @@ class AccessControlTest extends AppWebTestCase
      */
     public static function protectedPathProvider(): iterable
     {
-        yield 'accueil' => ['/'];
         yield 'profil' => ['/profil/'];
         yield 'paramètres' => ['/settings/'];
-        yield 'MaCuisine accueil' => ['/macuisine/'];
-        yield 'MaCuisine recettes' => ['/macuisine/recipe'];
-        yield 'MonPoids accueil' => ['/monpoids/'];
+        yield 'MaCuisine accueil' => ['/macuisine'];
+        yield 'MaCuisine recettes' => ['/macuisine/feed'];
+        yield 'MonPoids accueil' => ['/monpoids'];
         yield 'MonPoids IMC' => ['/monpoids/bmi/'];
         yield 'MonPoids mensurations' => ['/monpoids/measurement/'];
     }
@@ -69,7 +68,7 @@ class AccessControlTest extends AppWebTestCase
         yield 'relations admin' => ['admin/relationship'];
         yield 'recipes admin' => ['/admin/macuisine/recipe'];
         yield 'ingrédients admin' => ['admin/macuisine/ingredient'];
-        yield 'utensils admin' => ['/admin/ma/cuisine/utensil'];
+        yield 'utensils admin' => ['/admin/macuisine/utensil'];
         yield 'categories admin' => ['/admin/ma/cuisine/category'];
         yield 'IMC admin' => ['/admin/monpoids/bmi/'];
         yield 'mensurations admin' => ['/admin/monpoids/measurement/'];
@@ -107,6 +106,8 @@ class AccessControlTest extends AppWebTestCase
     {
         $this->login($this->createUser());
 
+        // La racine redirige l'utilisateur connecté vers son tableau de bord (/home).
+        $this->client->followRedirects();
         $this->client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();

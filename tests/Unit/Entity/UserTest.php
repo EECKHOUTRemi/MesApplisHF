@@ -39,4 +39,20 @@ class UserTest extends TestCase
     {
         $this->assertFalse(new User()->isVerified());
     }
+
+    public function testNewUserHasNoImage(): void
+    {
+        $this->assertNull(new User()->getImage());
+    }
+
+    public function testSetImageStoresFilenameAndCanBeReset(): void
+    {
+        $user = new User();
+
+        $this->assertSame($user, $user->setImage('avatar.png'));
+        $this->assertSame('avatar.png', $user->getImage());
+
+        $user->setImage(null);
+        $this->assertNull($user->getImage());
+    }
 }

@@ -1,6 +1,7 @@
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
 
 {{ form_start(form) }}
+    {% include '_required_legend.html.twig' with { form: form } only %}
     {{ form_row(form.name, {'label': 'Nom', 'attr': {'placeholder': 'Ex. Farine, Sucre, Tomate…'}}) }}
 
     <div class="d-flex justify-content-end gap-2 mt-3">

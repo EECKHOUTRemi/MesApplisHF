@@ -11,12 +11,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class GlobalController extends AbstractController
 {
     /** @return Response */
-    #[Route('/monpoids/global', name: 'app_mon_poids_global'),
+    #[Route('/monpoids', name: 'app_mon_poids_global'),
     IsGranted('ROLE_USER')]
     public function index(): Response
     {
-        return $this->render('MonPoids/global/index.html.twig', [
-            'controller_name' => 'GlobalController',
-        ]);
+        return $this->render('MonPoids/index.html.twig');
     }
 }

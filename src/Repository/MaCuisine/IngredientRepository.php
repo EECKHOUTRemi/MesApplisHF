@@ -44,11 +44,11 @@ class IngredientRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('i');
 
         if ($select) {
-            $qb->select(array_map(static fn (string $c) => 'i.'.$assertField($c), $select));
+            $qb->select(array_map(static fn (string $c) => 'i.' . $assertField($c), $select));
         }
 
         $qb->andWhere('UPPER(UNACCENT(i.name)) LIKE UPPER(UNACCENT(:term))')
-            ->setParameter('term', '%'.$term.'%')
+            ->setParameter('term', '%' . $term . '%')
         ;
 
         if ($order) {
@@ -56,7 +56,7 @@ class IngredientRepository extends ServiceEntityRepository
             if (!in_array($direction, ['ASC', 'DESC'], true)) {
                 throw new \InvalidArgumentException(sprintf('Invalid order direction "%s".', $order[1]));
             }
-            $qb->orderBy('i.'.$assertField($order[0]), $direction);
+            $qb->orderBy('i.' . $assertField($order[0]), $direction);
         }
 
         return $qb->getQuery()->getResult();

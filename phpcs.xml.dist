@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="MesApplisHF">
+    <description>Standard de code du projet : PSR-12 sur src/ et tests/.</description>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <!-- Chemins relatifs dans les rapports + sortie lisible -->
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg value="p"/>
+
+    <rule ref="PSR12"/>
+
+    <!-- Les warnings (ex. limite souple de 120 caractères) restent affichés
+         mais ne font pas échouer la CI ; seules les erreurs bloquent. -->
+    <config name="ignore_warnings_on_exit" value="1"/>
+</ruleset>

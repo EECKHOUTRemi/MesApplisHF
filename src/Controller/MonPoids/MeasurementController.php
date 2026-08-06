@@ -168,7 +168,7 @@ final class MeasurementController extends AbstractController
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Measurement $measurement, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$measurement->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $measurement->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($measurement);
             $entityManager->flush();
         }

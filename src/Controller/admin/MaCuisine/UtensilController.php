@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/ma/cuisine/utensil'),
+#[Route('/admin/macuisine/utensil'),
 IsGranted('ROLE_ADMIN')]
 /** CRUD admin des ustensiles MaCuisine. */
 final class UtensilController extends AbstractController
@@ -38,7 +38,7 @@ final class UtensilController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $utensil->setCreatedAt(new DateTimeImmutable);
+            $utensil->setCreatedAt(new DateTimeImmutable());
             $utensil->setCreatedBy($this->getUser());
             $entityManager->persist($utensil);
             $entityManager->flush();
@@ -77,7 +77,7 @@ final class UtensilController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $utensil->setUpdatedAt(new DateTimeImmutable);
+            $utensil->setUpdatedAt(new DateTimeImmutable());
             $entityManager->flush();
 
             return $this->redirectToRoute('app_admin_ma_cuisine_utensil_index', [], Response::HTTP_SEE_OTHER);
@@ -98,7 +98,7 @@ final class UtensilController extends AbstractController
     #[Route('/{id}', name: 'app_admin_ma_cuisine_utensil_delete', methods: ['POST'])]
     public function delete(Request $request, Utensil $utensil, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$utensil->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $utensil->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($utensil);
             $entityManager->flush();
         }

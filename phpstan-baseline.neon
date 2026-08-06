@@ -1,0 +1,529 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Parameter \#1 \$user of method App\\Entity\\MonPoids\\Bmi\:\:setuser\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/MonPoids/BmiController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Entity\\MonPoids\\Measurement\:\:setuser\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/MonPoids/MeasurementController.php
+
+		-
+			message: '#^Parameter \#1 \$createdBy of method App\\Entity\\MaCuisine\\Category\:\:setCreatedBy\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/admin/MaCuisine/CategoryController.php
+
+		-
+			message: '#^Parameter \#1 \$createdBy of method App\\Entity\\MaCuisine\\Utensil\:\:setCreatedBy\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/admin/MaCuisine/UtensilController.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Category\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MaCuisine/Category.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Category\:\:\$createdBy type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MaCuisine/Category.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Category\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MaCuisine/Category.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Ingredient\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MaCuisine/Ingredient.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Recipe\:\:\$author type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MaCuisine/Recipe.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Recipe\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MaCuisine/Recipe.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Recipe\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MaCuisine/Recipe.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Recipe\:\:\$refRecipeIngredients type mapping mismatch\: database can contain Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\MaCuisine\\RefRecipeIngredient\> but property expects Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\MaCuisine\\RefRecipeIngredient\>\|null\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MaCuisine/Recipe.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Recipe\:\:\$refRecipeIngredients type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\MaCuisine\\RefRecipeIngredient\>\|null but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\MaCuisine\\RefRecipeIngredient\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MaCuisine/Recipe.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Recipe\:\:\$utensil type mapping mismatch\: database can contain Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\MaCuisine\\Utensil\> but property expects Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\MaCuisine\\Utensil\>\|null\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MaCuisine/Recipe.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Recipe\:\:\$utensil type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\MaCuisine\\Utensil\>\|null but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\MaCuisine\\Utensil\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MaCuisine/Recipe.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\RefRecipeIngredient\:\:\$ingredient type mapping mismatch\: property can contain App\\Entity\\MaCuisine\\Ingredient\|null but database expects App\\Entity\\MaCuisine\\Ingredient\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MaCuisine/RefRecipeIngredient.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\RefRecipeIngredient\:\:\$quantity type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MaCuisine/RefRecipeIngredient.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\RefRecipeIngredient\:\:\$recipe type mapping mismatch\: property can contain App\\Entity\\MaCuisine\\Recipe\|null but database expects App\\Entity\\MaCuisine\\Recipe\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MaCuisine/RefRecipeIngredient.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\RefRecipeIngredient\:\:\$unite type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MaCuisine/RefRecipeIngredient.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Utensil\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MaCuisine/Utensil.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Utensil\:\:\$createdBy type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MaCuisine/Utensil.php
+
+		-
+			message: '#^Property App\\Entity\\MaCuisine\\Utensil\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MaCuisine/Utensil.php
+
+		-
+			message: '#^Property App\\Entity\\MonPoids\\Bmi\:\:\$bmi type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MonPoids/Bmi.php
+
+		-
+			message: '#^Property App\\Entity\\MonPoids\\Bmi\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MonPoids/Bmi.php
+
+		-
+			message: '#^Property App\\Entity\\MonPoids\\Bmi\:\:\$height type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MonPoids/Bmi.php
+
+		-
+			message: '#^Property App\\Entity\\MonPoids\\Bmi\:\:\$user type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MonPoids/Bmi.php
+
+		-
+			message: '#^Property App\\Entity\\MonPoids\\Bmi\:\:\$weight type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MonPoids/Bmi.php
+
+		-
+			message: '#^Property App\\Entity\\MonPoids\\Measurement\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MonPoids/Measurement.php
+
+		-
+			message: '#^Property App\\Entity\\MonPoids\\Measurement\:\:\$user type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MonPoids/Measurement.php
+
+		-
+			message: '#^Property App\\Entity\\Relationship\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Relationship.php
+
+		-
+			message: '#^Property App\\Entity\\Relationship\:\:\$status type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Relationship.php
+
+		-
+			message: '#^Property App\\Entity\\Relationship\:\:\$user1 type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Relationship.php
+
+		-
+			message: '#^Property App\\Entity\\Relationship\:\:\$user2 type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Relationship.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$password type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$username type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Class App\\Form\\ChangePasswordType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ChangePasswordType.php
+
+		-
+			message: '#^Method App\\Form\\ChangePasswordType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ChangePasswordType.php
+
+		-
+			message: '#^Method App\\Form\\ChangePasswordType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/ChangePasswordType.php
+
+		-
+			message: '#^Method App\\Form\\ChoiceList\\PassthroughChoiceLoader\:\:loadChoicesForValues\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/ChoiceList/PassthroughChoiceLoader.php
+
+		-
+			message: '#^Method App\\Form\\ChoiceList\\PassthroughChoiceLoader\:\:loadChoicesForValues\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/ChoiceList/PassthroughChoiceLoader.php
+
+		-
+			message: '#^Method App\\Form\\ChoiceList\\PassthroughChoiceLoader\:\:loadValuesForChoices\(\) has parameter \$choices with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/ChoiceList/PassthroughChoiceLoader.php
+
+		-
+			message: '#^Method App\\Form\\ChoiceList\\PassthroughChoiceLoader\:\:loadValuesForChoices\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/ChoiceList/PassthroughChoiceLoader.php
+
+		-
+			message: '#^Class App\\Form\\MaCuisine\\CategoryType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/CategoryType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\CategoryType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/CategoryType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\CategoryType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/MaCuisine/CategoryType.php
+
+		-
+			message: '#^Class App\\Form\\MaCuisine\\IngredientType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/IngredientType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\IngredientType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/IngredientType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\IngredientType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/MaCuisine/IngredientType.php
+
+		-
+			message: '#^Class App\\Form\\MaCuisine\\RecipeAdminType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/RecipeAdminType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\RecipeAdminType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/RecipeAdminType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\RecipeAdminType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/MaCuisine/RecipeAdminType.php
+
+		-
+			message: '#^Class App\\Form\\MaCuisine\\RecipeType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/RecipeType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\RecipeType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/RecipeType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\RecipeType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/MaCuisine/RecipeType.php
+
+		-
+			message: '#^Class App\\Form\\MaCuisine\\UtensilType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/UtensilType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\UtensilType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MaCuisine/UtensilType.php
+
+		-
+			message: '#^Method App\\Form\\MaCuisine\\UtensilType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/MaCuisine/UtensilType.php
+
+		-
+			message: '#^Class App\\Form\\MonPoids\\BmiType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MonPoids/BmiType.php
+
+		-
+			message: '#^Method App\\Form\\MonPoids\\BmiType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MonPoids/BmiType.php
+
+		-
+			message: '#^Method App\\Form\\MonPoids\\BmiType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/MonPoids/BmiType.php
+
+		-
+			message: '#^Class App\\Form\\MonPoids\\MeasurementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MonPoids/MeasurementType.php
+
+		-
+			message: '#^Method App\\Form\\MonPoids\\MeasurementType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/MonPoids/MeasurementType.php
+
+		-
+			message: '#^Method App\\Form\\MonPoids\\MeasurementType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/MonPoids/MeasurementType.php
+
+		-
+			message: '#^Class App\\Form\\ProfilePictureType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProfilePictureType.php
+
+		-
+			message: '#^Method App\\Form\\ProfilePictureType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProfilePictureType.php
+
+		-
+			message: '#^Method App\\Form\\ProfilePictureType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/ProfilePictureType.php
+
+		-
+			message: '#^Class App\\Form\\ProfileSettingsType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProfileSettingsType.php
+
+		-
+			message: '#^Method App\\Form\\ProfileSettingsType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProfileSettingsType.php
+
+		-
+			message: '#^Method App\\Form\\ProfileSettingsType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/ProfileSettingsType.php
+
+		-
+			message: '#^Class App\\Form\\RegistrationFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RegistrationFormType.php
+
+		-
+			message: '#^Method App\\Form\\RegistrationFormType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RegistrationFormType.php
+
+		-
+			message: '#^Method App\\Form\\RegistrationFormType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/RegistrationFormType.php
+
+		-
+			message: '#^Class App\\Form\\RelationshipType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RelationshipType.php
+
+		-
+			message: '#^Method App\\Form\\RelationshipType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RelationshipType.php
+
+		-
+			message: '#^Method App\\Form\\RelationshipType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/RelationshipType.php
+
+		-
+			message: '#^Class App\\Form\\UserType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/UserType.php
+
+		-
+			message: '#^Method App\\Form\\UserType\:\:buildForm\(\) has parameter \$builder with generic interface Symfony\\Component\\Form\\FormBuilderInterface but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/UserType.php
+
+		-
+			message: '#^Method App\\Form\\UserType\:\:buildForm\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/UserType.php
+
+		-
+			message: '#^Method App\\Handler\\RecipeFormHandler\:\:createNewIngredients\(\) has parameter \$ingredients with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Handler/RecipeFormHandler.php
+
+		-
+			message: '#^Method App\\Handler\\RecipeFormHandler\:\:syncIngredientRefs\(\) has parameter \$extras with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Handler/RecipeFormHandler.php
+
+		-
+			message: '#^Method App\\Handler\\RecipeFormHandler\:\:syncUtensils\(\) has parameter \$submittedUtensils with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Handler/RecipeFormHandler.php
+
+		-
+			message: '#^Parameter \#1 \$author of method App\\Entity\\MaCuisine\\Recipe\:\:setAuthor\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Handler/RecipeFormHandler.php
+
+		-
+			message: '#^Parameter \#1 \$createdBy of method App\\Entity\\MaCuisine\\Utensil\:\:setCreatedBy\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Handler/RecipeFormHandler.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to method Doctrine\\ORM\\EntityManagerInterface\:\:find\(\)$#'
+			identifier: argument.templateType
+			count: 2
+			path: tests/Functional/Admin/SimpleCrudAdminTest.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to method Doctrine\\ORM\\EntityManagerInterface\:\:getRepository\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: tests/Functional/Admin/SimpleCrudAdminTest.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Symfony\\\\Component\\\\Dotenv\\\\Dotenv'' and ''bootEnv'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: tests/bootstrap.php
