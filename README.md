@@ -1,6 +1,6 @@
 # MesApplisHF
 
-A Symfony 8 application skeleton powering the **HF apps portal**.
+A Symfony 7.4 application skeleton powering the **HF apps portal**.
 
 It hosts a collection of small personal apps:
 
@@ -17,13 +17,14 @@ Each sub-app exposes both a regular user area and an `/admin/...` section gated 
 
 ## Tech stack
 
-| Layer       | Choice                          |
-| ----------- | ------------------------------- |
-| Language    | PHP **8.4+**                    |
-| Framework   | Symfony **8.0.\***              |
-| Runtime     | `symfony/runtime`               |
-| Dependency  | Composer (managed via Flex)     |
-| Autoloading | PSR-4 — `App\` → `src/`         |
+| Layer                  | Choice                                      |
+| ---------------------- | ------------------------------------------- |
+| Language               | PHP **8.4+**                                |
+| Framework              | Symfony **7.4.\***                          |
+| Runtime                | `symfony/runtime`                           |
+| Dependency             | Composer (managed via Flex)                 |
+| Autoloading            | PSR-4 — `App\` → `src/`                    |
+| Transactional e-mail   | [Resend](https://resend.com) via `symfony/resend-mailer` |
 
 ## Requirements
 
@@ -49,6 +50,38 @@ symfony serve -d        # http://127.0.0.1:8000
 # — or, without the Symfony CLI:
 php -S 127.0.0.1:8000 -t public
 ```
+
+## Mailer
+
+Transactional e-mails (account confirmation, password reset) are sent via **[Resend](https://resend.com)** using the `symfony/resend-mailer` bridge.
+
+### DSN format
+
+```
+MAILER_DSN=resend+api://<API_KEY>@default
+```
+
+### Environment setup
+
+| Environment | Recommended value |
+| ----------- | ----------------- |
+| Local dev   | `resend+api://<key>@default` in `.env.dev.local` — or `null://null` to discard all mail |
+| Test        | `null://null` (already set in `.env.test`) |
+| Production  | Set `MAILER_DSN` as a Docker / CI secret — never commit the real key |
+
+> The default `.env` contains `resend+api://API_KEY@default` as a template.
+> Always override it with a real key in an uncommitted `.env.*.local` file or a runtime environment variable.
+
+### Sender address
+
+All e-mails are sent from `register@mesapplishf.fr` (configured in `src/Security/EmailVerifier.php`).
+Make sure the domain `mesapplishf.fr` is **verified** in the [Resend dashboard](https://resend.com/domains) before going live.
+
+### Currently sent e-mails
+
+| Trigger | Template |
+| ------- | -------- |
+| User registration | `templates/registration/confirmation_email.html.twig` |
 
 ## Project layout
 
