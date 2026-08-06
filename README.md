@@ -66,7 +66,7 @@ MAILER_DSN=resend+api://<API_KEY>@default
 | Environment | Recommended value |
 | ----------- | ----------------- |
 | Local dev   | `resend+api://<key>@default` in `.env.dev.local` — or `null://null` to discard all mail |
-| Test        | `null://null` (already set in `.env.test`) |
+| Test        | `null://null` (set in `.env.test` — e-mails are discarded, never sent) |
 | Production  | Set `MAILER_DSN` as a Docker / CI secret — never commit the real key |
 
 > The default `.env` contains `resend+api://API_KEY@default` as a template.
