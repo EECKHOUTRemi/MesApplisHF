@@ -131,7 +131,10 @@ final class ImagesControllerTest extends AppWebTestCase
         $filename = $this->createImageFile();
         $path = $this->imagesDirectory() . '/' . $filename;
         $this->login($this->createAdmin());
-        $token = static::getContainer()->get('security.csrf.token_manager')->getToken('delete-image')->getValue();
+
+        // GET the gallery first so a session exists and the delete form renders with a CSRF token.
+        $crawler = $this->client->request('GET', self::INDEX_PATH);
+        $token = (string) $crawler->filter('input[name="_token"]')->first()->attr('value');
 
         $this->client->request('POST', self::INDEX_PATH . '/delete/' . $filename, ['_token' => $token]);
 
@@ -145,9 +148,13 @@ final class ImagesControllerTest extends AppWebTestCase
     public function testDeleteMissingImageShowsDanger(): void
     {
         $this->login($this->createAdmin());
-        $filename = 'inexistante_' . bin2hex(random_bytes(4)) . '.png';
-        $token = static::getContainer()->get('security.csrf.token_manager')->getToken('delete-image')->getValue();
 
+        // A dummy image is needed so the gallery renders at least one delete form (and thus a CSRF token).
+        $this->createImageFile();
+        $crawler = $this->client->request('GET', self::INDEX_PATH);
+        $token = (string) $crawler->filter('input[name="_token"]')->first()->attr('value');
+
+        $filename = 'inexistante_' . bin2hex(random_bytes(4)) . '.png';
         $this->client->request('POST', self::INDEX_PATH . '/delete/' . $filename, ['_token' => $token]);
 
         self::assertResponseRedirects(self::INDEX_PATH);
