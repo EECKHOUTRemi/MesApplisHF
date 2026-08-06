@@ -148,8 +148,8 @@ class RecipeFormHandler
                 ->setRecipe($recipe)
                 ->setIngredient($ingredientObj);
 
-            $ref->setUnite($datas['unit']);
-            $ref->setQuantity((int) $datas['qty'] ?? null);
+            $ref->setUnite((string) $datas['unit']);
+            $ref->setQuantity((float) $datas['qty']);
 
             if (!isset($existing[$id])) {
                 $this->em->persist($ref);
@@ -229,11 +229,14 @@ class RecipeFormHandler
      */
     public function addImage(UploadedFile $imageFile, Recipe $recipe, ?string $currentImage = null): void
     {
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($this->recipesImagesDirectory);
+
         if ($currentImage !== null) {
-            (new Filesystem())->remove($this->recipesImagesDirectory . '/' . $currentImage);
+            $filesystem->remove($this->recipesImagesDirectory . '/' . $currentImage);
         }
 
-        $extension = strtolower($imageFile->getClientOriginalExtension());
+        $extension = strtolower((string) ($imageFile->guessExtension() ?: $imageFile->getClientOriginalExtension() ?: 'bin'));
         $newFilename = bin2hex(random_bytes(16)) . '.' . $extension;
         $imageFile->move($this->recipesImagesDirectory, $newFilename);
         $recipe->setImage($newFilename);

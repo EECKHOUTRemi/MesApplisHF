@@ -24,13 +24,15 @@ class ImageHandler
      * @param string $filename Nom du fichier image à supprimer
      * @return void
      */
-    public function removeImage(string $filename)
+    public function removeImage(string $filename): void
     {
-        $path = $this->recipesImagesDirectory . '/' . $filename;
-        if (is_file($path)) {
-            $this->filesystem->remove($path);
-        } else {
-            throw new FileNotFoundException("Image $filename not found");
+        $safeFilename = basename($filename);
+        $path = $this->recipesImagesDirectory . '/' . $safeFilename;
+
+        if (!is_file($path)) {
+            throw new FileNotFoundException(sprintf('Image "%s" not found.', $safeFilename));
         }
+
+        $this->filesystem->remove($path);
     }
 }
