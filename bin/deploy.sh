@@ -35,9 +35,19 @@ composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 log "Running database migrations..."
 sudo -u www-data php bin/console doctrine:migrations:migrate --no-interaction
 
-log "Clearing and warming cache..."
+log "Clearing cache..."
 sudo rm -rf /var/www/MesApplisHF/var/cache/*
 sudo -u www-data php bin/console cache:clear --env=prod --no-warmup
+
+log "Preparing var/ permissions for asset compile..."
+sudo chown -R deploy:www-data /var/www/MesApplisHF/var/
+sudo chmod -R 2775 /var/www/MesApplisHF/var/
+
+log "Compiling asset map..."
+rm -rf /var/www/MesApplisHF/public/assets
+php bin/console asset-map:compile --env=prod
+
+log "Warming cache..."
 sudo -u www-data php bin/console cache:warmup --env=prod
 
 log "Fixing permissions..."
