@@ -92,8 +92,7 @@ class SecurityController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Votre compte a été créé. Consultez votre boîte mail pour confirmer 
-                votre adresse e-mail avant de vous connecter."
+                "Votre compte a été créé. Consultez votre boîte mail pour confirmer votre adresse e-mail avant de vous connecter."
             );
 
             return $this->redirectToRoute('app_login');
