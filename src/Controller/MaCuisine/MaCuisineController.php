@@ -13,7 +13,6 @@ use App\Repository\MaCuisine\UtensilRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -86,13 +85,13 @@ final class MaCuisineController extends AbstractController
         CategoryRepository $categoryRepository,
         UtensilRepository $utensilRepository
     ): Response {
-        $query = $request->query->get('query');
+        $query = $request->query->get('q');
         $ingredients = $request->query->all('ingredients');
         $utensils = $request->query->all('utensils');
-        $category = $request->query->all('category');
+        $categories = $request->query->all('categories');
 
-        if (($query !== null && $query !== '') || $ingredients !== [] || $utensils !== [] || $category !== []) {
-            $recipes = $recipeRepository->findWithQuery($query, $ingredients, $utensils, $category);
+        if (($query !== null && $query !== '') || $ingredients !== [] || $utensils !== [] || $categories !== []) {
+            $recipes = $recipeRepository->findWithQuery($query, $ingredients, $utensils, $categories);
         } else {
             $recipes = $recipeRepository->findAll();
         }
