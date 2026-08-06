@@ -481,12 +481,6 @@ parameters:
 			path: src/Form/UserType.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: src/Handler/RecipeFormHandler.php
-
-		-
 			message: '#^Method App\\Handler\\RecipeFormHandler\:\:createNewIngredients\(\) has parameter \$ingredients with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
