@@ -86,12 +86,7 @@ final class MaCuisineController extends AbstractController
         CategoryRepository $categoryRepository,
         UtensilRepository $utensilRepository
     ): Response {
-        $query = $request->query->get("q");
-        $ingredients = $request->query->all("ingredients");
-        $utensils = $request->query->all("utensils");
-        $category = $request->query->all("categories");
-
-        if ($query || $ingredients || $utensils || $category) {
+        if (($query !== null && $query !== '') || $ingredients !== [] || $utensils !== [] || $category !== []) {
             $recipes = $recipeRepository->findWithQuery($query, $ingredients, $utensils, $category);
         } else {
             $recipes = $recipeRepository->findAll();
