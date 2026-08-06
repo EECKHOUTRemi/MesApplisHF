@@ -13,6 +13,10 @@
                         Connexion
                     </h1>
 
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success" role="alert">{{ message }}</div>
+                    {% endfor %}
+
                     <form method="post">
                         {% if error %}
                             <div class="alert alert-danger" role="alert">
@@ -53,6 +57,11 @@
                     Pas encore de compte ? <a href="{{ path('app_register') }}">Inscrivez-vous !</a>
                 </div>
             </div>
+            <p class="text-center mt-3 mb-0">
+                <a href="{{ path('app_brochure_index') }}" class="text-secondary text-decoration-none small">
+                    <i class="bi bi-info-circle me-1" aria-hidden="true"></i>Découvrir les outils
+                </a>
+            </p>
         </div>
     </div>
 </div>

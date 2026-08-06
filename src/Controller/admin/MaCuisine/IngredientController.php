@@ -93,7 +93,7 @@ final class IngredientController extends AbstractController
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Ingredient $ingredient, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$ingredient->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $ingredient->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($ingredient);
             $entityManager->flush();
         }

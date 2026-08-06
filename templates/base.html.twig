@@ -4,20 +4,39 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <link rel="icon" href="{{ asset('icons/favicon.ico') }}?v=5" type="image/x-icon">
         {% block stylesheets %}
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
             <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+            <style>
+                /* Astérisque rouge devant le label de tout champ obligatoire */
+                .required::before {
+                    content: "*";
+                    color: var(--bs-danger, #dc3545);
+                    margin-right: 0.25rem;
+                    font-weight: bold;
+                }
+            </style>
             {% if is_granted('ROLE_USER') %}
                 <style>
-                    body { 
-                        padding-top: 70px; 
+                    body {
+                        padding-top: 70px;
                     }
+                    /* Couleurs des icônes de la navbar — :hover et :focus-visible
+                       pour donner le même retour visuel au clavier qu'à la souris */
                     #logout-icon {
                         color: red;
                     }
-                    #logout-icon:hover {
-                        color: darkred;
+                    a:hover #logout-icon,
+                    a:focus-visible #logout-icon {
+                        color: pink;
+                    }
+                    #adminDropdown {
+                        color: yellow;
+                    }
+                    #adminDropdown:hover,
+                    #adminDropdown:focus-visible {
+                        color: #fffbb2;
                     }
                 </style>
             {% endif %}
@@ -47,7 +66,8 @@
         <footer class="border-top bg-light mt-auto py-3">
             <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2 small text-secondary">
                 <span>&copy; {{ "now"|date("Y") }} MesApplisHF</span>
-                <nav aria-label="Liens légaux">
+                <nav aria-label="Liens du site">
+                    <a href="{{ path('app_brochure_index') }}" class="text-secondary text-decoration-none me-3">Découvrir</a>
                     <a href="{{ path('app_terms') }}" class="text-secondary text-decoration-none me-3">CGU</a>
                     <a href="{{ path('app_privacy') }}" class="text-secondary text-decoration-none">Confidentialité</a>
                 </nav>

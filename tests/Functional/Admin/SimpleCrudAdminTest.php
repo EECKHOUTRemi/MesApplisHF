@@ -21,7 +21,7 @@ class SimpleCrudAdminTest extends AppWebTestCase
     {
         // [chemin de base, préfixe du formulaire, classe de l'entité]
         yield 'catégorie' => ['/admin/ma/cuisine/category', 'category', Category::class];
-        yield 'ustensile' => ['/admin/ma/cuisine/utensil', 'utensil', Utensil::class];
+        yield 'ustensile' => ['/admin/macuisine/utensil', 'utensil', Utensil::class];
         yield 'ingrédient' => ['/admin/macuisine/ingredient', 'ingredient', Ingredient::class];
     }
 

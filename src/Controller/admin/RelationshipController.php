@@ -91,9 +91,12 @@ final class RelationshipController extends AbstractController
      * @return Response
      */
     #[Route('/{id}', name: 'app_relationship_delete', methods: ['POST'])]
-    public function delete(Request $request, Relationship $relationship, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$relationship->getId(), $request->getPayload()->getString('_token'))) {
+    public function delete(
+        Request $request,
+        Relationship $relationship,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if ($this->isCsrfTokenValid('delete' . $relationship->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($relationship);
             $entityManager->flush();
         }

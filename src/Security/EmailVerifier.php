@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
@@ -28,6 +29,25 @@ class EmailVerifier
     }
 
     /**
+     * Construit et envoie l'e-mail de confirmation de compte (expéditeur, sujet et template) à l'utilisateur.
+     *
+     * @param User $user
+     * @return void
+     */
+    public function sendConfirmationEmail(User $user): void
+    {
+        $this->sendEmailConfirmation(
+            'app_verify_email',
+            $user,
+            (new TemplatedEmail())
+                ->from(new Address('register@mesapplishf.fr', 'Mes Applis HF - Validation du compte'))
+                ->to((string) $user->getEmail())
+                ->subject('Confirmez votre adresse e-mail')
+                ->htmlTemplate('registration/confirmation_email.html.twig')
+        );
+    }
+
+    /**
      * Génère l'URL signée de vérification et l'injecte dans le contexte du template avant envoi.
      *
      * @param string $verifyEmailRouteName
@@ -40,7 +60,8 @@ class EmailVerifier
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
             $verifyEmailRouteName,
             (string) $user->getId(),
-            (string) $user->getEmail()
+            (string) $user->getEmail(),
+            ['id' => (string) $user->getId()]
         );
 
         $context = $email->getContext();
@@ -61,7 +82,11 @@ class EmailVerifier
      */
     public function handleEmailConfirmation(Request $request, User $user): void
     {
-        $this->verifyEmailHelper->validateEmailConfirmationFromRequest($request, (string) $user->getId(), (string) $user->getEmail());
+        $this->verifyEmailHelper->validateEmailConfirmationFromRequest(
+            $request,
+            (string) $user->getId(),
+            (string) $user->getEmail()
+        );
 
         $user->setIsVerified(true);
 

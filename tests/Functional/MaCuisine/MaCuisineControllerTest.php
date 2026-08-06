@@ -20,7 +20,7 @@ class MaCuisineControllerTest extends AppWebTestCase
         $this->em()->flush();
 
         $this->login($user);
-        $this->client->request('GET', '/macuisine/');
+        $this->client->request('GET', '/macuisine');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'MaCuisine');

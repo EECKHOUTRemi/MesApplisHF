@@ -55,7 +55,7 @@
             color: #ff7e5f;
         }
         .post-banner {
-            height: 140px;
+            height: 300px;
             border-radius: .75rem;
             background: linear-gradient(135deg, #ffe5d9 0%, #ffc9b0 100%);
             display: flex;
@@ -64,6 +64,36 @@
             font-size: 3rem;
             color: #ff7e5f;
             margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        .post-banner picture {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .post-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .3s ease;
+        }
+        .feed-post:hover .post-banner img {
+            transform: scale(1.04);
+        }
+        .banner-fallback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .4rem;
+            color: #d98a6c;
+        }
+        .banner-fallback i {
+            font-size: 2.75rem;
+            opacity: .8;
+        }
+        .banner-fallback span {
+            font-size: .9rem;
+            font-weight: 500;
         }
         .post-actions .btn {
             color: #6c757d;
@@ -102,23 +132,85 @@
             </div>
         </section>
 
-        {# Future searchbar #}
-        {# <section class="card feed-post shadow-sm mb-3">
-            <div class="card-body d-flex align-items-center gap-3">
-                <span class="post-avatar">{{ app.user.username|first|upper }}</span>
-                <a href="{{ path('app_macuisine_recipe_new') }}" class="flex-grow-1 text-decoration-none">
-                    <div class="bg-light rounded-pill px-3 py-2 text-secondary">
-                        Quoi de bon dans votre cuisine, {{ app.user.username }}&nbsp;?
+        {# Recherche & filtres #}
+        {% set searchQuery = app.request.query.get('q') %}
+        {% set selectedIngredients = app.request.query.all('ingredients') %}
+        {% set selectedUtensils = app.request.query.all('utensils') %}
+        {% set selectedCategories = app.request.query.all('categories') %}
+        {% set activeFilterCount = selectedIngredients|length + selectedUtensils|length + selectedCategories|length %}
+
+        <section class="card feed-post shadow-sm mb-3">
+            <div class="card-body">
+                <form method="get" action="{{ path('app_macuisine_feed') }}" class="recipe-search">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 rounded-pill rounded-end-0">
+                                <i class="bi bi-search text-secondary" aria-hidden="true"></i>
+                            </span>
+                            <input type="search" name="q" value="{{ searchQuery }}"
+                                   class="form-control border-0 bg-light rounded-pill rounded-start-0"
+                                   placeholder="Rechercher par nom…" aria-label="Rechercher par nom">
+                        </div>
+                        <button class="btn btn-primary rounded-pill px-3 flex-shrink-0" type="submit">
+                            <i class="bi bi-search me-1 d-none d-sm-inline" aria-hidden="true"></i>Rechercher
+                        </button>
+                        <button class="btn btn-light rounded-pill px-3 flex-shrink-0" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#recipeFilters"
+                                aria-expanded="{{ activeFilterCount > 0 ? 'true' : 'false' }}" aria-controls="recipeFilters">
+                            <i class="bi bi-sliders me-1" aria-hidden="true"></i><span class="d-none d-sm-inline">Filtres</span>
+                            {% if activeFilterCount > 0 %}<span class="badge text-bg-primary ms-1">{{ activeFilterCount }}</span>{% endif %}
+                        </button>
                     </div>
-                </a>
-                <a href="{{ path('app_macuisine_recipe_new') }}" class="btn btn-primary d-none d-sm-inline-flex">
-                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Nouvelle recette
-                </a>
+
+                    <div class="collapse {{ activeFilterCount > 0 ? 'show' : '' }} mt-3" id="recipeFilters">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label small fw-semibold text-secondary" for="filterIngredients">
+                                    <i class="bi bi-basket me-1" aria-hidden="true"></i>Ingrédients
+                                </label>
+                                <select id="filterIngredients" name="ingredients[]" multiple
+                                        class="filter-ingredients-select"
+                                        data-ajax-url="{{ path('app_macuisine_recipe_ingredients_ajax') }}"></select>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label small fw-semibold text-secondary" for="filterUtensils">
+                                    <i class="bi bi-tools me-1" aria-hidden="true"></i>Ustensiles
+                                </label>
+                                <select id="filterUtensils" name="utensils[]" multiple
+                                        class="filter-utensils-select"
+                                        data-options="{{ utensils|json_encode }}"
+                                        data-initial="{{ selectedUtensils|json_encode }}"></select>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label small fw-semibold text-secondary" for="filterCategories">
+                                    <i class="bi bi-tag me-1" aria-hidden="true"></i>Catégories
+                                </label>
+                                <select id="filterCategories" name="categories[]" multiple class="filter-categories-select">
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}" {{ category.id in selectedCategories ? 'selected' }}>{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            {% if searchQuery or activeFilterCount > 0 %}
+                                <a href="{{ path('app_macuisine_feed') }}" class="btn btn-link text-secondary text-decoration-none">
+                                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i>Réinitialiser
+                                </a>
+                            {% endif %}
+                            <button type="submit" class="btn btn-primary rounded-pill px-3">
+                                <i class="bi bi-funnel me-1" aria-hidden="true"></i>Appliquer les filtres
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </section> #}
+        </section>
 
         {% for recipe in recipes %}
             {% set isAuthor = app.user and recipe.author and app.user.id == recipe.author.id %}
+            {% set isAdmin = app.user and 'ROLE_ADMIN' in app.user.roles %}
             <article class="card feed-post shadow-sm mb-3">
                 <div class="card-body">
                     <header class="d-flex align-items-center justify-content-between mb-3">
@@ -137,7 +229,7 @@
                             </div>
                         </div>
 
-                        {% if isAuthor %}
+                        {% if isAuthor or isAdmin %}
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
                                     <i class="bi bi-three-dots" aria-hidden="true"></i>
@@ -164,7 +256,26 @@
 
                     <a href="{{ path('app_macuisine_recipe_show', {'id': recipe.id}) }}" class="text-decoration-none">
                         <div class="post-banner">
-                            <i class="bi bi-cup-hot" aria-hidden="true"></i>
+                        {% if recipe.image %}
+                            {% set imgPath = 'uploads/recipes/' ~ recipe.image %}
+                            {% if imgPath is ondisk %}
+                                <picture>
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('big_avif') }}" type="image/avif">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('big_webp') }}" type="image/webp">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('big_png') }}" type="image/png">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('big_jpeg') }}" type="image/jpeg">
+                                    <img src="{{ asset(imgPath)}}" alt="{{ recipe.name }}" loading="lazy">
+                                </picture>
+                                
+                            {% else %}
+                                <div class="banner-fallback">
+                                    <i class="bi bi-image-alt" aria-hidden="true"></i>
+                                    <span>Image indisponible</span>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <span class="recipe-emoji"><i class="bi bi-fork-knife" aria-hidden="true"></i></span>
+                        {% endif %}
                         </div>
                         <h2 class="post-title">{{ recipe.name }}</h2>
                     </a>
@@ -208,7 +319,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center py-5">
                     <i class="bi bi-journal-plus display-4 text-secondary mb-3" aria-hidden="true"></i>
-                    <h5>Le fil est encore vide</h5>
+                    <h5>Le fil est vide</h5>
                     <p class="text-secondary mb-3">Soyez le premier à partager une recette avec la communauté&nbsp;!</p>
                     <a href="{{ path('app_macuisine_recipe_new') }}" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Publier ma première recette
@@ -220,3 +331,5 @@
     </div>
 </div>
 {% endblock %}
+
+{% block importmap %}{{ importmap(['app', 'MaCuisine/recipe-filters']) }}{% endblock %}

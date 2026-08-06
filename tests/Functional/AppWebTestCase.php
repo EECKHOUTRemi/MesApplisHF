@@ -33,18 +33,20 @@ abstract class AppWebTestCase extends WebTestCase
      * @param list<string> $roles
      * @param string $password
      * @param float|null $height
+     * @param bool $isVerified
      * @return User
      */
     protected function createUser(
         array $roles = [],
         string $password = 'motdepasse',
         ?float $height = null,
+        bool $isVerified = true,
     ): User {
         $user = new User();
         $user->setEmail(uniqid('user.', true) . '@test.local');
         $user->setUsername('testeur');
         $user->setRoles($roles);
-        $user->setIsVerified(true);
+        $user->setIsVerified($isVerified);
         $user->setCreatedAt(new \DateTimeImmutable());
         if (null !== $height) {
             $user->setHeight($height);

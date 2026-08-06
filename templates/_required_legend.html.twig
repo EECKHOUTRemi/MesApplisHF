@@ -1,0 +1,6 @@
+{#- Légende du champ obligatoire — affichée seulement si le formulaire en contient un -#}
+{%- if form|reduce((carry, child) => carry or child.vars.required, false) -%}
+    <p class="form-required-legend text-secondary small mb-3">
+        <span class="required" aria-hidden="true"></span>Champs obligatoires
+    </p>
+{%- endif -%}

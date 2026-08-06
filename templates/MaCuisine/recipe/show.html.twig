@@ -16,6 +16,32 @@
             font-size: 4rem;
             opacity: .9;
         }
+        .post-banner picture {
+            display: block;
+            width: 100%;
+        }
+        .post-banner img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            border-radius: .75rem;
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.18);
+        }
+        .banner-fallback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .35rem;
+            color: #fff;
+            opacity: .9;
+        }
+        .banner-fallback i {
+            font-size: 2.5rem;
+        }
+        .banner-fallback span {
+            font-size: .85rem;
+            font-weight: 500;
+        }
         .author-avatar {
             width: 44px;
             height: 44px;
@@ -66,7 +92,7 @@
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb mb-0 small">
             <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_recipe_index') }}" class="text-decoration-none">Recettes</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">Recettes</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{ recipe.name }}</li>
         </ol>
     </nav>
@@ -89,7 +115,27 @@
                 </div>
             </div>
             <div class="col-md-3 text-center d-none d-md-block">
-                <span class="recipe-emoji"><i class="bi bi-cup-hot" aria-hidden="true"></i></span>
+            <div class="post-banner">
+            {% if recipe.image %}
+                {% set imgPath = 'uploads/recipes/' ~ recipe.image %}
+                {% if imgPath is ondisk %}
+                    <picture>
+                        <source srcset="{{ asset(imgPath) | imagine_filter('lil_avif') }}" type="image/avif">
+                        <source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
+                        <source srcset="{{ asset(imgPath) | imagine_filter('lil_png') }}" type="image/png">
+                        <source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
+                        <img src="{{ asset(imgPath)}}" alt="{{ recipe.name }}" loading="lazy">
+                    </picture>
+                {% else %}
+                    <div class="banner-fallback">
+                        <i class="bi bi-image-alt" aria-hidden="true"></i>
+                        <span>Image indisponible</span>
+                    </div>
+                {% endif %}
+            {% else %}
+                <span class="recipe-emoji"><i class="bi bi-fork-knife" aria-hidden="true"></i></span>
+            {% endif %}
+            </div>
             </div>
         </div>
     </section>

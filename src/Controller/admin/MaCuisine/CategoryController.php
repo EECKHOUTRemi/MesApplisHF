@@ -38,7 +38,7 @@ final class CategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $category->setCreatedAt(new DateTimeImmutable);
+            $category->setCreatedAt(new DateTimeImmutable());
             $category->setCreatedBy($this->getUser());
             $entityManager->persist($category);
             $entityManager->flush();
@@ -98,7 +98,7 @@ final class CategoryController extends AbstractController
     #[Route('/{id}', name: 'app_admin_ma_cuisine_category_delete', methods: ['POST'])]
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($category);
             $entityManager->flush();
         }
