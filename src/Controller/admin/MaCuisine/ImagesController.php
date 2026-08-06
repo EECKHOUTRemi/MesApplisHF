@@ -46,7 +46,7 @@ final class ImagesController extends AbstractController
      * @return Response
      */
     #[Route('/delete/{imageToDelete}', name: 'delete', methods: ['POST'])]
-    public function delete(Request $request, string $imageToDelete, ImageHandler $imgHandler): Response 
+    public function delete(Request $request, string $imageToDelete, ImageHandler $imgHandler): Response
     {
         if (!$this->isCsrfTokenValid('delete-image', $request->request->get('_token'))) {
             $this->addFlash('danger', 'Jeton CSRF invalide.');
