@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\RelationshipRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * Relation sociale entre deux utilisateurs (amitié, demande, blocage, etc.).
@@ -11,6 +13,14 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: RelationshipRepository::class)]
 class Relationship
 {
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_ACCEPTED = 'accepted';
+
+    public const STATUSES = [
+        self::STATUS_PENDING,
+        self::STATUS_ACCEPTED
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,7 +34,8 @@ class Relationship
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user2 = null;
 
-    #[ORM\Column(length: 10)]
+    #[ORM\Column]
+    #[Assert\Choice(choices: self::STATUSES)]
     private ?string $status = null;
 
     #[ORM\Column]

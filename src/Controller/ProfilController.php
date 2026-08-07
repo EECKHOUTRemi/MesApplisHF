@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\ProfilePictureType;
+use App\Repository\RelationshipRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -26,7 +28,7 @@ final class ProfilController extends AbstractController
     }
 
     /** @return Response */
-    #[Route('/', name: 'index')]
+    #[Route(name: 'index')]
     public function index(): Response
     {
         return $this->render('profil/index.html.twig', [
@@ -71,5 +73,17 @@ final class ProfilController extends AbstractController
         }
 
         return $this->redirectToRoute('app_profil_index');
+    }
+
+    #[Route('/{id}', name: 'seeOtherUser', methods: ['GET'], requirements: ['id' => '[0-9]+'])]
+    public function seeOtherUser(int $id, UserRepository $userRepository, RelationshipRepository $relationshipRepository) : Response
+    {
+        $relationship = $relationshipRepository->findOneBy(['user1' => $this->getUser(), 'user2' => $userRepository->find($id)]);
+        $relationStatus = $relationship ? $relationship->getStatus() : null;
+
+        return $this->render('profil/index.html.twig', [
+            'profil' => $userRepository->find($id),
+            'relationStatus' => $relationStatus
+        ]);
     }
 }
