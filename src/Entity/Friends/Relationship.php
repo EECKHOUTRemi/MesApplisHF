@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Friends;
 
+use App\Entity\User;
 use App\Repository\RelationshipRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * Relation sociale entre deux utilisateurs (amitié, demande, blocage, etc.).
