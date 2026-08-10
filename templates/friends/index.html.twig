@@ -1,20 +1,172 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello FriendsController!{% endblock %}
+{% block title %}Amis
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+	<div
+		class="container py-5">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+		{# ── Barre de recherche ─────────────────────────────────────────── #}
+		<div class="row justify-content-center mb-5">
+			<div class="col-lg-6">
+				<h1 class="h4 fw-semibold mb-3">
+					<i class="bi bi-people-fill me-2 text-primary"></i>Amis
+				</h1>
+				<select id="userSearch" class="form-select" style="width: 100%" aria-label="Rechercher un utilisateur par pseudo"></select>
+			</div>
+		</div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/remie/dev/Perso/MesApplisHF/src/Controller/FriendsController.php</code></li>
-        <li>Your template at <code>C:/Users/remie/dev/Perso/MesApplisHF/templates/friends/index.html.twig</code></li>
-    </ul>
-</div>
+		<div class="row justify-content-center">
+			<div
+				class="col-lg-6">
+
+				{# ── Demandes reçues ─────────────────────────────────────── #}
+				<section class="mb-5" aria-labelledby="requests-heading">
+					<h2 class="h6 text-secondary text-uppercase fw-semibold mb-3" id="requests-heading">
+						<i class="bi bi-person-plus me-1"></i>Demandes reçues
+					</h2>
+
+					{% if pendingRequests is not empty %}
+						<ul class="list-group list-group-flush shadow-sm rounded">
+							{% for relationship in pendingRequests %}
+								<li class="list-group-item d-flex align-items-center justify-content-between gap-3 py-3">
+									<a href="{{ path('app_profil_seeOtherUser', { id: relationship.user1.id }) }}" class="d-flex align-items-center gap-3 text-decoration-none text-reset flex-grow-1">
+										{% if relationship.user1.image %}
+											<img src="{{ asset('uploads/pfp/' ~ relationship.user1.image) }}" alt="{{ relationship.user1.username }}" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+										{% else %}
+											<i class="bi bi-person-circle fs-2 text-secondary" aria-hidden="true"></i>
+										{% endif %}
+										<span class="fw-semibold">{{ relationship.user1.username }}</span>
+									</a>
+									<fieldset class="btn-group btn-group-sm">
+										<legend class="visually-hidden">Répondre à la demande</legend>
+										<form action="{{ path('app_friends_answerRequest', { id: relationship.id }) }}" method="POST">
+											<input type="hidden" name="answer" value="accepted">
+											<button type="submit" class="btn btn-success" title="Accepter">
+												<i class="bi bi-check-lg" aria-hidden="true"></i>
+												<span class="visually-hidden">Accepter</span>
+											</button>
+										</form>
+										<form action="{{ path('app_friends_removeRelationship', { user2Id: relationship.user1.id }) }}" method="POST">
+											<input type="hidden" name="redirect" value="friends">
+											<button type="submit" class="btn btn-outline-danger" title="Refuser">
+												<i class="bi bi-x-lg" aria-hidden="true"></i>
+												<span class="visually-hidden">Refuser</span>
+											</button>
+										</form>
+									</fieldset>
+								</li>
+							{% endfor %}
+						</ul>
+					{% else %}
+						<p class="text-secondary small fst-italic mb-0">Aucune demande en attente.</p>
+					{% endif %}
+				</section>
+
+				{# ── Liste d'amis ────────────────────────────────────────── #}
+				<section aria-labelledby="friends-heading">
+					<h2 class="h6 text-secondary text-uppercase fw-semibold mb-3" id="friends-heading">
+						<i class="bi bi-person-check me-1"></i>Mes amis
+					</h2>
+
+					{% if friends is not empty %}
+						<ul class="list-group list-group-flush shadow-sm rounded">
+							{% for friend in friends %}
+								<li class="list-group-item d-flex align-items-center justify-content-between gap-3 py-3">
+									<a href="{{ path('app_profil_seeOtherUser', { id: friend.id }) }}" class="d-flex align-items-center gap-3 text-decoration-none text-reset flex-grow-1">
+										{% set imgPath = friend.image ? 'uploads/pfp/' ~ friend.image : null %}
+										{% if imgPath and imgPath is ondisk %}
+											<picture>
+												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_avif') }}" type="image/avif">
+												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
+												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
+												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
+												<img src="{{ asset(imgPath) }}" alt="{{ friend.username }}" loading="lazy" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+											</picture>
+										{% else %}
+											<i class="bi bi-person-circle fs-2 text-secondary" aria-hidden="true"></i>
+										{% endif %}
+										<span class="fw-semibold">{{ friend.username }}</span>
+									</a>
+									<a href="{{ path('app_profil_seeOtherUser', { id: friend.id }) }}" class="btn btn-outline-secondary btn-sm">
+										Voir le profil
+									</a>
+								</li>
+							{% endfor %}
+						</ul>
+					{% else %}
+						<p class="text-secondary small fst-italic mb-0">Vous n'avez pas encore d'amis.</p>
+					{% endif %}
+				</section>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	{{ parent() }}
+	<script>
+		const escapeHtml = (text) => $('<span>').text(text).html();
+
+		/** Avatar <picture> avec les variantes générées par LiipImagine, ou icône de repli. */
+		const avatarHtml = (user, size) => {
+			if (!user.image) {
+				return `<i class="bi bi-person-circle me-2 text-secondary" style="font-size:${size}px"></i>`;
+			}
+
+			const sources = ['avif', 'webp', 'png', 'jpeg']
+				.filter((format) => user.sources && user.sources[format])
+				.map((format) => `<source srcset="${user.sources[format]}" type="image/${format}">`)
+				.join('');
+
+			return `<picture>${sources}<img src="${user.image}" alt="" loading="lazy" class="rounded-circle me-2" width="${size}" height="${size}" style="object-fit:cover"></picture>`;
+		};
+
+		$(function () {
+			$('#userSearch').select2({
+				theme: 'bootstrap-5',
+				placeholder: 'Rechercher un utilisateur par pseudo…',
+				allowClear: true,
+				width: '100%',
+				minimumInputLength: 2,
+				language: {
+					inputTooShort: () => 'Saisissez au moins 2 caractères…',
+					noResults: () => 'Aucun utilisateur trouvé.',
+					searching: () => 'Recherche…',
+				},
+				ajax: {
+					url: '{{ path("app_friends_getUsersAjax") }}',
+					dataType: 'json',
+					delay: 250,
+					data: (params) => ({ q: params.term }),
+					processResults: (data) => ({
+						results: data.map((i) => ({ id: i.id, text: i.username, url: i.url, image: i.image, sources: i.sources })),
+					}),
+					cache: true,
+				},
+				templateResult: (user) => {
+					if (user.loading) return user.text;
+					return $(`<span class="d-flex align-items-center">${avatarHtml(user, 32)}${escapeHtml(user.text)}</span>`);
+				},
+				templateSelection: (user) => {
+					if (!user.id) return user.text;
+					return $(`<span class="d-flex align-items-center">${avatarHtml(user, 20)}${escapeHtml(user.text)}</span>`);
+				},
+			});
+
+			$('#userSearch').on('select2:select', function (e) {
+				window.location.href = e.params.data.url;
+			});
+		});
+	</script>
 {% endblock %}

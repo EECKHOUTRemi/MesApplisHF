@@ -13,12 +13,12 @@ use Symfony\Component\Validator\Constraints\Date;
 #[ORM\Entity(repositoryClass: RelationshipRepository::class)]
 class Relationship
 {
-    public const STATUS_PENDING = 'pending';
+    public const STATUS_PENDING  = 'pending';
     public const STATUS_ACCEPTED = 'accepted';
 
     public const STATUSES = [
         self::STATUS_PENDING,
-        self::STATUS_ACCEPTED
+        self::STATUS_ACCEPTED,
     ];
 
     #[ORM\Id]

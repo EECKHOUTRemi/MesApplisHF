@@ -85,6 +85,20 @@
                         </ul>
                     </li>
                 {% endif %}
+                <li class="nav-item">
+                    {% set pendingCount = pending_friend_requests_count() %}
+                    <a class="nav-link d-flex align-items-center gap-2 {% if 'friends' in app.request.pathInfo %}active{% endif %}" href="{{ path('app_friends_index') }}" title="Amis">
+                        <i class="bi bi-people-fill fs-4" aria-hidden="true"></i>
+                        <span class="d-lg-none">Amis</span>
+                        <span class="visually-hidden d-none d-lg-inline">Amis</span>
+                        {% if pendingCount > 0 %}
+                            <span class="badge rounded-pill bg-danger" title="{{ pendingCount }} demande(s) en attente">
+                                {{ pendingCount }}
+                                <span class="visually-hidden">demande(s) d'ami en attente</span>
+                            </span>
+                        {% endif %}
+                    </a>
+                </li>
                 <li class="nav-item dropdown">
                     <button class="nav-link d-flex align-items-center gap-2 mt-1" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profil">
                         {% set imgPath = app.user and app.user.image ? 'uploads/pfp/' ~ app.user.image : null %}
@@ -94,7 +108,7 @@
                                 <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
-                                <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle">
+                                <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
                             </picture>
                         {% else %}
                             <i class="bi bi-person-circle fs-4" aria-hidden="true"></i>

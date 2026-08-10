@@ -75,15 +75,27 @@ final class ProfilController extends AbstractController
         return $this->redirectToRoute('app_profil_index');
     }
 
+    /**
+     * @param int $id
+     * @param UserRepository $userRepository
+     * @param RelationshipRepository $relationshipRepository
+     * @return Response
+     */
     #[Route('/{id}', name: 'seeOtherUser', methods: ['GET'], requirements: ['id' => '[0-9]+'])]
-    public function seeOtherUser(int $id, UserRepository $userRepository, RelationshipRepository $relationshipRepository) : Response
+    public function seeOtherUser(int $id, UserRepository $userRepository, RelationshipRepository $relationshipRepository): Response
     {
-        $relationship = $relationshipRepository->findOneBy(['user1' => $this->getUser(), 'user2' => $userRepository->find($id)]);
-        $relationStatus = $relationship ? $relationship->getStatus() : null;
+        $other = $userRepository->find($id);
+
+        if ($other === null) {
+            throw $this->createNotFoundException('Utilisateur introuvable.');
+        }
+
+        $relationship   = $relationshipRepository->findRelationShipByUsers($this->getUser(), $other);
 
         return $this->render('profil/index.html.twig', [
-            'profil' => $userRepository->find($id),
-            'relationStatus' => $relationStatus
+            'profil'         => $other,
+            'relationStatus' => $relationship?->getStatus(),
+            'relationUpdatedAt' => $relationship?->getUpdatedAt()->format('d/m/Y')
         ]);
     }
 }
