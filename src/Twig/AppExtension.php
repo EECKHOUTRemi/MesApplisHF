@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use App\Repository\RelationshipRepository;
+use App\Repository\Friends\RelationshipRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Extension\AbstractExtension;

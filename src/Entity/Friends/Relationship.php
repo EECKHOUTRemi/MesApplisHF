@@ -3,7 +3,7 @@
 namespace App\Entity\Friends;
 
 use App\Entity\User;
-use App\Repository\RelationshipRepository;
+use App\Repository\Friends\RelationshipRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 

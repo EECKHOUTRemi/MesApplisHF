@@ -2,9 +2,9 @@
 
 namespace App\Controller\admin;
 
-use App\Entity\Relationship;
+use App\Entity\Friends\Relationship;
 use App\Form\RelationshipType;
-use App\Repository\RelationshipRepository;
+use App\Repository\Friends\RelationshipRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

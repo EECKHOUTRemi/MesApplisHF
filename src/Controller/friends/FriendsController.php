@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\friends;
 
-use App\Entity\Relationship;
+use App\Entity\Friends\Relationship;
 use App\Entity\User;
-use App\Repository\RelationshipRepository;
+use App\Repository\Friends\RelationshipRepository;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
