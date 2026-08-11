@@ -39,6 +39,7 @@ services:
 
   database:
     image: postgres:16-alpine
+    # Ports for HeidiSQL access
     ports:
       - "127.0.0.1:${DB_PORT:?DB_PORT must be set}:5432"
     environment:
@@ -50,8 +51,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # No host port: the DB is reachable only by the app over the stack's private
-    # network. (Add "127.0.0.1:55432:5432" temporarily if you need host access.)
     volumes:
       - database_data:/var/lib/postgresql/data
     restart: unless-stopped

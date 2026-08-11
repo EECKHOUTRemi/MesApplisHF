@@ -31,6 +31,7 @@
 !bin/symfony_requirements
 !bin/deploy.sh
 !bin/deploy-docker.sh
+!bin/backup.sh
 !bin/phpunit
 /vendor/
 
@@ -88,3 +89,5 @@ docs/
 ###> liip/imagine-bundle ###
 /public/media/cache/
 ###< liip/imagine-bundle ###
+
+age-mesapplishf.key
