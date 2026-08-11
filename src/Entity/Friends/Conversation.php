@@ -22,7 +22,11 @@ class Conversation
     /**
      * @var Collection<int, User>
      */
+    // Conversation::$users — User is the inverse side, so Doctrine never cleans this up
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'conversations')]
+    #[ORM\JoinTable(name: 'conversation_user')]
+    #[ORM\JoinColumn(name: 'conversation_id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'user_id', onDelete: 'CASCADE')]
     private Collection $users;
 
     #[ORM\Column]

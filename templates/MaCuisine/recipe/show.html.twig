@@ -109,8 +109,8 @@
                 <h1 class="display-5 fw-bold mb-2">{{ recipe.name }}</h1>
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="author-avatar">{{ recipe.author.username|first|upper }}</span>
-                        <span>par <strong>{{ recipe.author.username }}</strong></span>
+                        <span class="author-avatar">{{ recipe.author.username|first|upper ?? "" }}</span>
+                        <span>par <strong>{{ recipe.author.username ?? "Compte supprimé" }}</strong></span>
                     </div>
                 </div>
             </div>

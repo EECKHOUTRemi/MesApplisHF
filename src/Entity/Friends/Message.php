@@ -24,7 +24,7 @@ class Message
     private Conversation $conversation;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private User $author;
 
     #[ORM\Column]
@@ -72,17 +72,17 @@ class Message
         return $this;
     }
 
-    /** @return User */
-    public function getAuthor(): User
+    /** @return null|User */
+    public function getAuthor(): ?User
     {
         return $this->author;
     }
 
     /**
-     * @param User $author
+     * @param null|User $author
      * @return static
      */
-    public function setAuthor(User $author): static
+    public function setAuthor(?User $author): static
     {
         $this->author = $author;
 

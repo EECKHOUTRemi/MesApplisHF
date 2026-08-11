@@ -16,7 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class MessageRepository extends ServiceEntityRepository
 {
     /** Un message « non lu » est un message reçu — jamais un des siens. */
-    private const RECEIVED = 'm.author != :reader';
+    private const RECEIVED = '(m.author IS NULL OR m.author != :reader)';
 
     private const UNREAD = 'm.readAt IS NULL';
 

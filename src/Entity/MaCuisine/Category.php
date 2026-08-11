@@ -27,7 +27,7 @@ class Category
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $createdBy = null;
 
     /** @return int|null */
