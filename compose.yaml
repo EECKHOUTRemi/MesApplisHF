@@ -23,6 +23,11 @@ services:
       MAILER_DSN: ${SYMFONY_MAILER_DSN:-null://null}
       # URL generation in CLI/emails (e.g. mesapplishf.fr, test.mesapplishf.fr).
       DEFAULT_URI: ${DEFAULT_URI:-http://localhost}
+      # Mercure: the app publishes over the stack's private network ("mercure"
+      # resolves to the hub service), the browser subscribes via the public URL.
+      MERCURE_URL: http://mercure/.well-known/mercure
+      MERCURE_PUBLIC_URL: ${MERCURE_PUBLIC_URL:?MERCURE_PUBLIC_URL must be set}
+      MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET:?MERCURE_JWT_SECRET must be set}
       # FrankenPHP listens on :80 inside the container; the host proxy terminates TLS.
       SERVER_NAME: ":80"
       # Trust the host reverse proxy so Symfony reads the real client IP/scheme.
@@ -59,17 +64,25 @@ services:
     image: dunglas/mercure
     restart: unless-stopped
     environment:
-      # Uncomment the following line to disable HTTPS,
-      #SERVER_NAME: ':80'
-      MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-      MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-      # Set the URL of your Symfony project (without trailing slash!) as value of the cors_origins directive
+      # Plain HTTP on :80 inside the container, like "app"; the host proxy
+      # terminates TLS. The browser refuses SSE over the hub's self-signed cert.
+      SERVER_NAME: ':80'
+      # Same secret the app signs its publish/subscribe JWTs with.
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET:?MERCURE_JWT_SECRET must be set}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET:?MERCURE_JWT_SECRET must be set}
+      # Must match the origin the browser loads the app from, scheme included and
+      # no trailing slash. "localhost" and "127.0.0.1" are NOT interchangeable:
+      # they are distinct origins and distinct cookie domains.
       MERCURE_EXTRA_DIRECTIVES: |
-        cors_origins http://127.0.0.1:8000
-    # Comment the following line to disable the development mode
-    command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
+        cors_origins ${MERCURE_CORS_ORIGIN:?MERCURE_CORS_ORIGIN must be set}
+    # No "command" override: the image's default Caddyfile requires a valid JWT to
+    # subscribe. The dev.Caddyfile shipped by the recipe allows anonymous
+    # subscribers, which would expose every conversation.
+    # Published only on loopback; the host proxy forwards /.well-known/mercure here.
+    ports:
+      - "127.0.0.1:${MERCURE_PORT:?MERCURE_PORT must be set}:80"
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost/healthz"]
+      test: ["CMD", "curl", "-f", "http://localhost/healthz"]
       timeout: 5s
       retries: 5
       start_period: 60s
