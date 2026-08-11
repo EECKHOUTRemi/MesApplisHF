@@ -90,4 +90,6 @@ docs/
 /public/media/cache/
 ###< liip/imagine-bundle ###
 
-age-mesapplishf.key
+# Private keys (age backup identity, ...) — never committed, and ideally never
+# stored in this directory at all.
+*.key
