@@ -26,6 +26,24 @@ class RelationshipRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne toutes les relations, les deux participants déjà chargés et la plus
+     * récente en tête. Le `addSelect` évite une requête par ligne à l'affichage.
+     *
+     * @return Relationship[]
+     */
+    public function findAllWithUsers(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->addSelect('u1', 'u2')
+            ->leftJoin('r.user1', 'u1')
+            ->leftJoin('r.user2', 'u2')
+            ->orderBy('r.createdAt', 'DESC')
+            ->addOrderBy('r.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Retourne les amis acceptés d'un utilisateur (dans les deux sens de la relation).
      *
      * @param UserInterface $user

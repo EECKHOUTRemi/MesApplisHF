@@ -1,34 +1,70 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Relationship{% endblock %}
+{% block title %}Relation #{{ relationship.id }} · Admin{% endblock %}
 
 {% block body %}
-    <h1>Relationship</h1>
+<div class="container py-4" style="max-width: 820px;">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ relationship.id }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ relationship.status }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ relationship.createdAt ? relationship.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ relationship.updatedAt ? relationship.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+	<nav aria-label="breadcrumb" class="mb-3">
+		<ol class="breadcrumb mb-0 small">
+			<li class="breadcrumb-item"><a href="{{ path('app_index') }}" class="text-decoration-none">Accueil</a></li>
+			<li class="breadcrumb-item"><a href="{{ path('app_relationship_index') }}" class="text-decoration-none">Relations</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Relation #{{ relationship.id }}</li>
+		</ol>
+	</nav>
 
-    <a href="{{ path('app_relationship_index') }}">back to list</a>
+	<div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
+		<div>
+			<h1 class="h4 mb-1 fw-bold">
+				<i class="bi bi-people me-2" aria-hidden="true"></i>Relation #{{ relationship.id }}
+			</h1>
+			<p class="text-secondary mb-0 small">Détail de la relation entre deux comptes.</p>
+		</div>
+		<a href="{{ path('app_relationship_edit', { id: relationship.id }) }}" class="btn btn-primary">
+			<i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Modifier
+		</a>
+	</div>
 
-    <a href="{{ path('app_relationship_edit', {'id': relationship.id}) }}">edit</a>
+	<div class="card border-0 shadow-sm mb-4">
+		<div class="card-body">
+			<dl class="row mb-0">
+				<dt class="col-sm-4">Statut</dt>
+				<dd class="col-sm-8">
+					<span class="badge {{ relationship.accepted ? 'text-bg-success' : 'text-bg-warning' }}">
+						<i class="bi {{ relationship.accepted ? 'bi-check-circle' : 'bi-hourglass-split' }}" aria-hidden="true"></i>
+						{{ relationship.statusLabel }}
+					</span>
+				</dd>
 
-    {{ include('admin/relationship/_delete_form.html.twig') }}
+				<dt class="col-sm-4">Demandeur</dt>
+				<dd class="col-sm-8">
+					{{ include('admin/relationship/_user_link.html.twig', { user: relationship.user1 }, with_context = false) }}
+				</dd>
+
+				<dt class="col-sm-4">Destinataire</dt>
+				<dd class="col-sm-8">
+					{{ include('admin/relationship/_user_link.html.twig', { user: relationship.user2 }, with_context = false) }}
+				</dd>
+
+				<dt class="col-sm-4">Créée le</dt>
+				<dd class="col-sm-8">
+					{{ relationship.createdAt ? relationship.createdAt|date('d/m/Y à H:i') : '—' }}
+				</dd>
+
+				<dt class="col-sm-4">Dernière mise à jour</dt>
+				<dd class="col-sm-8 mb-0">
+					{{ relationship.updatedAt ? relationship.updatedAt|date('d/m/Y à H:i') : '—' }}
+				</dd>
+			</dl>
+		</div>
+	</div>
+
+	<div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+		<a href="{{ path('app_relationship_index') }}" class="btn btn-outline-secondary">
+			<i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour à la liste
+		</a>
+		{{ include('admin/relationship/_delete_form.html.twig') }}
+	</div>
+
+</div>
 {% endblock %}

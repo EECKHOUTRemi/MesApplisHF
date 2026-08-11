@@ -1,0 +1,12 @@
+{# ─────────────────────────────────────────────────────────────────────────
+   Un participant d'une relation, lié à sa fiche admin.
+   user : App\Entity\User|null — null si le compte a été supprimé
+   ───────────────────────────────────────────────────────────────────────── #}
+{% if user %}
+	<a href="{{ path('app_user_show', { id: user.id }) }}" class="text-decoration-none">
+		{{ user.username }}
+		<span class="text-secondary small">({{ user.email }})</span>
+	</a>
+{% else %}
+	<span class="text-secondary fst-italic">Compte supprimé</span>
+{% endif %}

@@ -24,10 +24,15 @@ final class RelationshipController extends AbstractController
     public function index(RelationshipRepository $relationshipRepository): Response
     {
         return $this->render('admin/relationship/index.html.twig', [
-            'relationships' => $relationshipRepository->findAll(),
+            'relationships' => $relationshipRepository->findAllWithUsers(),
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/new', name: 'app_relationship_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -36,8 +41,13 @@ final class RelationshipController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Horodatage posé ici, comme côté utilisateur : jamais saisi à la main.
+            $relationship->setCreatedAt(new \DateTimeImmutable());
+
             $entityManager->persist($relationship);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Relation créée.');
 
             return $this->redirectToRoute('app_relationship_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -73,7 +83,10 @@ final class RelationshipController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $relationship->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->flush();
+
+            $this->addFlash('success', 'Relation mise à jour.');
 
             return $this->redirectToRoute('app_relationship_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -99,6 +112,8 @@ final class RelationshipController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $relationship->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($relationship);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Relation supprimée.');
         }
 
         return $this->redirectToRoute('app_relationship_index', [], Response::HTTP_SEE_OTHER);

@@ -21,6 +21,12 @@ class Relationship
         self::STATUS_ACCEPTED,
     ];
 
+    /** Libellés affichés, partagés par le formulaire admin et les vues. */
+    public const STATUS_LABELS = [
+        self::STATUS_PENDING  => 'En attente',
+        self::STATUS_ACCEPTED => 'Acceptée',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -88,6 +94,18 @@ class Relationship
     public function getStatus(): ?string
     {
         return $this->status;
+    }
+
+    /** @return string */
+    public function getStatusLabel(): string
+    {
+        return self::STATUS_LABELS[$this->status] ?? (string) $this->status;
+    }
+
+    /** @return bool */
+    public function isAccepted(): bool
+    {
+        return $this->status === self::STATUS_ACCEPTED;
     }
 
     /**
