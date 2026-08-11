@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\ProfilePictureType;
 use App\Repository\Friends\RelationshipRepository;
+use App\Repository\MaCuisine\RecipeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -79,11 +80,16 @@ final class ProfilController extends AbstractController
      * @param int $id
      * @param UserRepository $userRepository
      * @param RelationshipRepository $relationshipRepository
+     * @param RecipeRepository $recipeRepository
      * @return Response
      */
     #[Route('/{id}', name: 'seeOtherUser', methods: ['GET'], requirements: ['id' => '[0-9]+'])]
-    public function seeOtherUser(int $id, UserRepository $userRepository, RelationshipRepository $relationshipRepository): Response
-    {
+    public function seeOtherUser(
+        int $id,
+        UserRepository $userRepository,
+        RelationshipRepository $relationshipRepository,
+        RecipeRepository $recipeRepository,
+    ): Response {
         $other = $userRepository->find($id);
 
         if ($other === null) {
@@ -95,7 +101,9 @@ final class ProfilController extends AbstractController
         return $this->render('profil/index.html.twig', [
             'profil'         => $other,
             'relationStatus' => $relationship?->getStatus(),
-            'relationUpdatedAt' => $relationship?->getUpdatedAt()?->format('d/m/Y')
+            'relationUpdatedAt' => $relationship?->getUpdatedAt()?->format('d/m/Y'),
+            // Déjà visibles de tous dans le fil MaCuisine : rien de nouveau n'est exposé.
+            'recipes'        => $recipeRepository->findBy(['author' => $other], ['createdAt' => 'DESC']),
         ]);
     }
 }
