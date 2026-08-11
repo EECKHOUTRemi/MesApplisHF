@@ -87,11 +87,11 @@ final class FriendsController extends AbstractController
         requirements: ['user2Id' => self::ID_REQUIREMENT]
     )]
     public function removeRelationship(
-        int $user2Id, Request $request,
+        int $user2Id,
+        Request $request,
         RelationshipRepository $relationshipRepository,
         EntityManagerInterface $em
-    ): Response
-    {
+    ): Response {
         /** @var User $user1 */
         $user1 = $this->getUser();
 
@@ -119,11 +119,11 @@ final class FriendsController extends AbstractController
         requirements: ['id' => self::ID_REQUIREMENT]
     )]
     public function answerRequest(
-        int $id, Request $request,
+        int $id,
+        Request $request,
         RelationshipRepository $relationshipRepository,
         EntityManagerInterface $em
-    ): Response
-    {
+    ): Response {
         $answer = $request->request->get('answer');
 
         if (!in_array($answer, Relationship::STATUSES)) {

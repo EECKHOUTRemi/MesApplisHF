@@ -63,8 +63,7 @@ final class ProfilController extends AbstractController
             }
 
             $extension = strtolower((string) ($imageFile->guessExtension() ?:
-                $imageFile->getClientOriginalExtension() ?: 'bin')
-            );
+                $imageFile->getClientOriginalExtension() ?: 'bin'));
             $newFilename = bin2hex(random_bytes(16)) . '.' . $extension;
             $imageFile->move($this->profileImagesDirectory, $newFilename);
             $user->setImage($newFilename);
