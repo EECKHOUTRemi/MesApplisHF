@@ -10,10 +10,15 @@ env:
   # GHCR exige un nom en minuscules ; github.repository donne "EECKHOUTRemi/MesApplisHF"
   IMAGE: ghcr.io/eeckhoutremi/mesapplishf
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   # ── Stage 0: lint & static analysis (parallel with build) ───────
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
@@ -37,7 +42,8 @@ jobs:
 
   # ── Stage 1: build ──────────────────────────────────────────────
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v4
@@ -59,7 +65,8 @@ jobs:
   # ── Stage 2: test ───────────────────────────────────────────────
   test:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     services:
       database:
         image: postgres:16-alpine
@@ -68,7 +75,7 @@ jobs:
           POSTGRES_USER: app
           POSTGRES_PASSWORD: app
         ports:
-          - 5432:5432
+          - 55440:5432
         options: >-
           --health-cmd "pg_isready -U app -d app"
           --health-interval 10s --health-timeout 5s --health-retries 5
@@ -87,10 +94,10 @@ jobs:
           php bin/console --env=test doctrine:database:create --if-not-exists
           php bin/console --env=test doctrine:migrations:migrate --no-interaction
         env:
-          DATABASE_URL: postgresql://app:app@127.0.0.1:5432/app?serverVersion=16
+          DATABASE_URL: postgresql://app:app@127.0.0.1:55440/app?serverVersion=16
       - run: php bin/phpunit --coverage-clover=coverage.xml
         env:
-          DATABASE_URL: postgresql://app:app@127.0.0.1:5432/app?serverVersion=16
+          DATABASE_URL: postgresql://app:app@127.0.0.1:55440/app?serverVersion=16
       - uses: actions/upload-artifact@v7
         with:
           name: coverage
@@ -99,7 +106,8 @@ jobs:
   # ── Stage 3a: scan — Trivy (runs parallel with Sonar) ───────────
   scan-trivy:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7 # needed for the Trivy ignore policy
       - uses: actions/download-artifact@v8
@@ -116,11 +124,16 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           ignore-policy: .trivy/ignore-policy.rego # kernel-header CVEs (see file)
+      - name: Reclaim disk
+        if: always()
+        run: docker image rm -f "$IMAGE:${{ github.sha }}" || true
+
 
   # ── Stage 3b: scan — SonarQube (runs parallel with Trivy) ───────
   scan-sonar:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
         with:
@@ -147,7 +160,8 @@ jobs:
       (github.ref == 'refs/heads/main' ||
       github.ref == 'refs/heads/develop' ||
       startsWith(github.ref, 'refs/heads/release/'))
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     permissions:
       packages: write # for GHCR
     steps:
@@ -168,11 +182,19 @@ jobs:
           docker tag $IMAGE:${{ github.sha }} $IMAGE:$BRANCH_TAG
           docker push $IMAGE:${{ github.sha }}
           docker push $IMAGE:$BRANCH_TAG
+      - name: Reclaim disk
+        if: always()
+        run: |
+          BRANCH_TAG="${GITHUB_REF_NAME//\//-}"
+          docker image rm -f "$IMAGE:${{ github.sha }}" "$IMAGE:$BRANCH_TAG" || true
+
+
 
   # ── (conditional) deploy ────────────────────────────────────────
   deploy:
     needs: push
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     environment: ${{ github.ref_name }} # per-branch env + approvals
     steps:
       - run: echo "Deploy ${{ env.IMAGE }}:${{ github.ref_name }} to ${{ github.ref_name }}"
