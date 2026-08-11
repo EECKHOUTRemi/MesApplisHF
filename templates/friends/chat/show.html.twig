@@ -74,6 +74,44 @@
 			resize: none;
 			max-height: 140px;
 		}
+
+		/* Nécessaire pour que .text-truncate fonctionne dans un flex */
+		.min-w-0 {
+			min-width: 0;
+		}
+
+		/* Carte de recette, dans une bulle comme dans la fenêtre de sélection */
+		.chat-recipe {
+			background-color: var(--bs-body-bg);
+			color: var(--bs-body-color);
+			border: 1px solid var(--bs-border-color);
+			border-radius: .75rem;
+			padding: .4rem;
+		}
+		.chat-recipe:hover,
+		.chat-recipe:focus {
+			background-color: var(--bs-tertiary-bg);
+			color: var(--bs-body-color);
+		}
+
+		.chat-recipe-thumb {
+			width: 48px;
+			height: 48px;
+			flex-shrink: 0;
+			object-fit: cover;
+		}
+		.chat-recipe-thumb-empty {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: var(--bs-secondary-bg);
+			color: var(--bs-secondary-color);
+		}
+
+		#recipeList {
+			max-height: 55vh;
+			overflow-y: auto;
+		}
 	</style>
 {% endblock %}
 
@@ -181,7 +219,18 @@
 					{# ── Zone de saisie ──────────────────────────────────── #}
 					<div class="card-footer bg-body p-3">
 						{% if is_granted('CONVERSATION_POST', conversation) %}
+							{# Pastille de la recette choisie, remplie par la fenêtre de sélection #}
+							<output class="alert alert-secondary d-none align-items-center gap-2 py-2 px-3 mb-2" id="recipeSelected">
+								<i class="bi bi-journal-richtext flex-shrink-0" aria-hidden="true"></i>
+								<span class="flex-grow-1 text-truncate min-w-0" id="recipeSelectedName"></span>
+								<button type="button" class="btn-close flex-shrink-0" id="recipeClear" aria-label="Retirer la recette jointe"></button>
+							</output>
+
 							<form method="post" action="{{ path('app_friends_chat_sendMessage', { id: conversation.id }) }}" class="d-flex align-items-end gap-2" id="messageForm">
+								<button type="button" class="btn btn-outline-secondary flex-shrink-0" data-bs-toggle="modal" data-bs-target="#recipeModal" title="Joindre une recette">
+									<i class="bi bi-journal-plus" aria-hidden="true"></i>
+									<span class="visually-hidden">Joindre une recette</span>
+								</button>
 								<label for="messageInput" class="visually-hidden">Votre message</label>
 								<textarea
 									id="messageInput"
@@ -191,6 +240,7 @@
 									maxlength="2000"
 									placeholder="Écrivez un message…"
 									aria-describedby="messageHelp"></textarea>
+								<input type="hidden" name="recipe" value="" id="recipeInput">
 								<input type="hidden" name="_token" value="{{ csrf_token('chat_message') }}">
 								<button type="submit" class="btn btn-primary d-flex align-items-center gap-2 flex-shrink-0" title="Envoyer">
 									<i class="bi bi-send-fill" aria-hidden="true"></i>
@@ -210,6 +260,38 @@
 				</div>
 			</div>
 		</div>
+
+		{# ── Sélection d'une recette à joindre ───────────────────────────────── #}
+		{# Hors de la carte : celle-ci est en overflow-hidden. #}
+		{% if is_granted('CONVERSATION_POST', conversation) %}
+			<div class="modal fade" id="recipeModal" tabindex="-1" aria-labelledby="recipeModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h2 class="modal-title h5" id="recipeModalLabel">
+								<i class="bi bi-journal-richtext me-2 text-primary" aria-hidden="true"></i>Joindre une recette
+							</h2>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+						</div>
+						<div class="modal-body p-0">
+							<div class="p-3 border-bottom">
+								<label for="recipeSearch" class="visually-hidden">Rechercher une recette</label>
+								<div class="input-group">
+									<span class="input-group-text bg-body">
+										<i class="bi bi-search text-secondary" aria-hidden="true"></i>
+									</span>
+									<input type="search" id="recipeSearch" class="form-control border-start-0" placeholder="Rechercher une recette…" autocomplete="off">
+								</div>
+							</div>
+							{# Rempli à l'ouverture par ChatController::recipes() #}
+							<div id="recipeList" data-recipes-url="{{ path('app_friends_chat_recipes') }}" aria-live="polite">
+								<p class="text-secondary text-center small fst-italic my-4">Chargement…</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
 	</div>
 {% endblock %}
 
@@ -270,24 +352,92 @@
 			};
 			input.addEventListener('input', autosize);
 
+			// ── Recette jointe ───────────────────────────────────────────────
+			const recipeInput = document.getElementById('recipeInput');
+			const recipeChip = document.getElementById('recipeSelected');
+			const recipeChipName = document.getElementById('recipeSelectedName');
+			const recipeClear = document.getElementById('recipeClear');
+			const recipeList = document.getElementById('recipeList');
+			const recipeSearch = document.getElementById('recipeSearch');
+			const recipeModal = document.getElementById('recipeModal');
+
+			const selectRecipe = (id, name) => {
+				recipeInput.value = id ?? '';
+				recipeChipName.textContent = name ?? '';
+				recipeChip.classList.toggle('d-none', !id);
+				recipeChip.classList.toggle('d-flex', Boolean(id));
+			};
+
+			recipeClear.addEventListener('click', () => {
+				selectRecipe(null, null);
+				input.focus();
+			});
+
+			// Liste rendue par le serveur : mêmes vignettes que dans les bulles.
+			const loadRecipes = async (term) => {
+				const url = new URL(recipeList.dataset.recipesUrl, window.location.origin);
+
+				if (term) {
+					url.searchParams.set('q', term);
+				}
+
+				try {
+					const response = await fetch(url, { headers: { 'Accept': 'text/html' } });
+
+					recipeList.innerHTML = response.ok
+						? await response.text()
+						: '<p class="text-danger text-center small my-4">Impossible de charger les recettes.</p>';
+				} catch {
+					recipeList.innerHTML = '<p class="text-danger text-center small my-4">Impossible de charger les recettes.</p>';
+				}
+			};
+
+			recipeModal.addEventListener('show.bs.modal', () => loadRecipes(recipeSearch.value.trim()));
+			recipeModal.addEventListener('shown.bs.modal', () => recipeSearch.focus());
+
+			// Frappe au clavier : une requête après la pause, pas une par touche.
+			let searchTimer = null;
+			recipeSearch.addEventListener('input', () => {
+				window.clearTimeout(searchTimer);
+				searchTimer = window.setTimeout(() => loadRecipes(recipeSearch.value.trim()), 250);
+			});
+
+			recipeList.addEventListener('click', (event) => {
+				const choice = event.target.closest('[data-recipe-id]');
+
+				if (!choice) {
+					return;
+				}
+
+				selectRecipe(choice.dataset.recipeId, choice.dataset.recipeName);
+				bootstrap.Modal.getOrCreateInstance(recipeModal).hide();
+				input.focus();
+			});
+
+			// ── Envoi ────────────────────────────────────────────────────────
 			form.addEventListener('submit', async (event) => {
 				event.preventDefault();
 
 				const body = new FormData(form);
 				const content = body.get('message').trim();
+				const recipe = body.get('recipe');
+				const recipeName = recipeChipName.textContent;
 
-				if (content === '') {
+				// Une recette jointe se suffit à elle-même.
+				if (content === '' && recipe === '') {
 					return;
 				}
 
-				// Vidé tout de suite : le message revient par le flux Mercure.
+				// Vidés tout de suite : le message revient par le flux Mercure.
 				input.value = '';
+				selectRecipe(null, null);
 				autosize();
 
 				const response = await fetch(form.action, { method: 'POST', body });
 
 				if (!response.ok) {
 					input.value = content;
+					selectRecipe(recipe || null, recipeName);
 					autosize();
 				}
 			});
@@ -296,7 +446,7 @@
 				if (event.key === 'Enter' && !event.shiftKey) {
 					event.preventDefault();
 
-					if (input.value.trim() !== '') {
+					if (input.value.trim() !== '' || recipeInput.value !== '') {
 						form.requestSubmit();
 					}
 				}

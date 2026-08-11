@@ -3,6 +3,7 @@
 namespace App\Repository\MaCuisine;
 
 use App\Entity\MaCuisine\Recipe;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -62,5 +63,32 @@ class RecipeRepository extends ServiceEntityRepository
             ->orderBy('r.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Recettes proposées à la sélection dans le chat : toutes les recettes sont
+     * consultables par tous, mais celles de l'utilisateur remontent en tête.
+     *
+     * @param string|null $term
+     * @param User $author
+     * @param int $limit
+     * @return Recipe[]
+     */
+    public function findForAttachment(?string $term, User $author, int $limit = 20): array
+    {
+        $qb = $this->createQueryBuilder('r')
+            // HIDDEN : sert uniquement au tri, la requête retourne bien des Recipe.
+            ->addSelect('CASE WHEN r.author = :author THEN 0 ELSE 1 END AS HIDDEN mine')
+            ->setParameter('author', $author)
+            ->orderBy('mine', 'ASC')
+            ->addOrderBy('r.createdAt', 'DESC')
+            ->setMaxResults($limit);
+
+        if ($term !== null && $term !== '') {
+            $qb->andWhere('LOWER(r.name) LIKE :term')
+                ->setParameter('term', '%' . mb_strtolower($term) . '%');
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

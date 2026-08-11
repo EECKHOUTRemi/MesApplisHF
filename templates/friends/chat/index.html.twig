@@ -138,7 +138,11 @@
 													<i class="bi bi-reply-fill me-1" aria-hidden="true"></i><span class="visually-hidden">Vous : </span>
 												</span>
 												<span data-chat-preview class="{{ lastMessage ? '' : 'fst-italic' }}">
-													{{- lastMessage ? lastMessage.content : "Aucun message pour l'instant." -}}
+													{%- if lastMessage -%}
+														{{- include('friends/chat/_preview.txt.twig', { message: lastMessage })|e -}}
+													{%- else -%}
+														Aucun message pour l'instant.
+													{%- endif -%}
 												</span>
 											</span>
 											<span class="badge rounded-pill bg-primary flex-shrink-0 {{ row.unreadCount > 0 ? '' : 'd-none' }}" data-chat-unread data-count="{{ row.unreadCount }}">

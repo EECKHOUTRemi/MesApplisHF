@@ -5,6 +5,7 @@ namespace App\Tests\Functional\Friends;
 use App\Entity\Friends\Conversation;
 use App\Entity\Friends\Message;
 use App\Entity\Friends\Relationship;
+use App\Entity\MaCuisine\Recipe;
 use App\Entity\User;
 use App\Mercure\ChatTopics;
 use App\Tests\Functional\AppWebTestCase;
@@ -170,6 +171,79 @@ final class ChatControllerTest extends AppWebTestCase
         self::assertSame([], $this->publisher()->updates());
     }
 
+    public function testSendMessageAttachesARecipeWithoutAnyText(): void
+    {
+        [$me, $friend] = $this->createFriends();
+        $conversation  = $this->createConversation($me, $friend);
+        $recipe        = $this->createRecipe($me, 'Tarte aux pommes');
+
+        $this->login($me);
+        $tokens = $this->openConversation($conversation);
+
+        $this->client->request('POST', $this->messageUrl($conversation), [
+            'message' => '',
+            'recipe'  => (string) $recipe->getId(),
+            '_token'  => $tokens['message'],
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+
+        $sent = $this->em()->getRepository(Message::class)->findOneBy(['conversation' => $conversation]);
+
+        self::assertInstanceOf(Message::class, $sent);
+        self::assertNull($sent->getContent());
+        self::assertSame($recipe->getId(), $sent->getRecipeAttached()?->getId());
+
+        // Sans texte, l'aperçu se rabat sur le nom de la recette.
+        $theirs = $this->payloadOf($this->publisher(), ChatTopics::forUser($friend));
+
+        self::assertSame('Recette : Tarte aux pommes', $theirs['preview']);
+        self::assertStringContainsString('Tarte aux pommes', $theirs['html']);
+    }
+
+    public function testSendMessageRejectsAnUnknownRecipe(): void
+    {
+        [$me, $friend] = $this->createFriends();
+        $conversation  = $this->createConversation($me, $friend);
+
+        $this->login($me);
+        $tokens = $this->openConversation($conversation);
+
+        // Recette créée puis supprimée : l'identifiant est certain de ne plus exister.
+        $recipe = $this->createRecipe($me, 'Recette éphémère');
+        $gone   = (string) $recipe->getId();
+
+        $this->em()->remove($this->reload($recipe));
+        $this->em()->flush();
+
+        $this->client->request('POST', $this->messageUrl($conversation), [
+            'message' => self::CONTENT,
+            'recipe'  => $gone,
+            '_token'  => $tokens['message'],
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertSame([], $this->publisher()->updates());
+    }
+
+    public function testRecipePickerListsTheRecipesMatchingTheSearch(): void
+    {
+        // La base n'est pas vidée entre les exécutions : le nom doit être unique.
+        $name = 'Gratin-' . bin2hex(random_bytes(4));
+        $me   = $this->createUser();
+        $this->createRecipe($me, $name);
+
+        $this->login($me);
+        $crawler = $this->client->request('GET', self::BASE . '/recipes', ['q' => mb_strtolower($name)]);
+
+        self::assertResponseIsSuccessful();
+        self::assertCount(1, $crawler->filter('[data-recipe-name="' . $name . '"]'));
+
+        $crawler = $this->client->request('GET', self::BASE . '/recipes', ['q' => 'introuvable-' . uniqid()]);
+
+        self::assertCount(0, $crawler->filter('[data-recipe-id]'));
+    }
+
     public function testMarkAsReadClearsTheUnreadMessages(): void
     {
         [$me, $friend] = $this->createFriends();
@@ -249,6 +323,24 @@ final class ChatControllerTest extends AppWebTestCase
         $this->em()->flush();
 
         return $message;
+    }
+
+    /**
+     * @param User $author
+     * @param string $name
+     * @return Recipe
+     */
+    private function createRecipe(User $author, string $name): Recipe
+    {
+        $recipe = (new Recipe())
+            ->setAuthor($this->reload($author))
+            ->setName($name)
+            ->setCreatedAt(new \DateTimeImmutable());
+
+        $this->em()->persist($recipe);
+        $this->em()->flush();
+
+        return $recipe;
     }
 
     /**

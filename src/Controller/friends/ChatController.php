@@ -10,6 +10,7 @@ use App\Mercure\ChatTopics;
 use App\Repository\Friends\ConversationRepository;
 use App\Repository\Friends\MessageRepository;
 use App\Repository\Friends\RelationshipRepository;
+use App\Repository\MaCuisine\RecipeRepository;
 use App\Repository\UserRepository;
 use App\Security\Voter\ConversationVoter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -60,6 +61,29 @@ final class ChatController extends AbstractController
         }
 
         return $this->render('friends/chat/index.html.twig', ['rows' => $rows]);
+    }
+
+    /**
+     * Liste des recettes proposées à la pièce jointe, rendue en fragment HTML
+     * pour la fenêtre de sélection. Déclarée avant `/{id}` par lisibilité :
+     * l'identifiant est numérique, les deux routes ne peuvent pas se recouvrir.
+     *
+     * @param Request $request
+     * @param RecipeRepository $recipes
+     * @param User $me
+     * @return Response
+     */
+    #[Route('/recipes', name: 'recipes', methods: ['GET'])]
+    public function recipes(
+        Request $request,
+        RecipeRepository $recipes,
+        #[CurrentUser] User $me,
+    ): Response {
+        $term = trim($request->query->getString('q'));
+
+        return $this->render('friends/chat/_recipe_picker.html.twig', [
+            'recipes' => $recipes->findForAttachment($term === '' ? null : $term, $me),
+        ]);
     }
 
     /**
@@ -135,6 +159,7 @@ final class ChatController extends AbstractController
      * @param Request $request
      * @param EntityManagerInterface $em
      * @param HubInterface $hub
+     * @param RecipeRepository $recipes
      * @param User $me
      * @return Response
      */
@@ -145,22 +170,31 @@ final class ChatController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         HubInterface $hub,
+        RecipeRepository $recipes,
         #[CurrentUser] User $me,
     ): Response {
         if (!$this->isCsrfTokenValid('chat_message', $request->request->getString('_token'))) {
             throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
-        $content = trim($request->request->getString('message'));
+        $content  = trim($request->request->getString('message'));
+        $recipeId = $request->request->getInt('recipe');
+        $recipe   = $recipeId > 0 ? $recipes->find($recipeId) : null;
 
-        if ($content === '' || mb_strlen($content) > self::MAX_LENGTH) {
+        if ($recipeId > 0 && $recipe === null) {
+            return $this->json(['error' => 'Recette introuvable.'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Une recette jointe se suffit à elle-même : le texte devient facultatif.
+        if (($content === '' && $recipe === null) || mb_strlen($content) > self::MAX_LENGTH) {
             return $this->json(['error' => 'Message invalide.'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $message = (new Message())
             ->setConversation($conversation)
             ->setAuthor($me)
-            ->setContent($content);
+            ->setContent($content === '' ? null : $content)
+            ->setRecipeAttached($recipe);
 
         $conversation->setLastMessageAt($message->getSentAt());
 
@@ -223,7 +257,8 @@ final class ChatController extends AbstractController
         return json_encode([
             'conversationId' => $message->getConversation()->getId(),
             'fromMe'         => $fromMe,
-            'preview'        => $message->getContent(),
+            // Même libellé que la liste des conversations, d'où le rendu partagé.
+            'preview'        => trim($this->renderView('friends/chat/_preview.txt.twig', ['message' => $message])),
             'sentAt'         => $message->getSentAt()->format(\DateTimeInterface::ATOM),
             'time'           => $message->getSentAt()->format('H:i'),
             'html'           => $this->renderView('friends/chat/_message.html.twig', [

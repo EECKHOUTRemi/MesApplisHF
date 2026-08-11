@@ -42,9 +42,6 @@ class Message
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Recipe $recipeAttached = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $fileAttached = null;
-
     public function __construct()
     {
         $this->sentAt = new \DateTimeImmutable();
@@ -160,23 +157,6 @@ class Message
     public function setRecipeAttached(?Recipe $recipeAttached): static
     {
         $this->recipeAttached = $recipeAttached;
-
-        return $this;
-    }
-
-    /** @return string|null */
-    public function getFileAttached(): ?string
-    {
-        return $this->fileAttached;
-    }
-
-    /**
-     * @param string|null $fileAttached
-     * @return static
-     */
-    public function setFileAttached(?string $fileAttached): static
-    {
-        $this->fileAttached = $fileAttached;
 
         return $this;
     }

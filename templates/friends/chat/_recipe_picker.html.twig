@@ -1,0 +1,43 @@
+{# ─────────────────────────────────────────────────────────────────────────
+   Fragment chargé par la fenêtre « Joindre une recette »
+   (ChatController::recipes). Chaque bouton porte de quoi construire la
+   pastille de sélection sans nouvel aller-retour serveur.
+   recipes : App\Entity\MaCuisine\Recipe[]
+   ───────────────────────────────────────────────────────────────────────── #}
+{% if recipes is not empty %}
+	<div class="list-group list-group-flush">
+		{% for recipe in recipes %}
+			<button type="button" class="list-group-item list-group-item-action d-flex align-items-center gap-3"
+				data-recipe-id="{{ recipe.id }}"
+				data-recipe-name="{{ recipe.name }}">
+				{% set imgPath = recipe.image ? 'uploads/recipes/' ~ recipe.image : null %}
+				{% if imgPath and imgPath is ondisk %}
+					<picture>
+						<source srcset="{{ asset(imgPath) | imagine_filter('lil_avif') }}" type="image/avif">
+						<source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
+						<source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
+						<img src="{{ asset(imgPath) }}" alt="" loading="lazy" class="rounded chat-recipe-thumb">
+					</picture>
+				{% else %}
+					<span class="rounded chat-recipe-thumb chat-recipe-thumb-empty" aria-hidden="true">
+						<i class="bi bi-fork-knife"></i>
+					</span>
+				{% endif %}
+
+				<span class="text-start min-w-0">
+					<span class="d-block fw-semibold text-truncate">{{ recipe.name }}</span>
+					<span class="d-block small text-secondary text-truncate">
+						{%- if recipe.author == app.user -%}
+							Ma recette
+						{%- else -%}
+							{{ recipe.author ? recipe.author.username : 'Auteur inconnu' }}
+						{%- endif -%}
+						{% if recipe.category %} · {{ recipe.category.name }}{% endif %}
+					</span>
+				</span>
+			</button>
+		{% endfor %}
+	</div>
+{% else %}
+	<p class="text-secondary text-center small fst-italic my-4">Aucune recette ne correspond à votre recherche.</p>
+{% endif %}
