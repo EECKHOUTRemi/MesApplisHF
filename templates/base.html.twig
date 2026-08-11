@@ -38,6 +38,19 @@
                     #adminDropdown:focus-visible {
                         color: #fffbb2;
                     }
+                    /* Pastille de notification posée *sur* l'icône (messages non lus,
+                       demandes d'ami) : ancrée dans le coin haut-droit de son cadre.
+                       Le liseré reprend le fond de la navbar pour la détacher du
+                       pictogramme. */
+                    .nav-badge {
+                        top: 0;
+                        right: -.35rem;
+                        font-size: .55rem;
+                        line-height: 1;
+                        padding: .25em .4em;
+                        min-width: 1.4em;
+                        border: 2px solid var(--bs-dark);
+                    }
                 </style>
             {% endif %}
         {% endblock %}
