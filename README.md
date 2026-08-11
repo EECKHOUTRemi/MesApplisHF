@@ -111,12 +111,17 @@ Each user subscribes to a single private topic, `/friends/chat/user/<id>` — se
 
 ### Local development
 
+**A hub is optional.** Without one the app runs normally — messages send, persist and
+show up on reload; only the live push is missing. A failed publish is logged, not fatal
+(`src/EventSubscriber/MercureCookieSubscriber.php`). The test suite never needs a hub
+either: `config/services_test.yaml` mocks it.
+
 The Docker stacks (`bin/deploy-docker.sh`) already run a `mercure` service. With
 `symfony serve` you need a hub of your own — the defaults in `.env` expect it on port
-3000:
+3000, bound to loopback:
 
 ```bash
-docker run --rm -p 3000:80 \
+docker run -d --name mahf-mercure -p 127.0.0.1:3000:80 \
   -e SERVER_NAME=':80' \
   -e MERCURE_PUBLISHER_JWT_KEY='!ChangeThisMercureHubJWTSecretKey!' \
   -e MERCURE_SUBSCRIBER_JWT_KEY='!ChangeThisMercureHubJWTSecretKey!' \
@@ -124,9 +129,20 @@ docker run --rm -p 3000:80 \
   dunglas/mercure
 ```
 
-Then browse the app on `http://127.0.0.1:8000` — **not** `http://localhost:8000`, which
-is a different origin and a different cookie host. Without a hub running the site still
-works; only the live updates are missing, and a failed publish is logged.
+Prefer no Docker at all? The project ships standalone binaries for every platform,
+Windows included, on its [releases page](https://github.com/dunglas/mercure/releases).
+They are Caddy builds driven by the `Caddyfile` in the archive, plus the same environment
+variables as above.
+
+Whichever you pick, browse the app on `http://127.0.0.1:8000` — **not**
+`http://localhost:8000`, which is a different origin and a different cookie host, so the
+hub would reject the subscription. If you have run `symfony server:ca:install`, the local
+server serves **https**, and `cors_origins` has to match that scheme too.
+
+> Running the full Docker stack instead? The app image has no bind mounts, so every code
+> change needs `up -d --build`, and that stack's database and mailer are separate from
+> your local ones (`SYMFONY_MAILER_DSN=null://null` discards all mail, so account
+> verification e-mails never arrive).
 
 ### Reverse proxy
 
