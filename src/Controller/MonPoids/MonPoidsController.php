@@ -12,7 +12,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class MonPoidsController extends AbstractController
 {
     /** @return Response */
-    #[Route('/', name: 'index')]
+    #[Route(name: 'index')]
     public function index(): Response
     {
         // le template MonPoids/index.html.twig n'existe pas : la vraie page

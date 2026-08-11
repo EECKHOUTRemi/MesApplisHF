@@ -16,7 +16,7 @@ final class MeasurementAdminController extends AbstractController
      * @param MeasurementRepository $measurementRepository
      * @return Response
      */
-    #[Route('/', name: 'index', methods: ['GET'])]
+    #[Route(name: 'index', methods: ['GET'])]
     public function index(MeasurementRepository $measurementRepository): Response
     {
         return $this->render('admin/MonPoids/measurement/index.html.twig', [

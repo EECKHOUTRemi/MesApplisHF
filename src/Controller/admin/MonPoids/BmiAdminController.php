@@ -16,7 +16,7 @@ final class BmiAdminController extends AbstractController
      * @param BmiRepository $bmiRepository
      * @return Response
      */
-    #[Route('/', name: 'index', methods: ['GET'])]
+    #[Route(name: 'index', methods: ['GET'])]
     public function index(BmiRepository $bmiRepository): Response
     {
         return $this->render('admin/MonPoids/bmi/index.html.twig', [
