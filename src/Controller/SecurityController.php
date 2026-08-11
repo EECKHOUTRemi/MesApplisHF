@@ -55,7 +55,9 @@ class SecurityController extends AbstractController
      */
     public function logout(): void
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        throw new \LogicException(
+            'This method can be blank - it will be intercepted by the logout key on your firewall.'
+        );
     }
 
     /**
@@ -91,7 +93,8 @@ class SecurityController extends AbstractController
 
             $this->addFlash(
                 'success',
-                "Votre compte a été créé. Consultez votre boîte mail pour confirmer votre adresse e-mail avant de vous connecter."
+                "Votre compte a été créé. " .
+                "Consultez votre boîte mail pour confirmer votre adresse e-mail avant de vous connecter."
             );
 
             return $this->redirectToRoute('app_login');

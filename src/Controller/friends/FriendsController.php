@@ -80,8 +80,17 @@ final class FriendsController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    #[Route('/removeRelationship/{user2Id}', name: 'removeRelationship', methods: ['POST'], requirements: ['user2Id' => self::ID_REQUIREMENT])]
-    public function removeRelationship(int $user2Id, Request $request, RelationshipRepository $relationshipRepository, EntityManagerInterface $em): Response
+    #[Route(
+        '/removeRelationship/{user2Id}',
+        name: 'removeRelationship',
+        methods: ['POST'],
+        requirements: ['user2Id' => self::ID_REQUIREMENT]
+    )]
+    public function removeRelationship(
+        int $user2Id, Request $request,
+        RelationshipRepository $relationshipRepository,
+        EntityManagerInterface $em
+    ): Response
     {
         /** @var User $user1 */
         $user1 = $this->getUser();
@@ -103,8 +112,17 @@ final class FriendsController extends AbstractController
         return $this->redirectToRoute('app_profil_seeOtherUser', ['id' => $user2Id]);
     }
 
-    #[Route('/answerRequest/{id}', name: 'answerRequest', methods: ['POST'], requirements: ['id' => self::ID_REQUIREMENT])]
-    public function answerRequest(int $id, Request $request, RelationshipRepository $relationshipRepository, EntityManagerInterface $em): Response
+    #[Route(
+        '/answerRequest/{id}',
+        name: 'answerRequest',
+        methods: ['POST'],
+        requirements: ['id' => self::ID_REQUIREMENT]
+    )]
+    public function answerRequest(
+        int $id, Request $request,
+        RelationshipRepository $relationshipRepository,
+        EntityManagerInterface $em
+    ): Response
     {
         $answer = $request->request->get('answer');
 

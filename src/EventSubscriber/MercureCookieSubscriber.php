@@ -48,9 +48,9 @@ final class MercureCookieSubscriber implements EventSubscriberInterface
      */
     public function onKernelResponse(ResponseEvent $event): void
     {
-    $request = $event->getRequest();
+        $request = $event->getRequest();
         $user = $this->security->getUser();
-        
+
         if (!$event->isMainRequest() || $request->getRequestFormat() !== 'html' || !$user instanceof User) {
             return;
         }
