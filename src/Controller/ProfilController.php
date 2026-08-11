@@ -95,7 +95,7 @@ final class ProfilController extends AbstractController
         return $this->render('profil/index.html.twig', [
             'profil'         => $other,
             'relationStatus' => $relationship?->getStatus(),
-            'relationUpdatedAt' => $relationship?->getUpdatedAt()->format('d/m/Y')
+            'relationUpdatedAt' => $relationship?->getUpdatedAt()?->format('d/m/Y')
         ]);
     }
 }
