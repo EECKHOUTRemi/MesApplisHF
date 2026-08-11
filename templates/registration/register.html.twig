@@ -36,6 +36,12 @@
                             {{ form_errors(registrationForm.plainPassword) }}
                         </div>
 
+                        {% set cguLabel = 'J\'ai lu et j\'accèpte les <a href="' ~ path('app_terms') ~ '">Conditions Générales d\'Utilisation</a>' %}
+                        {{ form_row(registrationForm.cgu, { label: cguLabel, label_html: true }) }}
+
+                        {% set privacyLabel = 'J\'ai lu et j\'accèpte la <a href="' ~ path('app_privacy') ~ '">Politique de Confidentialité</a>' %}
+                        {{ form_row(registrationForm.privacy, { label: privacyLabel, label_html: true }) }}
+
                         <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
                     {{ form_end(registrationForm) }}
                 </div>
