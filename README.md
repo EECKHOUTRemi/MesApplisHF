@@ -89,6 +89,93 @@ Make sure the domain `mesapplishf.fr` is **verified** in the [Resend dashboard](
 | ------- | -------- |
 | User registration | `templates/registration/confirmation_email.html.twig` |
 
+## Realtime (Mercure)
+
+The friends chat pushes new messages over [Mercure](https://mercure.rocks) (SSE): the
+message bubble, the conversation list and the navbar unread badge all update without a
+reload.
+
+Each user subscribes to a single private topic, `/friends/chat/user/<id>` — see
+`src/Mercure/ChatTopics.php`. The authorization cookie is signed on every HTML page by
+`src/EventSubscriber/MercureCookieSubscriber.php`, so the connection opened in
+`templates/_chat_realtime.html.twig` works site-wide.
+
+### Environment variables
+
+| Variable | Meaning |
+| -------- | ------- |
+| `MERCURE_URL` | Where **the app** publishes. Inside Docker this is `http://mercure/.well-known/mercure` (the hub's service name on the stack's private network). |
+| `MERCURE_PUBLIC_URL` | Where **the browser** subscribes. Must share a host with the site, otherwise the authorization cookie cannot be issued. |
+| `MERCURE_JWT_SECRET` | Signs the publish/subscribe JWTs. The app and the hub must use the same value. |
+| `MERCURE_CORS_ORIGIN` | Hub-side only. The exact origin the app is served from, scheme included, no trailing slash. `localhost` and `127.0.0.1` are **not** interchangeable. |
+
+### Local development
+
+The Docker stacks (`bin/deploy-docker.sh`) already run a `mercure` service. With
+`symfony serve` you need a hub of your own — the defaults in `.env` expect it on port
+3000:
+
+```bash
+docker run --rm -p 3000:80 \
+  -e SERVER_NAME=':80' \
+  -e MERCURE_PUBLISHER_JWT_KEY='!ChangeThisMercureHubJWTSecretKey!' \
+  -e MERCURE_SUBSCRIBER_JWT_KEY='!ChangeThisMercureHubJWTSecretKey!' \
+  -e MERCURE_EXTRA_DIRECTIVES='cors_origins http://127.0.0.1:8000' \
+  dunglas/mercure
+```
+
+Then browse the app on `http://127.0.0.1:8000` — **not** `http://localhost:8000`, which
+is a different origin and a different cookie host. Without a hub running the site still
+works; only the live updates are missing, and a failed publish is logged.
+
+### Reverse proxy
+
+Each deployed stack publishes its hub on loopback only, so the host proxy has to forward
+`/.well-known/mercure` to it:
+
+| Stack | App port | Hub port |
+| ----- | -------- | -------- |
+| prod (`mesapplishf.fr`) | 8080 | 3080 |
+| test (`test.mesapplishf.fr`) | 8081 | 3081 |
+| dev (`dev.mesapplishf.fr`) | 8082 | 3082 |
+
+SSE is a long-lived, unbuffered response — the defaults of both nginx and Caddy will
+break it, so the flushing directives below are mandatory:
+
+```nginx
+# nginx — inside the server block, before the catch-all location
+location /.well-known/mercure {
+    proxy_pass http://127.0.0.1:3080;   # 3081 / 3082 for the other stacks
+
+    proxy_http_version 1.1;
+    proxy_set_header Host              $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header Connection        "";
+
+    # Without these the events pile up in a buffer and the stream dies on timeout.
+    proxy_buffering           off;
+    proxy_cache               off;
+    proxy_read_timeout        24h;
+    chunked_transfer_encoding off;
+}
+```
+
+```caddy
+# Caddy — flush_interval -1 disables response buffering
+handle /.well-known/mercure* {
+    reverse_proxy 127.0.0.1:3080 {
+        flush_interval -1
+    }
+}
+```
+
+### Tests
+
+Functional tests never reach a hub: `config/services_test.yaml` swaps the default hub for
+`MockHub`, backed by `tests/Mercure/CollectingPublisher.php`, which records the published
+updates so they can be asserted on. Nothing needs to be running.
+
 ## Project layout
 
 ```
