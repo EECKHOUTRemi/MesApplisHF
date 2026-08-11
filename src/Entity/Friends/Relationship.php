@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Friends;
 
-use App\Repository\RelationshipRepository;
+use App\Entity\User;
+use App\Repository\Friends\RelationshipRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Relation sociale entre deux utilisateurs (amitié, demande, blocage, etc.).
@@ -11,20 +13,35 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: RelationshipRepository::class)]
 class Relationship
 {
+    public const STATUS_PENDING  = 'pending';
+    public const STATUS_ACCEPTED = 'accepted';
+
+    public const STATUSES = [
+        self::STATUS_PENDING,
+        self::STATUS_ACCEPTED,
+    ];
+
+    /** Libellés affichés, partagés par le formulaire admin et les vues. */
+    public const STATUS_LABELS = [
+        self::STATUS_PENDING  => 'En attente',
+        self::STATUS_ACCEPTED => 'Acceptée',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete:"CASCADE")]
     private ?User $user1 = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete:"CASCADE")]
     private ?User $user2 = null;
 
-    #[ORM\Column(length: 10)]
+    #[ORM\Column]
+    #[Assert\Choice(choices: self::STATUSES)]
     private ?string $status = null;
 
     #[ORM\Column]
@@ -77,6 +94,18 @@ class Relationship
     public function getStatus(): ?string
     {
         return $this->status;
+    }
+
+    /** @return string */
+    public function getStatusLabel(): string
+    {
+        return self::STATUS_LABELS[$this->status] ?? (string) $this->status;
+    }
+
+    /** @return bool */
+    public function isAccepted(): bool
+    {
+        return $this->status === self::STATUS_ACCEPTED;
     }
 
     /**

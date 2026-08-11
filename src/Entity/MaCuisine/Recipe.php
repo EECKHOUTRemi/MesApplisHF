@@ -22,7 +22,7 @@ class Recipe
     private ?int $id = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $author = null;
 
     #[ORM\Column]
@@ -54,6 +54,7 @@ class Recipe
      * @var Collection<int, Utensil>
      */
     #[ORM\ManyToMany(targetEntity: Utensil::class)]
+    #[ORM\JoinColumn(onDelete:"CASCADE")]
     private ?Collection $utensil = null;
 
     #[ORM\ManyToOne]

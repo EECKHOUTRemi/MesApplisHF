@@ -7,6 +7,8 @@ parameters:
         - src
         - tests
     symfony:
-        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+        # Conteneur de test : il contient les services de l'application *et* les
+        # doublures déclarées dans config/services_test.yaml, que `tests/` référence.
+        containerXmlPath: var/cache/test/App_KernelTestDebugContainer.xml
     doctrine:
         objectManagerLoader: tests/object-manager.php

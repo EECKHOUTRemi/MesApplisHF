@@ -64,7 +64,7 @@ class UserJourneyTest extends WebTestCase
         $this->assertResponseIsSuccessful();
 
         // 4. L'historique IMC est vide pour un nouveau compte
-        $this->client->request('GET', '/monpoids/bmi/');
+        $this->client->request('GET', '/monpoids/bmi');
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('tbody', 'Aucun enregistrement');
 
@@ -75,7 +75,7 @@ class UserJourneyTest extends WebTestCase
             'bmi[weight]' => '72',
             'bmi[createdAt]' => '2026-06-10',
         ]);
-        $this->assertResponseRedirects('/monpoids/bmi/');
+        $this->assertResponseRedirects('/monpoids/bmi');
         $this->client->followRedirect();
         $this->assertSelectorTextContains('tbody', '23.51');
 
@@ -92,7 +92,7 @@ class UserJourneyTest extends WebTestCase
 
         // 7. Déconnexion : les pages protégées redirigent à nouveau vers /login
         $this->client->request('GET', '/logout');
-        $this->client->request('GET', '/monpoids/bmi/');
+        $this->client->request('GET', '/monpoids/bmi');
         $this->assertResponseRedirects();
         $location = (string) $this->client->getResponse()->headers->get('Location');
         $this->assertStringContainsString('/login', $location);

@@ -28,7 +28,8 @@
                 <thead class="table-light">
                     <tr>
                         <th scope="col" style="width: 70px;">#</th>
-                        <th scope="col">Statut</th>
+                        <th scope="col">Relation</th>
+                        <th scope="col" style="width: 130px;">Statut</th>
                         <th scope="col" class="d-none d-md-table-cell" style="width: 170px;">Créée le</th>
                         <th scope="col" class="d-none d-lg-table-cell" style="width: 170px;">Mise à jour</th>
                         <th scope="col" class="text-end" style="width: 140px;">Actions</th>
@@ -38,7 +39,21 @@
                 {% for relationship in relationships %}
                     <tr>
                         <td class="text-secondary">{{ relationship.id }}</td>
-                        <td class="fw-semibold">{{ relationship.status }}</td>
+                        <td>
+                            {# Le sens compte : user1 a envoyé la demande, user2 l'a reçue. #}
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                {{ include('admin/relationship/_user_link.html.twig', { user: relationship.user1 }, with_context = false) }}
+                                <i class="bi bi-arrow-right text-secondary" aria-hidden="true"></i>
+                                <span class="visually-hidden">a envoyé une demande à</span>
+                                {{ include('admin/relationship/_user_link.html.twig', { user: relationship.user2 }, with_context = false) }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge {{ relationship.accepted ? 'text-bg-success' : 'text-bg-warning' }}">
+                                <i class="bi {{ relationship.accepted ? 'bi-check-circle' : 'bi-hourglass-split' }}" aria-hidden="true"></i>
+                                {{ relationship.statusLabel }}
+                            </span>
+                        </td>
                         <td class="d-none d-md-table-cell text-secondary small">
                             {{ relationship.createdAt ? relationship.createdAt|date('d/m/Y H:i') : '—' }}
                         </td>
@@ -56,7 +71,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="5" class="text-center text-secondary py-4">
+                        <td colspan="6" class="text-center text-secondary py-4">
                             <i class="bi bi-inbox d-block fs-3 mb-2" aria-hidden="true"></i>
                             Aucune relation enregistrée.
                         </td>

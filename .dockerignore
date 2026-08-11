@@ -14,6 +14,10 @@ public/assets/
 .env.local
 .env.*.local
 
+# Private keys must never enter the build context: the image is deployed to the
+# very server the backups are encrypted against.
+*.key
+
 Dockerfile
 compose.yaml
 compose.override.yaml

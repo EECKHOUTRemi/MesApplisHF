@@ -1,0 +1,4 @@
+# Shell scripts are executed on Linux (deploys, cron backups): always check out
+# with LF endings. A CRLF shebang fails with a misleading
+# "bad interpreter: No such file or directory".
+*.sh text eol=lf

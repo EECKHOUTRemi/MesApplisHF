@@ -9,7 +9,7 @@ use App\Tests\Functional\AppWebTestCase;
 /** Teste le CRUD des mensurations MonPoids : création, affichage, édition et suppression. */
 class MeasurementControllerTest extends AppWebTestCase
 {
-    private const INDEX_PATH = '/monpoids/measurement/';
+    private const INDEX_PATH = '/monpoids/measurement';
 
     /**
      * @param User $user
@@ -46,7 +46,7 @@ class MeasurementControllerTest extends AppWebTestCase
         $user = $this->createUser();
         $this->login($user);
 
-        $this->client->request('GET', self::INDEX_PATH . 'new');
+        $this->client->request('GET', self::INDEX_PATH . '/new');
         $this->assertResponseIsSuccessful();
 
         $this->client->submitForm('Enregistrer', [
@@ -73,7 +73,7 @@ class MeasurementControllerTest extends AppWebTestCase
         $measurement = $this->createMeasurement($user);
         $this->login($user);
 
-        $this->client->request('GET', self::INDEX_PATH . $measurement->getId());
+        $this->client->request('GET', self::INDEX_PATH . '/' . $measurement->getId());
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'Détail mesure');
@@ -85,7 +85,7 @@ class MeasurementControllerTest extends AppWebTestCase
         $measurement = $this->createMeasurement($user);
         $this->login($user);
 
-        $this->client->request('GET', self::INDEX_PATH . $measurement->getId() . '/edit');
+        $this->client->request('GET', self::INDEX_PATH . '/' . $measurement->getId() . '/edit');
         $this->assertResponseIsSuccessful();
 
         $this->client->submitForm('Mettre à jour', [
@@ -105,9 +105,9 @@ class MeasurementControllerTest extends AppWebTestCase
         $this->login($user);
 
         // le formulaire de suppression (token CSRF inclus) est sur la page d'édition
-        $crawler = $this->client->request('GET', self::INDEX_PATH . $measurementId . '/edit');
+        $crawler = $this->client->request('GET', self::INDEX_PATH . '/' . $measurementId . '/edit');
         // ^= : tolère une query string ajoutée à l'action (ex. ?from=...)
-        $form = $crawler->filter('form[action^="' . self::INDEX_PATH . $measurementId . '"]')->form();
+        $form = $crawler->filter('form[action^="' . self::INDEX_PATH . '/' . $measurementId . '"]')->form();
         $this->client->submit($form);
 
         $this->assertResponseRedirects(self::INDEX_PATH);

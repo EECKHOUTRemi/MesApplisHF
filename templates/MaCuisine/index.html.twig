@@ -242,7 +242,7 @@
                                     <h5 class="card-title mb-1">{{ recipe.name }}</h5>
                                     <p class="text-secondary small mb-2">
                                         <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
-                                        {{ recipe.author.username }}
+                                        {{ recipe.author.username ?? "Compte supprimé" }}
                                         {% if recipe.createdAt %}
                                             <span class="mx-1">·</span>
                                             <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>

@@ -215,9 +215,9 @@
                 <div class="card-body">
                     <header class="d-flex align-items-center justify-content-between mb-3">
                         <div class="d-flex align-items-center gap-3">
-                            <span class="post-avatar">{{ recipe.author.username|first|upper }}</span>
+                            <span class="post-avatar">{{ (recipe.author.username ?? "Compte supprimé")|first|upper }}</span>
                             <div>
-                                <div class="post-author">{{ recipe.author.username }}</div>
+                                <div class="post-author">{{ recipe.author.username ?? "Compte supprimé" }}</div>
                                 <div class="post-meta">
                                     {% if recipe.createdAt %}
                                         <i class="bi bi-clock me-1" aria-hidden="true"></i>{{ recipe.createdAt|date('d/m/Y à H:i') }}

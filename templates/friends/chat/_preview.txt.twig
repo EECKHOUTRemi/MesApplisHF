@@ -1,0 +1,14 @@
+{# ─────────────────────────────────────────────────────────────────────────
+   Résumé d'un message sur une seule ligne : liste des conversations et
+   charge utile Mercure passent par ici pour rester cohérentes.
+   Gabarit texte : la sortie part telle quelle en JSON, et l'échappement est
+   à la charge de l'appelant HTML (`|e`).
+   message : App\Entity\Friends\Message
+   ───────────────────────────────────────────────────────────────────────── #}
+{%- if message.content -%}
+	{{- message.content -}}
+{%- elseif message.recipeAttached -%}
+	Recette : {{ message.recipeAttached.name }}
+{%- else -%}
+	Recette supprimée
+{%- endif -%}

@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\ProfilePictureType;
+use App\Repository\Friends\RelationshipRepository;
+use App\Repository\MaCuisine\RecipeRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -26,7 +29,7 @@ final class ProfilController extends AbstractController
     }
 
     /** @return Response */
-    #[Route('/', name: 'index')]
+    #[Route(name: 'index')]
     public function index(): Response
     {
         return $this->render('profil/index.html.twig', [
@@ -59,7 +62,8 @@ final class ProfilController extends AbstractController
                 $filesystem->remove($this->profileImagesDirectory . '/' . $user->getImage());
             }
 
-            $extension = strtolower((string) ($imageFile->guessExtension() ?: $imageFile->getClientOriginalExtension() ?: 'bin'));
+            $extension = strtolower((string) ($imageFile->guessExtension() ?:
+                $imageFile->getClientOriginalExtension() ?: 'bin'));
             $newFilename = bin2hex(random_bytes(16)) . '.' . $extension;
             $imageFile->move($this->profileImagesDirectory, $newFilename);
             $user->setImage($newFilename);
@@ -71,5 +75,36 @@ final class ProfilController extends AbstractController
         }
 
         return $this->redirectToRoute('app_profil_index');
+    }
+
+    /**
+     * @param int $id
+     * @param UserRepository $userRepository
+     * @param RelationshipRepository $relationshipRepository
+     * @param RecipeRepository $recipeRepository
+     * @return Response
+     */
+    #[Route('/{id}', name: 'seeOtherUser', methods: ['GET'], requirements: ['id' => '[0-9]+'])]
+    public function seeOtherUser(
+        int $id,
+        UserRepository $userRepository,
+        RelationshipRepository $relationshipRepository,
+        RecipeRepository $recipeRepository,
+    ): Response {
+        $other = $userRepository->find($id);
+
+        if ($other === null) {
+            throw $this->createNotFoundException('Utilisateur introuvable.');
+        }
+
+        $relationship   = $relationshipRepository->findRelationShipByUsers($this->getUser(), $other);
+
+        return $this->render('profil/index.html.twig', [
+            'profil'         => $other,
+            'relationStatus' => $relationship?->getStatus(),
+            'relationUpdatedAt' => $relationship?->getUpdatedAt()?->format('d/m/Y'),
+            // Déjà visibles de tous dans le fil MaCuisine : rien de nouveau n'est exposé.
+            'recipes'        => $recipeRepository->findBy(['author' => $other], ['createdAt' => 'DESC']),
+        ]);
     }
 }
