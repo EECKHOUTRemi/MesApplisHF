@@ -51,7 +51,7 @@ class RelationshipType extends AbstractType
      * @param User $user
      * @return string
      */
-    private static function userLabel(User $user): string
+    public static function userLabel(User $user): string
     {
         return sprintf('%s (%s)', $user->getUsername(), $user->getEmail());
     }
@@ -60,7 +60,7 @@ class RelationshipType extends AbstractType
      * @param UserRepository $repository
      * @return QueryBuilder
      */
-    private static function orderedByUsername(UserRepository $repository): QueryBuilder
+    public static function orderedByUsername(UserRepository $repository): QueryBuilder
     {
         return $repository->createQueryBuilder('u')->orderBy('u.username', 'ASC');
     }

@@ -48,20 +48,10 @@ final class MercureCookieSubscriber implements EventSubscriberInterface
      */
     public function onKernelResponse(ResponseEvent $event): void
     {
-        if (!$event->isMainRequest()) {
-            return;
-        }
-
-        $request = $event->getRequest();
-
-        // Seules les pages HTML embarquent la barre de navigation, donc l'abonnement.
-        if ($request->getRequestFormat() !== 'html') {
-            return;
-        }
-
+    $request = $event->getRequest();
         $user = $this->security->getUser();
-
-        if (!$user instanceof User) {
+        
+        if (!$event->isMainRequest() || $request->getRequestFormat() !== 'html' || !$user instanceof User) {
             return;
         }
 
