@@ -28,6 +28,8 @@ jobs:
           php bin/console lint:yaml config --parse-tags
           php bin/console lint:twig templates
           php bin/console lint:container
+          # Dumps the test container, which PHPStan reads (voir phpstan.dist.neon).
+          php bin/console lint:container --env=test
       - name: PHP_CodeSniffer (PSR-12, config phpcs.xml.dist)
         run: vendor/bin/phpcs
       - name: PHPStan (niveau 6 + baseline, config phpstan.dist.neon)
