@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 final class ProfilControllerTest extends AppWebTestCase
 {
-    private const INDEX_PATH = '/profil/';
+    private const INDEX_PATH = '/profil';
     private const PICTURE_PATH = '/profil/photo';
 
     private Filesystem $filesystem;
@@ -133,7 +133,7 @@ final class ProfilControllerTest extends AppWebTestCase
 
         // chaque entrée pointe au bon endroit et porte son icône bootstrap
         $this->assertSame(1, $menu->filter('a[href="' . self::INDEX_PATH . '"]')->count());
-        $this->assertSame(1, $menu->filter('a[href="/settings/"]')->count());
+        $this->assertSame(1, $menu->filter('a[href="/settings"]')->count());
         $this->assertSame(1, $menu->filter('a[href="/logout"]')->count());
         $this->assertCount(3, $menu->filter('a.dropdown-item i.bi'));
     }
