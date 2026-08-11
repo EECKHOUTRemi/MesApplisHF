@@ -1,0 +1,24 @@
+{# ─────────────────────────────────────────────────────────────────────────
+   Une bulle de message. Rendue dans la page au chargement, et poussée telle
+   quelle par Mercure à chaque nouveau message.
+   message : App\Entity\Friends\Message
+   fromMe  : bool — dépend du lecteur, d'où un rendu par participant
+   grouped : bool — message consécutif du même auteur (queue supprimée)
+   ───────────────────────────────────────────────────────────────────────── #}
+<div class="d-flex {{ fromMe ? 'justify-content-end' : 'justify-content-start' }} {{ grouped ? 'chat-grouped mt-1' : 'mt-3' }}">
+	<div class="chat-bubble shadow-sm {{ fromMe ? 'chat-bubble-out' : 'chat-bubble-in' }}">
+		<div>{{ message.content|nl2br }}</div>
+		<div class="chat-meta d-flex align-items-center justify-content-end gap-1 mt-1 {{ fromMe ? '' : 'text-secondary' }}">
+			<time datetime="{{ message.sentAt|date('c') }}">{{ message.sentAt|date('H:i') }}</time>
+			{% if fromMe %}
+				{% if message.readAt %}
+					<i class="bi bi-check2-all" title="Lu" aria-hidden="true"></i>
+					<span class="visually-hidden">Lu</span>
+				{% else %}
+					<i class="bi bi-check2" title="Envoyé" aria-hidden="true"></i>
+					<span class="visually-hidden">Envoyé</span>
+				{% endif %}
+			{% endif %}
+		</div>
+	</div>
+</div>

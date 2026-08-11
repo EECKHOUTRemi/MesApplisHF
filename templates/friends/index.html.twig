@@ -95,9 +95,17 @@
 										{% endif %}
 										<span class="fw-semibold">{{ friend.username }}</span>
 									</a>
-									<a href="{{ path('app_profil_seeOtherUser', { id: friend.id }) }}" class="btn btn-outline-secondary btn-sm">
-										Voir le profil
-									</a>
+									<div class="d-flex align-items-center gap-2 flex-shrink-0">
+										<form action="{{ path('app_friends_chat_start', { id: friend.id }) }}" method="POST">
+											<button type="submit" class="btn btn-primary btn-sm d-flex align-items-center gap-1" title="Envoyer un message">
+												<i class="bi bi-chat-dots" aria-hidden="true"></i>
+												<span class="d-none d-sm-inline">Message</span>
+											</button>
+										</form>
+										<a href="{{ path('app_profil_seeOtherUser', { id: friend.id }) }}" class="btn btn-outline-secondary btn-sm">
+											Voir le profil
+										</a>
+									</div>
 								</li>
 							{% endfor %}
 						</ul>

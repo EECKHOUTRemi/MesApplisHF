@@ -1,0 +1,306 @@
+{% extends 'base.html.twig' %}
+
+{# `friend` peut être null si l'autre compte a été supprimé : la conversation
+   reste consultable, mais l'en-tête ne peut plus pointer vers un profil. #}
+{% set friendName = friend ? friend.username : 'Utilisateur supprimé' %}
+{% set avatarColor = '#d63384' %}
+
+{% block title %}Discussion avec {{ friendName }}
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<style>
+		/* Pastille d'initiale utilisée quand l'utilisateur n'a pas de photo */
+		.chat-avatar {
+			color: #fff;
+			font-weight: 600;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.chat-avatar img {
+			object-fit: cover;
+		}
+
+		/* Fil de discussion : seule zone qui défile */
+		.chat-thread {
+			min-height: 45vh;
+			max-height: 60vh;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			background-color: var(--bs-tertiary-bg);
+		}
+
+		.chat-bubble {
+			max-width: 75%;
+			padding: .5rem .85rem;
+			border-radius: 1.15rem;
+			word-wrap: break-word;
+		}
+		.chat-bubble-in {
+			background-color: var(--bs-body-bg);
+			border-bottom-left-radius: .35rem;
+		}
+		.chat-bubble-out {
+			background-color: var(--bs-primary);
+			color: #fff;
+			border-bottom-right-radius: .35rem;
+		}
+		/* Messages consécutifs du même auteur : coin « queue » supprimé */
+		.chat-grouped .chat-bubble-in {
+			border-bottom-left-radius: 1.15rem;
+		}
+		.chat-grouped .chat-bubble-out {
+			border-bottom-right-radius: 1.15rem;
+		}
+
+		.chat-meta {
+			font-size: .72rem;
+		}
+		.chat-bubble-out .chat-meta {
+			color: rgba(255, 255, 255, .75);
+		}
+
+		/* Séparateur de date, trait de part et d'autre du libellé */
+		.chat-day::before,
+		.chat-day::after {
+			content: "";
+			flex: 1 1 auto;
+			border-top: 1px solid var(--bs-border-color);
+		}
+
+		#messageInput {
+			resize: none;
+			max-height: 140px;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<div class="container py-4">
+		<div class="row justify-content-center">
+			<div class="col-lg-7">
+				<div class="card shadow-sm overflow-hidden">
+					{# ── En-tête de la conversation ──────────────────────── #}
+					<div class="card-header bg-body d-flex align-items-center gap-3 py-3">
+						<a href="{{ path('app_friends_chat_index') }}" class="btn btn-link text-secondary p-0 lh-1" title="Retour aux messages">
+							<i class="bi bi-arrow-left fs-4" aria-hidden="true"></i>
+							<span class="visually-hidden">Retour aux messages</span>
+						</a>
+
+						{% set headerTag = friend ? 'a' : 'div' %}
+						<{{ headerTag }} {% if friend %}href="{{ path('app_profil_seeOtherUser', { id: friend.id }) }}"{% endif %} class="d-flex align-items-center gap-3 text-decoration-none text-reset flex-grow-1 min-w-0">
+							<div class="position-relative flex-shrink-0">
+								{% set imgPath = friend and friend.image ? 'uploads/pfp/' ~ friend.image : null %}
+								{% if imgPath and imgPath is ondisk %}
+									<picture>
+										<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_avif') }}" type="image/avif">
+										<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
+										<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
+										<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
+										<img src="{{ asset(imgPath) }}" alt="" class="rounded-circle chat-avatar" width="44" height="44">
+									</picture>
+								{% else %}
+									<span class="rounded-circle chat-avatar" style="width:44px;height:44px;background-color: {{ avatarColor }}" aria-hidden="true">
+										{{ friendName|slice(0, 1)|upper }}
+									</span>
+								{% endif %}
+							</div>
+
+							<div class="text-truncate">
+								<div class="fw-semibold text-truncate">{{ friendName }}</div>
+							</div>
+						</{{ headerTag }}>
+
+						{% if friend %}
+							<div class="dropdown flex-shrink-0">
+								<button class="btn btn-link text-secondary p-0 lh-1" type="button" id="chatActions" data-bs-toggle="dropdown" aria-expanded="false" title="Actions">
+									<i class="bi bi-three-dots-vertical fs-5" aria-hidden="true"></i>
+									<span class="visually-hidden">Actions de la conversation</span>
+								</button>
+								<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="chatActions">
+									<li>
+										<a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_profil_seeOtherUser', { id: friend.id }) }}">
+											<i class="bi bi-person-circle" aria-hidden="true"></i> Voir le profil
+										</a>
+									</li>
+									<li><hr class="dropdown-divider"></li>
+									<li>
+										{# TODO : brancher sur la suppression de conversation #}
+										<button type="button" class="dropdown-item d-flex align-items-center gap-2 text-danger" disabled>
+											<i class="bi bi-trash" aria-hidden="true"></i> Supprimer la conversation
+										</button>
+									</li>
+								</ul>
+							</div>
+						{% endif %}
+					</div>
+
+					{# ── Fil de discussion ───────────────────────────────── #}
+					{# tabindex="0" : zone défilante, sinon inatteignable au clavier (WCAG 2.1.1) #}
+					<div class="chat-thread p-3" id="chatThread" tabindex="0" role="log" aria-label="Messages de la conversation"
+						data-conversation-id="{{ conversation.id }}"
+						data-read-url="{{ path('app_friends_chat_markAsRead', { id: conversation.id }) }}"
+						data-read-token="{{ csrf_token('chat_read') }}">
+						{% if messages is not empty %}
+							{% for message in messages %}
+								{% set previous = loop.first ? null : messages[loop.index0 - 1] %}
+								{% set grouped = false %}
+
+								{# Séparateur quand on change de jour #}
+								{% if previous is null or previous.sentAt|date('Y-m-d') != message.sentAt|date('Y-m-d') %}
+									<div class="chat-day d-flex align-items-center gap-3 text-secondary small my-3">
+										{% if message.sentAt|date('Y-m-d') == 'now'|date('Y-m-d') %}
+											Aujourd'hui
+										{% elseif message.sentAt|date('Y-m-d') == 'now'|date_modify('-1 day')|date('Y-m-d') %}
+											Hier
+										{% else %}
+											{{ message.sentAt|date('d/m/Y') }}
+										{% endif %}
+									</div>
+								{% else %}
+									{# Message consécutif du même auteur : espacement réduit, pas de queue #}
+									{% set grouped = previous.author == message.author %}
+								{% endif %}
+
+								{% include 'friends/chat/_message.html.twig' with {
+									message: message,
+									fromMe: message.author == app.user,
+									grouped: grouped,
+								} only %}
+							{% endfor %}
+						{% else %}
+							<div class="text-center text-secondary py-5">
+								<i class="bi bi-chat-square-heart display-5 d-block mb-3 opacity-50" aria-hidden="true"></i>
+								<p class="mb-0">Aucun message pour l'instant.<br>Lancez la conversation !</p>
+							</div>
+						{% endif %}
+					</div>
+
+					{# ── Zone de saisie ──────────────────────────────────── #}
+					<div class="card-footer bg-body p-3">
+						{% if is_granted('CONVERSATION_POST', conversation) %}
+							<form method="post" action="{{ path('app_friends_chat_sendMessage', { id: conversation.id }) }}" class="d-flex align-items-end gap-2" id="messageForm">
+								<label for="messageInput" class="visually-hidden">Votre message</label>
+								<textarea
+									id="messageInput"
+									name="message"
+									class="form-control"
+									rows="1"
+									maxlength="2000"
+									placeholder="Écrivez un message…"
+									aria-describedby="messageHelp"></textarea>
+								<input type="hidden" name="_token" value="{{ csrf_token('chat_message') }}">
+								<button type="submit" class="btn btn-primary d-flex align-items-center gap-2 flex-shrink-0" title="Envoyer">
+									<i class="bi bi-send-fill" aria-hidden="true"></i>
+									<span class="d-none d-sm-inline">Envoyer</span>
+								</button>
+							</form>
+							<div class="form-text mt-2" id="messageHelp">
+								<kbd>Entrée</kbd> pour envoyer, <kbd>Maj</kbd> + <kbd>Entrée</kbd> pour aller à la ligne.
+							</div>
+						{% else %}
+							<p class="text-secondary text-center small mb-0">
+								<i class="bi bi-lock-fill me-1" aria-hidden="true"></i>
+								Vous n'êtes plus amis : cette conversation est en lecture seule.
+							</p>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const thread = document.getElementById('chatThread');
+			const form = document.getElementById('messageForm');
+			const input = document.getElementById('messageInput');
+
+			if (thread) {
+				const conversationId = Number(thread.dataset.conversationId);
+
+				// Les messages arrivés pendant que la page est ouverte sont lus aussitôt :
+				// sans cela ils repasseraient en « non lus » au prochain chargement.
+				const markAsRead = () => {
+					const body = new FormData();
+					body.set('_token', thread.dataset.readToken);
+
+					fetch(thread.dataset.readUrl, { method: 'POST', body: body, keepalive: true });
+				};
+
+				// Ouvrir la conversation sur le dernier message
+				thread.scrollTop = thread.scrollHeight;
+
+				// Réception temps réel : concerne aussi les conversations en lecture seule.
+				// La connexion SSE elle-même est ouverte une fois pour tout le site,
+				// dans _chat_realtime.html.twig, qui relaie ici chaque message.
+				document.addEventListener('chat:message', (event) => {
+					const payload = event.detail;
+
+					if (payload.conversationId !== conversationId) {
+						return;
+					}
+
+					// Message affiché sous les yeux du lecteur : pas de pastille.
+					event.preventDefault();
+
+					// La bulle est rendue par le serveur, pour ce lecteur précisément.
+					thread.insertAdjacentHTML('beforeend', payload.html);
+					thread.scrollTop = thread.scrollHeight;
+
+					if (!payload.fromMe) {
+						markAsRead();
+					}
+				});
+			}
+
+			if (!form || !input) {
+				return;
+			}
+
+			// Le textarea grandit avec le contenu, jusqu'au max-height CSS
+			const autosize = () => {
+				input.style.height = 'auto';
+				input.style.height = `${input.scrollHeight}px`;
+			};
+			input.addEventListener('input', autosize);
+
+			form.addEventListener('submit', async (event) => {
+				event.preventDefault();
+
+				const body = new FormData(form);
+				const content = body.get('message').trim();
+
+				if (content === '') {
+					return;
+				}
+
+				// Vidé tout de suite : le message revient par le flux Mercure.
+				input.value = '';
+				autosize();
+
+				const response = await fetch(form.action, { method: 'POST', body });
+
+				if (!response.ok) {
+					input.value = content;
+					autosize();
+				}
+			});
+
+			input.addEventListener('keydown', (event) => {
+				if (event.key === 'Enter' && !event.shiftKey) {
+					event.preventDefault();
+
+					if (input.value.trim() !== '') {
+						form.requestSubmit();
+					}
+				}
+			});
+		});
+	</script>
+{% endblock %}

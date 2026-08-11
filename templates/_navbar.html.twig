@@ -26,6 +26,7 @@
             </ul>
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                {% set currentRoute = app.request.attributes.get('_route') %}
                 {% if is_granted('ROLE_ADMIN') %}
                     <li class="nav-item dropdown">
                         <button class="nav-link d-flex align-items-center gap-2" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Administration">
@@ -86,8 +87,21 @@
                     </li>
                 {% endif %}
                 <li class="nav-item">
+                    {# Rendue même à zéro, et masquée : le flux Mercure l'incrémente sans recharger la page. #}
+                    {% set unreadCount = unread_messages_count() %}
+                    <a class="nav-link d-flex align-items-center gap-2 {% if 'chat' in currentRoute %}active{% endif %}" href="{{ path('app_friends_chat_index') }}" title="Chat">
+                        <i class="bi bi-chat-dots-fill fs-4" aria-hidden="true"></i>
+                        <span class="d-lg-none">Chat</span>
+                        <span class="visually-hidden d-none d-lg-inline">Chat</span>
+                        <span id="chatUnreadBadge" class="badge rounded-pill bg-danger {{ unreadCount > 0 ? '' : 'd-none' }}" data-count="{{ unreadCount }}">
+                            <span data-chat-total>{{ unreadCount }}</span>
+                            <span class="visually-hidden">message(s) non lu(s)</span>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     {% set pendingCount = pending_friend_requests_count() %}
-                    <a class="nav-link d-flex align-items-center gap-2 {% if 'friends' in app.request.pathInfo %}active{% endif %}" href="{{ path('app_friends_index') }}" title="Amis">
+                    <a class="nav-link d-flex align-items-center gap-2 {% if currentRoute starts with 'app_friends' and currentRoute != 'app_friends_chat_index' %}active{% endif %}" href="{{ path('app_friends_index') }}" title="Amis">
                         <i class="bi bi-people-fill fs-4" aria-hidden="true"></i>
                         <span class="d-lg-none">Amis</span>
                         <span class="visually-hidden d-none d-lg-inline">Amis</span>
