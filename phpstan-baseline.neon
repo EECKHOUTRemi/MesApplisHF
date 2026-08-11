@@ -31,12 +31,6 @@ parameters:
 			path: src/Entity/MaCuisine/Category.php
 
 		-
-			message: '#^Property App\\Entity\\MaCuisine\\Category\:\:\$createdBy type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/MaCuisine/Category.php
-
-		-
 			message: '#^Property App\\Entity\\MaCuisine\\Category\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -117,12 +111,6 @@ parameters:
 		-
 			message: '#^Property App\\Entity\\MaCuisine\\Utensil\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
 			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/MaCuisine/Utensil.php
-
-		-
-			message: '#^Property App\\Entity\\MaCuisine\\Utensil\:\:\$createdBy type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
-			identifier: doctrine.associationType
 			count: 1
 			path: src/Entity/MaCuisine/Utensil.php
 

@@ -23,9 +23,10 @@ class Message
     #[ORM\JoinColumn(nullable: false)]
     private Conversation $conversation;
 
+    /** Null lorsque le compte de l'auteur a été supprimé : le fil reste lisible. */
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private User $author;
+    private ?User $author = null;
 
     #[ORM\Column]
     private \DateTimeImmutable $sentAt;
