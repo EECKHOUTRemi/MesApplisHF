@@ -93,3 +93,7 @@ docs/
 # Private keys (age backup identity, ...) — never committed, and ideally never
 # stored in this directory at all.
 *.key
+
+###> PhpStorm ###
+.idea/
+###< PhpStorm ###
