@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 # One Compose file serves every environment. The environment is selected by the
 # --env-file passed at deploy time (.env.docker.prod / .test / .dev), which sets
 # BUILD_TARGET, ports, secrets, and the DB credentials. Run via bin/deploy-docker.sh.
