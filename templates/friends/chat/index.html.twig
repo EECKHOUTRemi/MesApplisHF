@@ -1,0 +1,243 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Messages
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<style>
+		.chat-list .list-group-item {
+			transition: background-color .15s ease-in-out;
+		}
+		.chat-list .list-group-item:hover,
+		.chat-list .list-group-item:focus-within {
+			background-color: var(--bs-tertiary-bg);
+		}
+
+		/* Pastille d'initiale utilisée quand l'utilisateur n'a pas de photo */
+		.chat-avatar {
+			width: 48px;
+			height: 48px;
+			font-size: 1.1rem;
+			font-weight: 600;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.chat-avatar img {
+			width: 48px;
+			height: 48px;
+			object-fit: cover;
+		}
+
+		/* Point vert « en ligne », posé sur le coin de l'avatar */
+		.chat-status-dot {
+			width: 13px;
+			height: 13px;
+			bottom: 1px;
+			right: 1px;
+			border: 2px solid var(--bs-body-bg);
+		}
+
+		/* Nécessaire pour que .text-truncate fonctionne dans un flex */
+		.chat-preview {
+			min-width: 0;
+		}
+
+		.chat-unread .chat-last-message {
+			color: var(--bs-body-color) !important;
+			font-weight: 500;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	{# `rows` vient de ChatController::index() : chaque entrée porte la
+	   conversation, l'ami correspondant, son dernier message et le nombre
+	   de messages non lus. #}
+	{% set avatarColors = ['#0d6efd', '#6f42c1', '#d63384', '#fd7e14', '#198754', '#0dcaf0'] %}
+	{% set totalUnread = rows|reduce((carry, row) => carry + row.unreadCount, 0) %}
+
+	<div class="container py-5">
+		<div class="row justify-content-center">
+			<div class="col-lg-7">
+
+				{# ── En-tête ─────────────────────────────────────────────── #}
+				<div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+					<h1 class="h4 fw-semibold mb-0">
+						<i class="bi bi-chat-dots-fill me-2 text-primary" aria-hidden="true"></i>Messages
+						{% if totalUnread > 0 %}
+							<span class="badge rounded-pill bg-danger align-middle ms-1">
+								{{ totalUnread }}
+								<span class="visually-hidden">message(s) non lu(s)</span>
+							</span>
+						{% endif %}
+					</h1>
+					<a href="{{ path('app_friends_index') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
+						<i class="bi bi-pencil-square" aria-hidden="true"></i>
+						<span class="d-none d-sm-inline">Nouveau message</span>
+					</a>
+				</div>
+
+				{# ── Filtre ──────────────────────────────────────────────── #}
+				<div class="input-group mb-4">
+					<span class="input-group-text bg-body" id="chatSearchIcon">
+						<i class="bi bi-search text-secondary" aria-hidden="true"></i>
+					</span>
+					<input type="search" id="chatSearch" class="form-control border-start-0" placeholder="Rechercher une conversation…" aria-label="Rechercher une conversation" aria-describedby="chatSearchIcon">
+				</div>
+
+				{# ── Liste des conversations ─────────────────────────────── #}
+				{% if rows is not empty %}
+					<ul class="list-group shadow-sm rounded overflow-hidden chat-list" id="chatList">
+						{% for row in rows %}
+							{% set friendName = row.friend ? row.friend.username : 'Utilisateur supprimé' %}
+							{% set lastMessage = row.lastMessage %}
+							<li class="list-group-item p-0 {{ row.unreadCount > 0 ? 'chat-unread' : '' }}" data-username="{{ friendName|lower }}" data-conversation-id="{{ row.conversation.id }}">
+								<a href="{{ path('app_friends_chat_show', { id: row.conversation.id }) }}" class="d-flex align-items-center gap-3 p-3 text-decoration-none text-reset">
+
+									{# Avatar #}
+									<div class="position-relative flex-shrink-0">
+										{% set imgPath = row.friend and row.friend.image ? 'uploads/pfp/' ~ row.friend.image : null %}
+										{% if imgPath and imgPath is ondisk %}
+											<picture>
+												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_avif') }}" type="image/avif">
+												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
+												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
+												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
+												<img src="{{ asset(imgPath) }}" alt="" loading="lazy" class="rounded-circle chat-avatar">
+											</picture>
+										{% else %}
+											<span class="rounded-circle chat-avatar" style="background-color: {{ avatarColors[loop.index0 % avatarColors|length] }}" aria-hidden="true">
+												{{ friendName|slice(0, 1)|upper }}
+											</span>
+										{% endif %}
+									</div>
+
+									{# Pseudo + dernier message #}
+									<div class="flex-grow-1 chat-preview">
+										<div class="d-flex align-items-baseline justify-content-between gap-2">
+											<span class="fw-semibold text-truncate">{{ friendName }}</span>
+											{# Rendus même sans message : le flux Mercure les remplit sans recharger la page. #}
+											<time class="small text-secondary flex-shrink-0 {{ lastMessage ? '' : 'd-none' }}" data-chat-time {% if lastMessage %}datetime="{{ lastMessage.sentAt|date('c') }}"{% endif %}>
+												{% if lastMessage %}
+													{% if lastMessage.sentAt|date('Y-m-d') == 'now'|date('Y-m-d') %}
+														{{ lastMessage.sentAt|date('H:i') }}
+													{% elseif lastMessage.sentAt|date('Y-m-d') == 'now'|date_modify('-1 day')|date('Y-m-d') %}
+														Hier
+													{% else %}
+														{{ lastMessage.sentAt|date('d/m/Y') }}
+													{% endif %}
+												{% endif %}
+											</time>
+										</div>
+										<div class="d-flex align-items-center justify-content-between gap-2">
+											<span class="small text-secondary text-truncate chat-last-message">
+												<span data-chat-own class="{{ lastMessage and lastMessage.author == app.user ? '' : 'd-none' }}">
+													<i class="bi bi-reply-fill me-1" aria-hidden="true"></i><span class="visually-hidden">Vous : </span>
+												</span>
+												<span data-chat-preview class="{{ lastMessage ? '' : 'fst-italic' }}">
+													{%- if lastMessage -%}
+														{{- include('friends/chat/_preview.txt.twig', { message: lastMessage })|e -}}
+													{%- else -%}
+														Aucun message pour l'instant.
+													{%- endif -%}
+												</span>
+											</span>
+											<span class="badge rounded-pill bg-primary flex-shrink-0 {{ row.unreadCount > 0 ? '' : 'd-none' }}" data-chat-unread data-count="{{ row.unreadCount }}">
+												<span data-chat-count>{{ row.unreadCount }}</span>
+												<span class="visually-hidden">message(s) non lu(s)</span>
+											</span>
+										</div>
+									</div>
+								</a>
+							</li>
+						{% endfor %}
+					</ul>
+
+					{# Affiché par le filtre quand aucune conversation ne correspond #}
+					<p class="text-secondary small fst-italic mt-3 mb-0 d-none" id="chatNoResult">Aucune conversation ne correspond à votre recherche.</p>
+				{% else %}
+					<div class="text-center text-secondary py-5">
+						<i class="bi bi-chat-square-text display-4 d-block mb-3 opacity-50" aria-hidden="true"></i>
+						<p class="mb-3">Vous n'avez encore aucune conversation.</p>
+						<a href="{{ path('app_friends_index') }}" class="btn btn-outline-primary btn-sm">
+							<i class="bi bi-people-fill me-1" aria-hidden="true"></i>Voir mes amis
+						</a>
+					</div>
+				{% endif %}
+
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const search = document.getElementById('chatSearch');
+			const list = document.getElementById('chatList');
+			const noResult = document.getElementById('chatNoResult');
+
+			// Réception temps réel : la connexion SSE est ouverte une fois pour tout
+			// le site (_chat_realtime.html.twig), qui relaie ici chaque message.
+			// La pastille de la barre de navigation n'est pas annulée : depuis cette
+			// page le message n'est pas encore lu.
+			document.addEventListener('chat:message', (event) => {
+				const payload = event.detail;
+				const row = list ? list.querySelector(`li[data-conversation-id="${payload.conversationId}"]`) : null;
+
+				// Première conversation, ou conversation ouverte par l'ami : le
+				// gabarit de la ligne n'existe pas côté client.
+				if (!row) {
+					window.location.reload();
+					return;
+				}
+
+				const time = row.querySelector('[data-chat-time]');
+				const own = row.querySelector('[data-chat-own]');
+				const preview = row.querySelector('[data-chat-preview]');
+				const badge = row.querySelector('[data-chat-unread]');
+				const count = badge.querySelector('[data-chat-count]');
+
+				time.textContent = payload.time;
+				time.dateTime = payload.sentAt;
+				time.classList.remove('d-none');
+				own.classList.toggle('d-none', !payload.fromMe);
+				preview.textContent = payload.preview;
+				preview.classList.remove('fst-italic');
+
+				if (!payload.fromMe) {
+					const unread = Number(badge.dataset.count || 0) + 1;
+
+					badge.dataset.count = unread;
+					count.textContent = unread;
+					badge.classList.remove('d-none');
+					row.classList.add('chat-unread');
+				}
+
+				// La liste est triée par date du dernier message.
+				list.prepend(row);
+			});
+
+			if (!search || !list) {
+				return;
+			}
+
+			search.addEventListener('input', () => {
+				const term = search.value.trim().toLowerCase();
+				let visible = 0;
+
+				list.querySelectorAll('li').forEach((item) => {
+					const match = item.dataset.username.includes(term);
+					item.classList.toggle('d-none', !match);
+					visible += match ? 1 : 0;
+				});
+
+				noResult.classList.toggle('d-none', visible > 0);
+			});
+		});
+	</script>
+{% endblock %}

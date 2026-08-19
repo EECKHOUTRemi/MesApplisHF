@@ -31,12 +31,6 @@ parameters:
 			path: src/Entity/MaCuisine/Category.php
 
 		-
-			message: '#^Property App\\Entity\\MaCuisine\\Category\:\:\$createdBy type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/MaCuisine/Category.php
-
-		-
 			message: '#^Property App\\Entity\\MaCuisine\\Category\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -121,12 +115,6 @@ parameters:
 			path: src/Entity/MaCuisine/Utensil.php
 
 		-
-			message: '#^Property App\\Entity\\MaCuisine\\Utensil\:\:\$createdBy type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/MaCuisine/Utensil.php
-
-		-
 			message: '#^Property App\\Entity\\MaCuisine\\Utensil\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -175,28 +163,28 @@ parameters:
 			path: src/Entity/MonPoids/Measurement.php
 
 		-
-			message: '#^Property App\\Entity\\Relationship\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			message: '#^Property App\\Entity\\Friends\\Relationship\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
 			identifier: doctrine.columnType
 			count: 1
-			path: src/Entity/Relationship.php
+			path: src/Entity/Friends/Relationship.php
 
 		-
-			message: '#^Property App\\Entity\\Relationship\:\:\$status type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			message: '#^Property App\\Entity\\Friends\\Relationship\:\:\$status type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
-			path: src/Entity/Relationship.php
+			path: src/Entity/Friends/Relationship.php
 
 		-
-			message: '#^Property App\\Entity\\Relationship\:\:\$user1 type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			message: '#^Property App\\Entity\\Friends\\Relationship\:\:\$user1 type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
 			identifier: doctrine.associationType
 			count: 1
-			path: src/Entity/Relationship.php
+			path: src/Entity/Friends/Relationship.php
 
 		-
-			message: '#^Property App\\Entity\\Relationship\:\:\$user2 type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			message: '#^Property App\\Entity\\Friends\\Relationship\:\:\$user2 type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
 			identifier: doctrine.associationType
 			count: 1
-			path: src/Entity/Relationship.php
+			path: src/Entity/Friends/Relationship.php
 
 		-
 			message: '#^Property App\\Entity\\User\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'

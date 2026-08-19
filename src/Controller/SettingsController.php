@@ -25,7 +25,7 @@ final class SettingsController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    #[Route('/', name: 'index', methods: ['GET', 'POST'])]
+    #[Route(name: 'index', methods: ['GET', 'POST'])]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         /** @var User $user */

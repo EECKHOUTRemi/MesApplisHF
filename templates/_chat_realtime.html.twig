@@ -1,0 +1,47 @@
+{# ─────────────────────────────────────────────────────────────────────────
+   Connexion temps réel du chat, ouverte une seule fois pour tout le site.
+
+   Le sujet Mercure est propre à l'utilisateur connecté ; le serveur y pousse,
+   pour chaque message reçu, la bulle déjà rendue pour ce lecteur et de quoi
+   rafraîchir la liste des conversations.
+
+   L'événement DOM `chat:message` relaie la charge utile aux pages du chat.
+   Une page qui l'annule (`preventDefault()`) déclare avoir affiché le message :
+   la pastille de la barre de navigation n'est alors pas incrémentée.
+   ───────────────────────────────────────────────────────────────────────── #}
+{% set topic = chat_topic() %}
+
+{% if topic %}
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const badge = document.getElementById('chatUnreadBadge');
+			const total = badge ? badge.querySelector('[data-chat-total]') : null;
+			const source = new EventSource({{ mercure(topic)|json_encode|raw }}, { withCredentials: true });
+
+			source.addEventListener('message', (event) => {
+				let payload;
+
+				try {
+					payload = JSON.parse(event.data);
+				} catch {
+					return;
+				}
+
+				const displayed = !document.dispatchEvent(new CustomEvent('chat:message', {
+					detail: payload,
+					cancelable: true,
+				}));
+
+				if (payload.fromMe || displayed || !badge || !total) {
+					return;
+				}
+
+				const count = Number(badge.dataset.count || 0) + 1;
+
+				badge.dataset.count = count;
+				total.textContent = count;
+				badge.classList.remove('d-none');
+			});
+		});
+	</script>
+{% endif %}

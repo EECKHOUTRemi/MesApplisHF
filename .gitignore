@@ -31,6 +31,7 @@
 !bin/symfony_requirements
 !bin/deploy.sh
 !bin/deploy-docker.sh
+!bin/backup.sh
 !bin/phpunit
 /vendor/
 
@@ -88,3 +89,29 @@ docs/
 ###> liip/imagine-bundle ###
 /public/media/cache/
 ###< liip/imagine-bundle ###
+
+# Private keys (age backup identity, ...) — never committed, and ideally never
+# stored in this directory at all.
+*.key
+
+# PhpStorm
+.idea/
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
+
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###

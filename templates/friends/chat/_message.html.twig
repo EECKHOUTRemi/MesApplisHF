@@ -1,0 +1,58 @@
+{# ─────────────────────────────────────────────────────────────────────────
+   Une bulle de message. Rendue dans la page au chargement, et poussée telle
+   quelle par Mercure à chaque nouveau message.
+   message : App\Entity\Friends\Message
+   fromMe  : bool — dépend du lecteur, d'où un rendu par participant
+   grouped : bool — message consécutif du même auteur (queue supprimée)
+   ───────────────────────────────────────────────────────────────────────── #}
+<div class="d-flex {{ fromMe ? 'justify-content-end' : 'justify-content-start' }} {{ grouped ? 'chat-grouped mt-1' : 'mt-3' }}">
+	<div class="chat-bubble shadow-sm {{ fromMe ? 'chat-bubble-out' : 'chat-bubble-in' }}">
+		{% if message.recipeAttached %}
+			{% set recipe = message.recipeAttached %}
+			<a href="{{ path('app_macuisine_recipe_show', { id: recipe.id }) }}" class="chat-recipe d-flex align-items-center gap-2 text-decoration-none">
+				{% set imgPath = recipe.image ? 'uploads/recipes/' ~ recipe.image : null %}
+				{% if imgPath and imgPath is ondisk %}
+					<picture>
+						<source srcset="{{ asset(imgPath) | imagine_filter('lil_avif') }}" type="image/avif">
+						<source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
+						<source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
+						<img src="{{ asset(imgPath) }}" alt="" loading="lazy" class="rounded chat-recipe-thumb">
+					</picture>
+				{% else %}
+					<span class="rounded chat-recipe-thumb chat-recipe-thumb-empty" aria-hidden="true">
+						<i class="bi bi-fork-knife"></i>
+					</span>
+				{% endif %}
+
+				<span class="min-w-0">
+					<span class="d-block small text-secondary">
+						<i class="bi bi-journal-richtext me-1" aria-hidden="true"></i>Recette
+					</span>
+					<span class="d-block fw-semibold text-truncate">{{ recipe.name }}</span>
+					{% if recipe.category %}
+						<span class="d-block small text-secondary text-truncate">{{ recipe.category.name }}</span>
+					{% endif %}
+				</span>
+			</a>
+		{% endif %}
+
+		{% if message.content %}
+			<div class="{{ message.recipeAttached ? 'mt-2' : '' }}">{{ message.content|nl2br }}</div>
+		{% elseif message.recipeAttached is null %}
+			{# Recette jointe puis supprimée : la bulle resterait vide. #}
+			<div class="fst-italic">Recette supprimée</div>
+		{% endif %}
+		<div class="chat-meta d-flex align-items-center justify-content-end gap-1 mt-1 {{ fromMe ? '' : 'text-secondary' }}">
+			<time datetime="{{ message.sentAt|date('c') }}">{{ message.sentAt|date('H:i') }}</time>
+			{% if fromMe %}
+				{% if message.readAt %}
+					<i class="bi bi-check2-all" title="Lu" aria-hidden="true"></i>
+					<span class="visually-hidden">Lu</span>
+				{% else %}
+					<i class="bi bi-check2" title="Envoyé" aria-hidden="true"></i>
+					<span class="visually-hidden">Envoyé</span>
+				{% endif %}
+			{% endif %}
+		</div>
+	</div>
+</div>

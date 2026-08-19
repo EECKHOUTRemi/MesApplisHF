@@ -12,7 +12,7 @@ use App\Tests\Functional\AppWebTestCase;
  */
 class BmiControllerTest extends AppWebTestCase
 {
-    private const INDEX_PATH = '/monpoids/bmi/';
+    private const INDEX_PATH = '/monpoids/bmi';
     private const NEW_PATH = '/monpoids/bmi/new';
 
     /**
@@ -21,7 +21,7 @@ class BmiControllerTest extends AppWebTestCase
      */
     private function showPath(Bmi $bmi): string
     {
-        return self::INDEX_PATH . $bmi->getId();
+        return self::INDEX_PATH . '/' . $bmi->getId();
     }
 
     /**
