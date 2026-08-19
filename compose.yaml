@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 # One Compose file serves every environment. The environment is selected by the
 # --env-file passed at deploy time (.env.docker.prod / .test / .dev), which sets
 # BUILD_TARGET, ports, secrets, and the DB credentials. Run via bin/deploy-docker.sh.
@@ -35,14 +35,14 @@ services:
       SYMFONY_TRUSTED_PROXIES: ${SYMFONY_TRUSTED_PROXIES:-127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
     # Published only on loopback; the host's Nginx/Caddy reverse-proxies the domain here.
     ports:
-      - "127.0.0.1:${HTTP_PORT:?HTTP_PORT must be set}:80"
+      - "127.0.0.1:${HTTP_PORT:?HTTP_PORT_must_be_set}:80"
     restart: unless-stopped
 
   database:
     image: postgres:16-alpine
     # Ports for HeidiSQL access
     ports:
-      - "127.0.0.1:${DB_PORT:?DB_PORT must be set}:5432"
+      - "127.0.0.1:${DB_PORT:?DB_PORT_must_be_set}:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB must be set}
       POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set}
@@ -80,7 +80,7 @@ services:
     # subscribers, which would expose every conversation.
     # Published only on loopback; the host proxy forwards /.well-known/mercure here.
     ports:
-      - "127.0.0.1:${MERCURE_PORT:?MERCURE_PORT must be set}:80"
+      - "127.0.0.1:${MERCURE_PORT:?MERCURE_PORT_must_be_set}:80"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/healthz"]
       timeout: 5s
@@ -91,24 +91,6 @@ services:
       - mercure_config:/config
 ###< symfony/mercure-bundle ###
 
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
 volumes:
   database_data:
 
@@ -116,7 +98,3 @@ volumes:
   mercure_data:
   mercure_config:
 ###< symfony/mercure-bundle ###
-
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
