@@ -15,7 +15,7 @@ concurrency:
 jobs:
   deploy:
     name: Deploy ${{ github.ref_name }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Map branch to environment
@@ -28,23 +28,14 @@ jobs:
             *) echo "Unsupported branch ${{ github.ref_name }}"; exit 1 ;;
           esac
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Run Docker deploy on server
-        run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "cd ${{ steps.map.outputs.dir }} && ./bin/deploy-docker.sh ${{ steps.map.outputs.env }}"
+      - name: Run Docker deploy
+        run: cd ${{ steps.map.outputs.dir }} && ./bin/deploy-docker.sh ${{ steps.map.outputs.env }}
 
   # Generate the phpDocumentor docs on main only, published later via GitHub Pages.
   docs:
     name: Generate docs
     if: github.ref_name == 'main'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     permissions:
       pages: write
@@ -55,7 +46,7 @@ jobs:
       url: ${{steps.deploy.outputs.page_url}}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -64,7 +55,7 @@ jobs:
           extensions: intl, pdo_pgsql, zip, opcache
 
       - name: Install Graphviz (phpDocumentor class diagrams)
-        run: sudo apt-get update && sudo apt-get install -y graphviz
+        run: command -v dot >/dev/null || { sudo apt-get update && sudo apt-get install -y graphviz; }
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
@@ -74,10 +65,10 @@ jobs:
         run: vendor/bin/phpdoc --no-interaction
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs/.build
       
       - name: Deploy to Github Pages
         id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 # One Compose file serves every environment. The environment is selected by the
 # --env-file passed at deploy time (.env.docker.prod / .test / .dev), which sets
 # BUILD_TARGET, ports, secrets, and the DB credentials. Run via bin/deploy-docker.sh.
@@ -23,19 +24,25 @@ services:
       MAILER_DSN: ${SYMFONY_MAILER_DSN:-null://null}
       # URL generation in CLI/emails (e.g. mesapplishf.fr, test.mesapplishf.fr).
       DEFAULT_URI: ${DEFAULT_URI:-http://localhost}
+      # Mercure: the app publishes over the stack's private network ("mercure"
+      # resolves to the hub service), the browser subscribes via the public URL.
+      MERCURE_URL: http://mercure/.well-known/mercure
+      MERCURE_PUBLIC_URL: ${MERCURE_PUBLIC_URL:?MERCURE_PUBLIC_URL must be set}
+      MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET:?MERCURE_JWT_SECRET must be set}
       # FrankenPHP listens on :80 inside the container; the host proxy terminates TLS.
       SERVER_NAME: ":80"
       # Trust the host reverse proxy so Symfony reads the real client IP/scheme.
       SYMFONY_TRUSTED_PROXIES: ${SYMFONY_TRUSTED_PROXIES:-127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
     # Published only on loopback; the host's Nginx/Caddy reverse-proxies the domain here.
     ports:
-      - "127.0.0.1:${HTTP_PORT:?HTTP_PORT must be set}:80"
+      - "127.0.0.1:${HTTP_PORT:?HTTP_PORT_must_be_set}:80"
     restart: unless-stopped
 
   database:
     image: postgres:16-alpine
+    # Ports for HeidiSQL access
     ports:
-      - "127.0.0.1:${DB_PORT:?DB_PORT must be set}:5432"
+      - "127.0.0.1:${DB_PORT:?DB_PORT_must_be_set}:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB must be set}
       POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set}
@@ -45,13 +52,49 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # No host port: the DB is reachable only by the app over the stack's private
-    # network. (Add "127.0.0.1:55432:5432" temporarily if you need host access.)
     volumes:
       - database_data:/var/lib/postgresql/data
     restart: unless-stopped
 
 # Scoped per stack by the Compose project name (e.g. mesapplishf-prod_database_data),
 # so prod/test/dev never share data.
+
+###> symfony/mercure-bundle ###
+  mercure:
+    image: dunglas/mercure
+    restart: unless-stopped
+    environment:
+      # Plain HTTP on :80 inside the container, like "app"; the host proxy
+      # terminates TLS. The browser refuses SSE over the hub's self-signed cert.
+      SERVER_NAME: ':80'
+      # Same secret the app signs its publish/subscribe JWTs with.
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET:?MERCURE_JWT_SECRET must be set}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET:?MERCURE_JWT_SECRET must be set}
+      # Must match the origin the browser loads the app from, scheme included and
+      # no trailing slash. "localhost" and "127.0.0.1" are NOT interchangeable:
+      # they are distinct origins and distinct cookie domains.
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins ${MERCURE_CORS_ORIGIN:?MERCURE_CORS_ORIGIN must be set}
+    # No "command" override: the image's default Caddyfile requires a valid JWT to
+    # subscribe. The dev.Caddyfile shipped by the recipe allows anonymous
+    # subscribers, which would expose every conversation.
+    # Published only on loopback; the host proxy forwards /.well-known/mercure here.
+    ports:
+      - "127.0.0.1:${MERCURE_PORT:?MERCURE_PORT_must_be_set}:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/healthz"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - mercure_data:/data
+      - mercure_config:/config
+###< symfony/mercure-bundle ###
+
 volumes:
   database_data:
+
+###> symfony/mercure-bundle ###
+  mercure_data:
+  mercure_config:
+###< symfony/mercure-bundle ###

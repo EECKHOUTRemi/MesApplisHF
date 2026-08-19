@@ -6,7 +6,7 @@
 <div class="container py-4" style="max-width: 820px;">
 
     <h1 class="mb-1">Politique de confidentialité</h1>
-    <p class="text-secondary small mb-4">Dernière mise à jour : 20 mai 2026</p>
+    <p class="text-secondary small mb-4">Dernière mise à jour : 11 août 2026</p>
 
     <section class="mb-4">
         <h2 class="h5 fw-bold">1. Responsable du traitement</h2>
@@ -22,10 +22,13 @@
         <p>Les données suivantes sont susceptibles d'être collectées :</p>
         <ul>
             <li><strong>Données de compte</strong> : adresse e-mail, nom d'utilisateur, mot de passe (stocké de manière hachée et non réversible), date de création du compte.</li>
-            <li><strong>Données de recettes (MaCuisine)</strong> : titre, description, ingrédients, ustensiles, catégorie, ainsi que la date de création et de modification.</li>
+            <li><strong>Données de profil</strong> : photo de profil si vous en déposez une, et votre taille si vous la renseignez.</li>
+            <li><strong>Données de recettes (MaCuisine)</strong> : titre, description, ingrédients, ustensiles, catégorie, images déposées, ainsi que la date de création et de modification.</li>
             <li><strong>Données de suivi corporel (MonPoids)</strong> : poids, taille, mesures corporelles (tour de taille, hanches, etc.), IMC calculé, dates de relevé.</li>
+            <li><strong>Données relationnelles</strong> : les demandes d'amitié que vous envoyez ou recevez, leur statut (en attente, acceptée) et leurs dates.</li>
+            <li><strong>Données de messagerie</strong> : le contenu des messages que vous envoyez et recevez, la liste des participants à chaque conversation, la date d'envoi et la date de lecture de chaque message, ainsi que les recettes ou fichiers que vous y joignez.</li>
             <li><strong>Données de communication</strong> : votre adresse e-mail est utilisée pour l'envoi d'e-mails transactionnels (confirmation de compte, réinitialisation de mot de passe). Aucun e-mail commercial ou publicitaire n'est envoyé.</li>
-            <li><strong>Données techniques</strong> : adresse IP et identifiants de session, dans la stricte mesure nécessaire au fonctionnement du Service.</li>
+            <li><strong>Données techniques</strong> : adresse IP et identifiants de session, dans la stricte mesure nécessaire au fonctionnement du Service et à sa sécurité.</li>
         </ul>
     </section>
 
@@ -35,6 +38,8 @@
             <li>Permettre la création et la gestion de votre compte utilisateur.</li>
             <li>Vous permettre de publier, consulter et partager des recettes au sein de la communauté MaCuisine.</li>
             <li>Vous permettre de suivre de manière privée votre poids et vos mesures corporelles dans MonPoids.</li>
+            <li>Vous permettre de rechercher d'autres utilisateurs, de leur envoyer des demandes d'amitié et d'échanger des messages avec les personnes qui les ont acceptées.</li>
+            <li>Acheminer vos messages en temps réel vers les autres participants d'une conversation, et vous indiquer le nombre de messages non lus.</li>
             <li>Vous envoyer les e-mails transactionnels strictement nécessaires au fonctionnement du Service : confirmation de votre adresse e-mail lors de l'inscription, et réinitialisation de mot de passe sur demande.</li>
             <li>Assurer la sécurité du Service et prévenir les usages abusifs.</li>
         </ul>
@@ -53,21 +58,49 @@
         <h2 class="h5 fw-bold">5. Visibilité de vos données</h2>
         <ul>
             <li><strong>Recettes</strong> : visibles par les autres utilisateurs connectés. Votre nom d'utilisateur est affiché en tant qu'auteur·e.</li>
+            <li><strong>Profil</strong> : votre nom d'utilisateur et votre photo de profil sont visibles par les autres utilisateurs connectés, notamment dans la recherche d'amis.</li>
+            <li><strong>Messages</strong> : visibles uniquement par les participants de la conversation concernée. Ils ne sont <strong>pas chiffrés de bout en bout</strong> : ils sont stockés en clair dans la base de données, et l'éditeur y a donc un accès technique. N'y faites pas transiter d'informations que vous jugez sensibles.</li>
+            <li><strong>Liste d'amis</strong> : une demande d'amitié révèle votre nom d'utilisateur et votre photo de profil à son destinataire.</li>
             <li><strong>Suivi corporel (MonPoids)</strong> : strictement privé. Aucune autre personne que vous, hors administrateurs techniques du Service, ne peut consulter ces données.</li>
             <li><strong>Adresse e-mail et mot de passe</strong> : jamais affichés publiquement.</li>
         </ul>
+        <p class="mb-0">
+            <strong>Images déposées.</strong> Les photos de profil et les images de recettes sont servies
+            comme de simples fichiers statiques, à une adresse publique. Toute personne connaissant
+            l'URL exacte d'une image peut donc l'afficher sans être connectée. Ces adresses ne sont
+            pas devinables et ne sont pas référencées ailleurs, mais elles ne sont pas protégées par
+            une authentification : n'y déposez pas d'image que vous ne souhaiteriez pas voir sortir
+            du Service.
+        </p>
     </section>
 
     <section class="mb-4">
         <h2 class="h5 fw-bold">6. Destinataires et partage</h2>
         <p>
             Aucune donnée personnelle n'est vendue, louée ou transmise à des partenaires commerciaux.
-            Seul l'éditeur du Service et, le cas échéant, son hébergeur <strong>Hetzner</strong>, ont accès aux données stockées dans la base, dans le strict cadre du fonctionnement technique du Service.
+            Seul l'éditeur du Service et, le cas échéant, son hébergeur <strong>OVH SAS</strong> (Roubaix, France), ont accès aux données stockées dans la base, dans le strict cadre du fonctionnement technique du Service.
         </p>
         <p>
             Pour l'envoi des e-mails transactionnels, le Service fait appel au prestataire <strong>Resend</strong> (Resend Inc., États-Unis), dont les serveurs d'envoi sont localisés dans la région <strong>eu-west-1 (Irlande)</strong> via Amazon Web Services.
             Seule votre adresse e-mail et le contenu de l'e-mail vous concernant sont transmis à ce prestataire, dans le seul but d'assurer la délivrabilité du message.
             Resend agit en qualité de sous-traitant au sens du RGPD et s'engage contractuellement à ne pas utiliser ces données à d'autres fins.
+        </p>
+        <p>
+            L'acheminement des messages en temps réel s'appuie sur un <strong>hub Mercure</strong> auto-hébergé
+            sur la même infrastructure que le Service. Aucun prestataire tiers n'intervient dans cet acheminement.
+        </p>
+        <p class="mb-1">
+            Enfin, certaines ressources d'affichage (feuilles de style, polices d'icônes et scripts) sont
+            chargées depuis des <strong>réseaux de diffusion de contenu tiers</strong> :
+        </p>
+        <ul class="mb-2">
+            <li><strong>jsDelivr</strong> (<code>cdn.jsdelivr.net</code>) — Bootstrap, Bootstrap Icons, Select2, sur l'ensemble des pages ;</li>
+            <li><strong>jQuery CDN</strong> (<code>code.jquery.com</code>) — la bibliothèque jQuery, sur la page de recherche d'amis.</li>
+        </ul>
+        <p>
+            Par la nature même du web, votre navigateur transmet à ces services votre adresse IP et les
+            caractéristiques techniques de votre navigateur lorsqu'il télécharge ces fichiers. Ces
+            requêtes ne déposent aucun cookie et ne transportent aucune donnée de votre compte.
         </p>
     </section>
 
@@ -76,15 +109,58 @@
         <ul>
             <li>Les données de compte sont conservées tant que le compte est actif.</li>
             <li>Vos contenus (recettes, mesures) sont conservés tant que vous ne les supprimez pas ou que vous ne supprimez pas votre compte.</li>
-            <li>En cas de suppression du compte, vos données sont effacées dans un délai raisonnable, sauf obligation légale de conservation.</li>
+            <li>Les messages et les relations d'amitié sont conservés tant que la conversation ou la relation existe.</li>
+            <li>En cas de suppression du compte, vos données sont effacées dans un délai maximal de 30 jours, sauf obligation légale de conservation.</li>
         </ul>
+        <p class="mb-0">
+            Un message déjà envoyé se trouve également dans la conversation de son destinataire.
+            Supprimer votre compte efface votre exemplaire ; la copie détenue par votre correspondant·e
+            relève de sa propre conversation, au même titre qu'un courrier déjà remis.
+        </p>
     </section>
 
     <section class="mb-4">
         <h2 class="h5 fw-bold">8. Cookies</h2>
         <p>
-            Le Service utilise uniquement les cookies strictement nécessaires à son fonctionnement (notamment un cookie de session pour vous maintenir connecté·e).
-            Aucun cookie de mesure d'audience, de publicité ou de traçage tiers n'est déposé.
+            Le Service dépose uniquement des cookies <strong>strictement nécessaires</strong> à son fonctionnement.
+            Aucun cookie de mesure d'audience, de publicité, de profilage ou de traçage tiers n'est utilisé.
+            À ce titre, et conformément aux recommandations de la CNIL, ces cookies sont dispensés de consentement
+            préalable : c'est pourquoi aucune bannière ne vous est présentée.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <caption class="small">Cookies déposés par MesApplisHF</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Finalité</th>
+                        <th scope="col">Durée</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>PHPSESSID</code></td>
+                        <td>Identifie votre session : vous maintient connecté·e d'une page à l'autre et conserve les jetons anti-CSRF ainsi que les messages d'information affichés après une action.</td>
+                        <td>Effacé à la fermeture du navigateur</td>
+                    </tr>
+                    <tr>
+                        <td><code>__Host-…</code> <span class="text-secondary">(nom variable)</span></td>
+                        <td>Jeton anti-CSRF déposé par le navigateur au moment où vous remplissez un formulaire (connexion, déconnexion, envoi de contenu). Il protège contre la soumission d'un formulaire à votre insu depuis un autre site.</td>
+                        <td>Supprimé dès le formulaire envoyé</td>
+                    </tr>
+                    <tr>
+                        <td><code>mercureAuthorization</code></td>
+                        <td>Autorise votre navigateur à recevoir vos messages en temps réel. Il contient un jeton signé qui n'ouvre l'accès qu'à votre propre flux de notifications, et n'est envoyé qu'au hub temps réel.</td>
+                        <td>1 heure, renouvelé à chaque page</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="mb-0">
+            Ces cookies étant indispensables à l'authentification et à la sécurité, les refuser via les
+            réglages de votre navigateur rend la connexion au Service impossible.
         </p>
     </section>
 
@@ -99,21 +175,47 @@
             <li>Droit à la portabilité des données.</li>
         </ul>
         <p>
-            Pour exercer ces droits, écrivez à <a href="mailto:contact@mesapplishf.fr">contact@mesapplishf.fr</a>.
-            Vous pouvez également introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.
+            Une partie de ces droits s'exerce directement depuis le Service : vos informations de compte
+            se modifient dans <strong>Paramètres</strong>, et la même page permet de
+            <strong>supprimer définitivement votre compte</strong>.
         </p>
-    </section>
-
-    <section class="mb-4">
-        <h2 class="h5 fw-bold">10. Sécurité</h2>
         <p>
-            Les mots de passe sont stockés sous forme hachée. Des mesures techniques et organisationnelles raisonnables sont mises en œuvre pour protéger vos données contre la perte, l'altération ou l'accès non autorisé.
-            Aucun système n'étant infaillible, nous ne pouvons cependant garantir une sécurité absolue.
+            Pour tout le reste — accès, portabilité, limitation, opposition — écrivez à
+            <a href="mailto:contact@mesapplishf.fr">contact@mesapplishf.fr</a>. Une réponse vous sera
+            apportée dans un délai d'un mois. Vous pouvez également introduire une réclamation auprès de
+            la <a href="https://www.cnil.fr" target="_blank" rel="noopener">CNIL</a>.
         </p>
     </section>
 
     <section class="mb-4">
-        <h2 class="h5 fw-bold">11. Modification de la présente politique</h2>
+        <h2 class="h5 fw-bold">10. Transferts hors Union européenne</h2>
+        <p>
+            Les données du Service sont hébergées dans l'Union européenne. Le prestataire d'envoi d'e-mails
+            <strong>Resend</strong> est une société de droit états-unien, mais ses serveurs d'envoi utilisés
+            ici sont situés en <strong>Irlande</strong>. Un accès depuis les États-Unis par ce prestataire
+            ne peut être totalement exclu ; il est alors encadré par les clauses contractuelles types de la
+            Commission européenne.
+        </p>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">11. Sécurité</h2>
+        <p>
+            Les mots de passe sont stockés sous forme hachée et non réversible. Les échanges avec le Service
+            sont chiffrés en transit (HTTPS). Les formulaires sont protégés contre la soumission frauduleuse
+            par des jetons anti-CSRF, et l'accès à une conversation est vérifié à chaque requête : seuls ses
+            participants peuvent la lire. Le flux temps réel est cloisonné par un jeton signé qui n'autorise
+            l'écoute que de votre propre canal de notifications.
+        </p>
+        <p>
+            Des mesures techniques et organisationnelles raisonnables sont mises en œuvre pour protéger vos
+            données contre la perte, l'altération ou l'accès non autorisé. Aucun système n'étant infaillible,
+            nous ne pouvons cependant garantir une sécurité absolue.
+        </p>
+    </section>
+
+    <section class="mb-4">
+        <h2 class="h5 fw-bold">12. Modification de la présente politique</h2>
         <p>
             La présente politique peut être mise à jour pour refléter des évolutions du Service ou de la réglementation.
             La date de dernière mise à jour figure en haut de cette page.

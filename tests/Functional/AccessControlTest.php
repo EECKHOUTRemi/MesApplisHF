@@ -15,13 +15,13 @@ class AccessControlTest extends AppWebTestCase
      */
     public static function protectedPathProvider(): iterable
     {
-        yield 'profil' => ['/profil/'];
-        yield 'paramètres' => ['/settings/'];
+        yield 'profil' => ['/profil'];
+        yield 'paramètres' => ['/settings'];
         yield 'MaCuisine accueil' => ['/macuisine'];
         yield 'MaCuisine recettes' => ['/macuisine/feed'];
         yield 'MonPoids accueil' => ['/monpoids'];
-        yield 'MonPoids IMC' => ['/monpoids/bmi/'];
-        yield 'MonPoids mensurations' => ['/monpoids/measurement/'];
+        yield 'MonPoids IMC' => ['/monpoids/bmi'];
+        yield 'MonPoids mensurations' => ['/monpoids/measurement'];
     }
 
     /**
@@ -70,8 +70,8 @@ class AccessControlTest extends AppWebTestCase
         yield 'ingrédients admin' => ['admin/macuisine/ingredient'];
         yield 'utensils admin' => ['/admin/macuisine/utensil'];
         yield 'categories admin' => ['/admin/ma/cuisine/category'];
-        yield 'IMC admin' => ['/admin/monpoids/bmi/'];
-        yield 'mensurations admin' => ['/admin/monpoids/measurement/'];
+        yield 'IMC admin' => ['/admin/monpoids/bmi'];
+        yield 'mensurations admin' => ['/admin/monpoids/measurement'];
     }
 
     /**

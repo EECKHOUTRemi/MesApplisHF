@@ -10,12 +10,17 @@ env:
   # GHCR exige un nom en minuscules ; github.repository donne "EECKHOUTRemi/MesApplisHF"
   IMAGE: ghcr.io/eeckhoutremi/mesapplishf
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   # ── Stage 0: lint & static analysis (parallel with build) ───────
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
@@ -28,6 +33,8 @@ jobs:
           php bin/console lint:yaml config --parse-tags
           php bin/console lint:twig templates
           php bin/console lint:container
+          # Dumps the test container, which PHPStan reads (voir phpstan.dist.neon).
+          php bin/console lint:container --env=test
       - name: PHP_CodeSniffer (PSR-12, config phpcs.xml.dist)
         run: vendor/bin/phpcs
       - name: PHPStan (niveau 6 + baseline, config phpstan.dist.neon)
@@ -35,12 +42,13 @@ jobs:
 
   # ── Stage 1: build ──────────────────────────────────────────────
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
       - name: Build prod image (load locally, don't push)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           target: prod
@@ -49,7 +57,7 @@ jobs:
           pull: true           # always resolve latest digest for floating base-image tags
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: docker-image
           path: /tmp/image.tar
@@ -57,7 +65,8 @@ jobs:
   # ── Stage 2: test ───────────────────────────────────────────────
   test:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     services:
       database:
         image: postgres:16-alpine
@@ -66,12 +75,12 @@ jobs:
           POSTGRES_USER: app
           POSTGRES_PASSWORD: app
         ports:
-          - 5432:5432
+          - 55440:5432
         options: >-
           --health-cmd "pg_isready -U app -d app"
           --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
@@ -85,11 +94,11 @@ jobs:
           php bin/console --env=test doctrine:database:create --if-not-exists
           php bin/console --env=test doctrine:migrations:migrate --no-interaction
         env:
-          DATABASE_URL: postgresql://app:app@127.0.0.1:5432/app?serverVersion=16
+          DATABASE_URL: postgresql://app:app@127.0.0.1:55440/app?serverVersion=16
       - run: php bin/phpunit --coverage-clover=coverage.xml
         env:
-          DATABASE_URL: postgresql://app:app@127.0.0.1:5432/app?serverVersion=16
-      - uses: actions/upload-artifact@v4
+          DATABASE_URL: postgresql://app:app@127.0.0.1:55440/app?serverVersion=16
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage.xml
@@ -97,10 +106,11 @@ jobs:
   # ── Stage 3a: scan — Trivy (runs parallel with Sonar) ───────────
   scan-trivy:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4 # needed for the Trivy ignore policy
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7 # needed for the Trivy ignore policy
+      - uses: actions/download-artifact@v8
         with:
           name: docker-image
           path: /tmp
@@ -114,16 +124,21 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           ignore-policy: .trivy/ignore-policy.rego # kernel-header CVEs (see file)
+      - name: Reclaim disk
+        if: always()
+        run: docker image rm -f "$IMAGE:${{ github.sha }}" || true
+
 
   # ── Stage 3b: scan — SonarQube (runs parallel with Trivy) ───────
   scan-sonar:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # Sonar needs full history for blame
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: coverage
       - name: Vérifier la présence des secrets Sonar
@@ -145,16 +160,17 @@ jobs:
       (github.ref == 'refs/heads/main' ||
       github.ref == 'refs/heads/develop' ||
       startsWith(github.ref, 'refs/heads/release/'))
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     permissions:
       packages: write # for GHCR
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: docker-image
           path: /tmp
       - run: docker load --input /tmp/image.tar
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -166,11 +182,19 @@ jobs:
           docker tag $IMAGE:${{ github.sha }} $IMAGE:$BRANCH_TAG
           docker push $IMAGE:${{ github.sha }}
           docker push $IMAGE:$BRANCH_TAG
+      - name: Reclaim disk
+        if: always()
+        run: |
+          BRANCH_TAG="${GITHUB_REF_NAME//\//-}"
+          docker image rm -f "$IMAGE:${{ github.sha }}" "$IMAGE:$BRANCH_TAG" || true
+
+
 
   # ── (conditional) deploy ────────────────────────────────────────
   deploy:
     needs: push
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+    timeout-minutes: 20
     environment: ${{ github.ref_name }} # per-branch env + approvals
     steps:
       - run: echo "Deploy ${{ env.IMAGE }}:${{ github.ref_name }} to ${{ github.ref_name }}"

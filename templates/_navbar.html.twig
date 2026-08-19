@@ -26,6 +26,7 @@
             </ul>
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                {% set currentRoute = app.request.attributes.get('_route') %}
                 {% if is_granted('ROLE_ADMIN') %}
                     <li class="nav-item dropdown">
                         <button class="nav-link d-flex align-items-center gap-2" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Administration">
@@ -85,16 +86,51 @@
                         </ul>
                     </li>
                 {% endif %}
+                <li class="nav-item">
+                    {# Rendue même à zéro, et masquée : le flux Mercure l'incrémente sans recharger la page. #}
+                    {% set unreadCount = unread_messages_count() %}
+                    <a class="nav-link d-flex align-items-center gap-2 {% if 'chat' in currentRoute %}active{% endif %}" href="{{ path('app_friends_chat_index') }}" title="Chat">
+                        {# La pastille se superpose au coin de l'icône : `position-relative`
+                           sur l'enveloppe, absolue sur la pastille. #}
+                        <span class="position-relative d-inline-flex">
+                            <i class="bi bi-chat-dots-fill fs-4" aria-hidden="true"></i>
+                            <span id="chatUnreadBadge" class="nav-badge position-absolute badge rounded-pill bg-danger {{ unreadCount > 0 ? '' : 'd-none' }}" data-count="{{ unreadCount }}">
+                                <span data-chat-total>{{ unreadCount }}</span>
+                                <span class="visually-hidden">message(s) non lu(s)</span>
+                            </span>
+                        </span>
+                        <span class="d-lg-none">Chat</span>
+                        <span class="visually-hidden d-none d-lg-inline">Chat</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    {% set pendingCount = pending_friend_requests_count() %}
+                    <a class="nav-link d-flex align-items-center gap-2 {% if currentRoute starts with 'app_friends' and currentRoute != 'app_friends_chat_index' %}active{% endif %}" href="{{ path('app_friends_index') }}" title="Amis">
+                        <span class="position-relative d-inline-flex">
+                            <i class="bi bi-people-fill fs-4" aria-hidden="true"></i>
+                            {% if pendingCount > 0 %}
+                                <span class="nav-badge position-absolute badge rounded-pill bg-danger" title="{{ pendingCount }} demande(s) en attente">
+                                    {{ pendingCount }}
+                                    <span class="visually-hidden">demande(s) d'ami en attente</span>
+                                </span>
+                            {% endif %}
+                        </span>
+                        <span class="d-lg-none">Amis</span>
+                        <span class="visually-hidden d-none d-lg-inline">Amis</span>
+                    </a>
+                </li>
                 <li class="nav-item dropdown">
-                    <button class="nav-link d-flex align-items-center gap-2 mt-1" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profil">
+                    <button class="nav-link d-flex align-items-center gap-2" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profil">
                         {% set imgPath = app.user and app.user.image ? 'uploads/pfp/' ~ app.user.image : null %}
                         {% if imgPath and imgPath is ondisk %}
-                            <picture>
+                            {# d-flex : sans cela l'image, en ligne, repose sur la ligne de base
+                               et traîne un blanc sous elle qui décale l'icône. #}
+                            <picture class="d-flex">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_avif') }}" type="image/avif">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
-                                <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle">
+                                <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
                             </picture>
                         {% else %}
                             <i class="bi bi-person-circle fs-4" aria-hidden="true"></i>

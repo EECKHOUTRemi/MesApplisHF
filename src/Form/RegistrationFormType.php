@@ -4,9 +4,10 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
@@ -45,6 +46,16 @@ class RegistrationFormType extends AbstractType
                         max: 4096,
                     ),
                 ],
+            ])
+            ->add('cgu', CheckboxType::class, [
+                'label'    => 'J\'ai lu et j\'accèpte les Conditions Générales d\'Utilisation',
+                'required' => true,
+                'mapped' => false
+            ])
+            ->add('privacy', CheckboxType::class, [
+                'label'    => 'J\'ai lu et j\'accèpte la Politique de confidentialité',
+                'required' => true,
+                'mapped' => false
             ])
         ;
     }

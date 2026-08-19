@@ -29,7 +29,7 @@ final class BmiController extends AbstractController
      * @param ChartBuilderInterface $chartBuilder
      * @return Response
      */
-    #[Route('/', name: 'index', methods: ['GET'])]
+    #[Route(name: 'index', methods: ['GET'])]
     public function index(BmiRepository $bmiRepository, ChartBuilderInterface $chartBuilder): Response
     {
         $bmis = $bmiRepository->findBy(['user' => $this->getUser()], ['createdAt' => 'ASC']);

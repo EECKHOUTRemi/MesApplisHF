@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# Surcharges de services propres à l'environnement de test.
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Les tests fonctionnels ne doivent pas appeler un vrai hub Mercure : le hub
+    # par défaut est remplacé par un mock qui mémorise les mises à jour publiées.
+    # Le fournisseur et la fabrique de JWT restent ceux du bundle, pour que le
+    # cookie d'autorisation soit fabriqué et signé comme en production.
+    App\Tests\Mercure\CollectingPublisher:
+        public: true
+
+    mercure.hub.default:
+        class: Symfony\Component\Mercure\MockHub
+        arguments:
+            $url: '%env(default::MERCURE_URL)%'
+            $jwtProvider: '@mercure.hub.default.jwt.provider'
+            $publisher: '@App\Tests\Mercure\CollectingPublisher'
+            $jwtFactory: '@mercure.hub.default.jwt.factory'
+            $publicUrl: '%env(default::MERCURE_PUBLIC_URL)%'

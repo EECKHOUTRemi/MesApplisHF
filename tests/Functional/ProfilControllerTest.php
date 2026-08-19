@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\MaCuisine\Recipe;
 use App\Entity\User;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 final class ProfilControllerTest extends AppWebTestCase
 {
-    private const INDEX_PATH = '/profil/';
+    private const INDEX_PATH = '/profil';
     private const PICTURE_PATH = '/profil/photo';
 
     private Filesystem $filesystem;
@@ -96,6 +97,24 @@ final class ProfilControllerTest extends AppWebTestCase
         );
     }
 
+    /**
+     * @param User $author
+     * @param string $name
+     * @return Recipe
+     */
+    private function createRecipe(User $author, string $name): Recipe
+    {
+        $recipe = (new Recipe())
+            ->setAuthor($author)
+            ->setName($name)
+            ->setCreatedAt(new \DateTimeImmutable());
+
+        $this->em()->persist($recipe);
+        $this->em()->flush();
+
+        return $recipe;
+    }
+
     public function testUpdatePictureRequiresAuthentication(): void
     {
         $this->client->request('POST', self::PICTURE_PATH);
@@ -133,7 +152,7 @@ final class ProfilControllerTest extends AppWebTestCase
 
         // chaque entrée pointe au bon endroit et porte son icône bootstrap
         $this->assertSame(1, $menu->filter('a[href="' . self::INDEX_PATH . '"]')->count());
-        $this->assertSame(1, $menu->filter('a[href="/settings/"]')->count());
+        $this->assertSame(1, $menu->filter('a[href="/settings"]')->count());
         $this->assertSame(1, $menu->filter('a[href="/logout"]')->count());
         $this->assertCount(3, $menu->filter('a.dropdown-item i.bi'));
     }
@@ -221,6 +240,39 @@ final class ProfilControllerTest extends AppWebTestCase
 
         $this->client->followRedirect();
         $this->assertSelectorTextContains('.alert-danger', "n'a pas pu être mise à jour");
+    }
+
+    public function testOtherUserProfileListsTheirRecipes(): void
+    {
+        $other = $this->createUser();
+        $mine  = $this->createUser();
+        $name  = 'Blanquette-' . bin2hex(random_bytes(4));
+
+        $this->createRecipe($other, $name);
+        // Recette du visiteur : elle ne doit pas apparaître sur le profil visité.
+        $this->createRecipe($mine, 'Intruse-' . bin2hex(random_bytes(4)));
+
+        $this->login($mine);
+        $crawler = $this->client->request('GET', self::INDEX_PATH . '/' . $other->getId());
+
+        $this->assertResponseIsSuccessful();
+
+        $links = $crawler->filter('a[href^="/macuisine/"]');
+
+        $this->assertCount(1, $links);
+        $this->assertStringContainsString($name, $links->text());
+    }
+
+    public function testOwnProfileHasNoRecipeSection(): void
+    {
+        $user = $this->createUser();
+        $this->createRecipe($user, 'Solo-' . bin2hex(random_bytes(4)));
+
+        $this->login($user);
+        $crawler = $this->client->request('GET', self::INDEX_PATH);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringNotContainsString('Recettes publiées', $crawler->filter('body')->text());
     }
 
     public function testUpdatePictureWithoutFileShowsError(): void
