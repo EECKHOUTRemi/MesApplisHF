@@ -511,7 +511,7 @@ API documentation is generated from the source PHPDoc with
 **📚 <https://eeckhoutremi.github.io/MesApplisHF>**
 
 It is rebuilt automatically on every push to `main` (the `docs` job in
-`.github/workflows/deploy.yml`). To build it locally:
+`.github/workflows/ci.yml`). To build it locally:
 
 ```bash
 vendor/bin/phpdoc        # outputs to docs/.build (git-ignored)

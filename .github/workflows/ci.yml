@@ -16,7 +16,10 @@ concurrency:
 
 jobs:
   # ── Stage 0: lint & static analysis (parallel with build) ───────
+  # PR-only: the branch ruleset requires this check + an up-to-date branch
+  # before merging, so the merge commit is already proven — no need to redo it on push.
   lint:
+    if: github.event_name == 'pull_request'
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
     timeout-minutes: 20
     steps:
@@ -63,8 +66,10 @@ jobs:
           path: /tmp/image.tar
 
   # ── Stage 2: test ───────────────────────────────────────────────
+  # PR-only: see note on the lint job above.
   test:
-    needs: build
+    needs: [build, lint]
+    if: github.event_name == 'pull_request'
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
     timeout-minutes: 20
     services:
@@ -104,8 +109,12 @@ jobs:
           path: coverage.xml
 
   # ── Stage 3a: scan — Trivy (runs parallel with Sonar) ───────────
+  # Runs on every build (PR and push), unlike lint/test/scan-sonar: `build`
+  # uses `pull: true`, so a push-triggered rebuild can resolve a newer base
+  # image than what the PR run scanned — the artifact itself isn't proven
+  # safe until *this* build of it has been scanned.
   scan-trivy:
-    needs: test
+    needs: build
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
     timeout-minutes: 20
     steps:
@@ -130,8 +139,10 @@ jobs:
 
 
   # ── Stage 3b: scan — SonarQube (runs parallel with Trivy) ───────
+  # PR-only: see note on the lint job above.
   scan-sonar:
     needs: test
+    if: github.event_name == 'pull_request'
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
     timeout-minutes: 20
     steps:
@@ -154,8 +165,12 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   # ── Stage 4: push (only on main/release/develop) ────────────────
+  # Waits on scan-trivy (which itself needs build): lint/test/scan-sonar are
+  # PR-only (see above) since the branch ruleset already guarantees this exact
+  # source tree passed them, but the built image is only proven safe once
+  # *this* build has been Trivy-scanned.
   push:
-    needs: [lint, scan-trivy, scan-sonar] # waits for lint + BOTH scans
+    needs: scan-trivy
     if: github.event_name == 'push' &&
       (github.ref == 'refs/heads/main' ||
       github.ref == 'refs/heads/develop' ||
@@ -190,11 +205,63 @@ jobs:
 
 
 
-  # ── (conditional) deploy ────────────────────────────────────────
+    # ── Stage 5: deploy (only on main/release/develop) ────────────────
   deploy:
     needs: push
     runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
-    timeout-minutes: 20
-    environment: ${{ github.ref_name }} # per-branch env + approvals
+
     steps:
-      - run: echo "Deploy ${{ env.IMAGE }}:${{ github.ref_name }} to ${{ github.ref_name }}"
+      - name: Map branch to environment
+        id: map
+        run: |
+          case "${{ github.ref_name }}" in
+            main)    echo "env=prod" >> "$GITHUB_OUTPUT"; echo "dir=/srv/mesapplishf/prod" >> "$GITHUB_OUTPUT" ;;
+            release) echo "env=test" >> "$GITHUB_OUTPUT"; echo "dir=/srv/mesapplishf/test" >> "$GITHUB_OUTPUT" ;;
+            develop) echo "env=dev"  >> "$GITHUB_OUTPUT"; echo "dir=/srv/mesapplishf/dev"  >> "$GITHUB_OUTPUT" ;;
+            *) echo "Unsupported branch ${{ github.ref_name }}"; exit 1 ;;
+          esac
+
+      - name: Run Docker deploy
+        run: cd ${{ steps.map.outputs.dir }} && ./bin/deploy-docker.sh ${{ steps.map.outputs.env }}
+
+    # ── Stage 6: docs (only on main) ────────────────
+  docs:
+    needs: deploy
+    if: github.ref_name == 'main'
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'self-hosted' }}
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{steps.deploy.outputs.page_url}}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: intl, pdo_pgsql, zip, opcache
+
+      - name: Install Graphviz (phpDocumentor class diagrams)
+        run: command -v dot >/dev/null || { sudo apt-get update && sudo apt-get install -y graphviz; }
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      # phpdoc.dist.xml drives the run and outputs HTML to docs/.build
+      - name: Generate documentation with phpDocumentor
+        run: vendor/bin/phpdoc --no-interaction
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/.build
+
+      - name: Deploy to Github Pages
+        id: deploy
+        uses: actions/deploy-pages@v5
