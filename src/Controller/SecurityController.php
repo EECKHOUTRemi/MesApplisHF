@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Notifier\EmailNotifier;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,8 +23,9 @@ class SecurityController extends AbstractController
 {
     /**
      * @param EmailVerifier $emailVerifier
+     * @param EmailNotifier $emailNotifier
      */
-    public function __construct(private EmailVerifier $emailVerifier)
+    public function __construct(private EmailVerifier $emailVerifier, private EmailNotifier $emailNotifier)
     {
         $this->emailVerifier = $emailVerifier;
     }
@@ -77,23 +79,27 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
+            if ($this->emailVerifier->checkIfEmailExists($form->get('email')->getData())) {
+                $this->emailNotifier->sendRegisterAttemptEmail($form->get('email')->getData());
+            } else {
+                /** @var string $plainPassword */
+                $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+                // encode the plain password
+                $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            $user->setCreatedAt(new \DateTimeImmutable());
+                $user->setCreatedAt(new \DateTimeImmutable());
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+                $entityManager->persist($user);
+                $entityManager->flush();
 
-            // generate a signed url and email it to the user
-            $this->emailVerifier->sendConfirmationEmail($user);
+                // generate a signed url and email it to the user
+                $this->emailVerifier->sendConfirmationEmail($user);
+            }
 
             $this->addFlash(
                 'success',
-                "Votre compte a été créé. " .
+                "Votre compte a été créé." .
                 "Consultez votre boîte mail pour confirmer votre adresse e-mail avant de vous connecter."
             );
 
