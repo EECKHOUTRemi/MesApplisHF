@@ -51,9 +51,6 @@
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body text-center p-4">
-                    {% if isConnectedUser %}
-                        <a href="#" class="position-relative d-inline-block text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#pfpModal" title="Changer la photo de profil">
-                    {% endif %}
                     {% if profil.image %}
                         {% set imgPath = 'uploads/pfp/' ~ profil.image %}
                         {% if imgPath is ondisk %}
@@ -74,10 +71,6 @@
                         <i class="bi bi-person-circle text-secondary" style="font-size: 6rem;"></i>
                     {% endif %}
 
-                {% if isConnectedUser %}
-                        <i class="bi bi-pencil position-absolute bottom-0 end-0 text-primary" style="font-size: 1.75rem;"></i>
-                    </a>
-                {% endif %}
                     <h2 class="mt-3 mb-1 d-flex align-items-center justify-content-center gap-2">
                         {{ profil.username }}
                         {% if isConnectedUser %}
@@ -244,37 +237,5 @@
         </div>
     </div>
 </div>
-
-{% if isConnectedUser %}
-    <div class="modal fade" id="pfpModal" tabindex="-1" aria-labelledby="pfpModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                {% form_theme pictureForm 'bootstrap_5_layout.html.twig' %}
-                {{ form_start(pictureForm, { action: path('app_profil_picture') }) }}
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="pfpModalLabel">
-                            <i class="bi bi-camera me-2 text-primary"></i>Changer la photo de profil
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                    </div>
-                    <div class="modal-body">
-                        {{ form_row(pictureForm.image) }}
-                        <p class="text-secondary small mb-0">
-                            Formats acceptés : AVIF, WebP, JPEG, PNG — 1 Mo maximum.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check2"></i> Enregistrer
-                        </button>
-                    </div>
-                {{ form_end(pictureForm) }}
-            </div>
-        </div>
-    </div>
-{% endif %}
 
 {% endblock %}
