@@ -24,11 +24,11 @@ class EmailNotifier
     private static string $defaultFromName = 'MesApplisHF';
 
     /**
-     * @param array $to
+     * @param list<string> $to
      * @param string $subject
      * @param string $template
      * @param string $content
-     * @param array|null $from
+     * @param array{address: string, name: string}|null $from
      * @param string|null $attachmentPath
      *
      * @return void

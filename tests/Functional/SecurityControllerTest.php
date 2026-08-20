@@ -60,7 +60,7 @@ class SecurityControllerTest extends AppWebTestCase
         $this->client->request('GET', '/register');
         $this->client->submitForm("S'inscrire", [
             'registration_form[email]' => $email,
-            'registration_form[username]' => 'nouvelutilisateur',
+            'registration_form[username]' => uniqid('insc.', true),
             'registration_form[plainPassword]' => 'MotDePasse123',
         ]);
 
@@ -79,11 +79,72 @@ class SecurityControllerTest extends AppWebTestCase
         $this->client->request('GET', '/register');
         $this->client->submitForm("S'inscrire", [
             'registration_form[email]' => uniqid('inscrit.', true) . '@test.local',
-            'registration_form[username]' => 'nouvelutilisateur',
+            'registration_form[username]' => uniqid('insc.', true),
             'registration_form[plainPassword]' => 'MotDePasse123',
         ]);
 
         $this->assertEmailCount(1);
+    }
+
+    public function testRegistrationWithAnAlreadyUsedEmailDoesNotCreateASecondAccount(): void
+    {
+        $existing = $this->createUser();
+
+        $this->client->request('GET', '/register');
+        $this->client->submitForm("S'inscrire", [
+            'registration_form[email]' => $existing->getEmail(),
+            'registration_form[username]' => uniqid('insc.', true),
+            'registration_form[plainPassword]' => 'MotDePasse123',
+        ]);
+
+        // La réponse reste identique à une inscription réussie : elle ne doit pas
+        // laisser deviner qu'un compte existe déjà pour cette adresse.
+        $this->assertResponseRedirects('/login');
+        $this->client->followRedirect();
+        $this->assertSelectorTextContains('.alert-success', 'Votre compte a été créé');
+
+        $accounts = $this->em()->getRepository(\App\Entity\User::class)->findBy(['email' => $existing->getEmail()]);
+        $this->assertCount(1, $accounts, "Aucun second compte ne doit être créé pour un e-mail déjà utilisé");
+    }
+
+    public function testRegistrationWithAnAlreadyUsedEmailNotifiesTheAccountOwnerInstead(): void
+    {
+        $existing = $this->createUser();
+
+        $this->client->request('GET', '/register');
+        $this->client->submitForm("S'inscrire", [
+            'registration_form[email]' => $existing->getEmail(),
+            'registration_form[username]' => uniqid('insc.', true),
+            'registration_form[plainPassword]' => 'MotDePasse123',
+        ]);
+
+        // Pas d'e-mail de confirmation (aucun compte créé), mais une alerte à l'adresse existante.
+        $this->assertEmailCount(1);
+        $email = $this->getMailerMessage();
+        $this->assertInstanceOf(\Symfony\Component\Mime\RawMessage::class, $email);
+        $this->assertEmailSubjectContains($email, 'Tentative de création de compte');
+        $this->assertEmailAddressContains($email, 'To', $existing->getEmail());
+    }
+
+    public function testRegistrationWithAnAlreadyUsedUsernameIsRejected(): void
+    {
+        $existing = $this->createUser();
+
+        $this->client->request('GET', '/register');
+        $this->client->submitForm("S'inscrire", [
+            'registration_form[email]' => uniqid('inscrit.', true) . '@test.local',
+            'registration_form[username]' => $existing->getUsername(),
+            'registration_form[plainPassword]' => 'MotDePasse123',
+        ]);
+
+        // Contrairement à l'e-mail, le nom d'utilisateur n'est pas sensible : le
+        // formulaire peut donc afficher l'erreur de validation habituelle.
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertSelectorTextContains(
+            '.invalid-feedback',
+            'Un compte avec le meme nom d\'utilisateur existe déjà.'
+        );
+        $this->assertEmailCount(0);
     }
 
     public function testUnverifiedUserCannotLoginAndReceivesNewEmail(): void

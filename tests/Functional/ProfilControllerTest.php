@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\Friends\Relationship;
 use App\Entity\MaCuisine\Recipe;
 use App\Entity\User;
 use Symfony\Component\Filesystem\Filesystem;
@@ -113,6 +114,25 @@ final class ProfilControllerTest extends AppWebTestCase
         $this->em()->flush();
 
         return $recipe;
+    }
+
+    /**
+     * @param User $user1
+     * @param User $user2
+     * @return Relationship
+     */
+    private function createAcceptedRelationship(User $user1, User $user2): Relationship
+    {
+        $relationship = (new Relationship())
+            ->setuser1($user1)
+            ->setuser2($user2)
+            ->setStatus(Relationship::STATUS_ACCEPTED)
+            ->setCreatedAt(new \DateTimeImmutable());
+
+        $this->em()->persist($relationship);
+        $this->em()->flush();
+
+        return $relationship;
     }
 
     public function testUpdatePictureRequiresAuthentication(): void
@@ -273,6 +293,35 @@ final class ProfilControllerTest extends AppWebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertStringNotContainsString('Recettes publiées', $crawler->filter('body')->text());
+    }
+
+    public function testOtherUserProfileShowsChatButtonForAnAcceptedFriend(): void
+    {
+        $me     = $this->createUser();
+        $friend = $this->createUser();
+        $this->createAcceptedRelationship($me, $friend);
+
+        $this->login($me);
+        $crawler = $this->client->request('GET', self::INDEX_PATH . '/' . $friend->getId());
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(
+            1,
+            $crawler->filter('button[formaction="/friends/chat/with/' . $friend->getId() . '"]'),
+            "Le profil d'un ami doit proposer un bouton vers la conversation."
+        );
+    }
+
+    public function testOtherUserProfileHasNoChatButtonWithoutAFriendship(): void
+    {
+        $me       = $this->createUser();
+        $stranger = $this->createUser();
+
+        $this->login($me);
+        $crawler = $this->client->request('GET', self::INDEX_PATH . '/' . $stranger->getId());
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(0, $crawler->filter('button[formaction="/friends/chat/with/' . $stranger->getId() . '"]'));
     }
 
     public function testUpdatePictureWithoutFileShowsError(): void
