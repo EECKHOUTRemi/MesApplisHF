@@ -44,8 +44,7 @@ final class ProfilController extends AbstractController
             throw $this->createNotFoundException('Utilisateur introuvable.');
         }
 
-        /** @var UserInterface $currentUser */
-        $currentUser = $this->getUser();
+        $currentUser = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
 
         // Le template bascule sur l'UI « mon profil » (dont la modale photo) dès que le profil
         // consulté est celui de l'utilisateur connecté, or seul index() fournit `pictureForm`.
