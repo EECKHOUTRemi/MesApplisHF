@@ -1,0 +1,14 @@
+{# Note 1-5 en lecture seule, rendue en icônes (la saisie vit dans _icon_rating_theme.html.twig).
+   Paramètres : value, icon (classe bootstrap-icons), variant (difficulty|cost), max (défaut 5),
+   label (optionnel : à ne passer que si aucun intitulé visible n'accompagne déjà les icônes,
+   sinon les lecteurs d'écran l'annoncent deux fois).
+   Les icônes sont décoratives : la valeur est donnée aux lecteurs d'écran par le texte masqué. #}
+{% set max = max|default(5) %}
+<span class="rating-static rating-static-{{ variant }}">
+    <span class="visually-hidden">{% if label|default(false) %}{{ label }} : {% endif %}{{ value }} sur {{ max }}</span>
+    <span aria-hidden="true">
+        {%- for i in 1..max -%}
+            <i class="bi {{ icon }}{{ i <= value ? ' is-on' : '' }}"></i>
+        {%- endfor -%}
+    </span>
+</span>
