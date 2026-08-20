@@ -10,6 +10,11 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        .profil-pfp {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
         .profil-recipe-thumb {
             width: 56px;
             height: 56px;
@@ -46,9 +51,6 @@
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body text-center p-4">
-                    {% if isConnectedUser %}
-                        <a href="#" class="position-relative d-inline-block text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#pfpModal" title="Changer la photo de profil">
-                    {% endif %}
                     {% if profil.image %}
                         {% set imgPath = 'uploads/pfp/' ~ profil.image %}
                         {% if imgPath is ondisk %}
@@ -57,7 +59,7 @@
                                 <source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('lil_png') }}" type="image/png">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
-                                <img src="{{ asset(imgPath)}}" alt="{{ profil.username }}" loading="lazy" class="rounded-4">
+                                <img src="{{ asset(imgPath)}}" alt="{{ profil.username }}" loading="lazy" class="rounded-circle profil-pfp">
                             </picture>
                         {% else %}
                             <div class="banner-fallback">
@@ -68,11 +70,7 @@
                     {% else %}
                         <i class="bi bi-person-circle text-secondary" style="font-size: 6rem;"></i>
                     {% endif %}
-                    
-                {% if isConnectedUser %}
-                        <i class="bi bi-pencil position-absolute bottom-0 end-0 text-primary" style="font-size: 1.75rem;"></i>
-                    </a>
-                {% endif %}
+
                     <h2 class="mt-3 mb-1 d-flex align-items-center justify-content-center gap-2">
                         {{ profil.username }}
                         {% if isConnectedUser %}
@@ -104,6 +102,9 @@
                                     <span class="btn btn-success disabled pe-none">
                                         <i class="bi bi-person-check-fill me-1"></i>Ami
                                     </span>
+                                    <button type="submit" formaction="{{ path('app_friends_chat_start', { id: profil.id }) }}" class="btn btn-outline-primary" title="Accéder à la conversation de cet ami">
+                                        <i class="bi bi-chat-dots"></i>
+                                    </button>
                                     <button type="submit" formaction="{{ path('app_friends_removeRelationship', { user2Id: profil.id }) }}" class="btn btn-outline-danger" title="Supprimer l'ami">
                                         <i class="bi bi-person-fill-x"></i>
                                     </button>
@@ -117,7 +118,7 @@
                             <i class="bi bi-envelope"></i> {{ profil.email }}
                         </p>
                     {% endif %}
-                    
+
                     <p class="text-secondary small mt-3 mb-0">
                         {% if relationStatus is same as('accepted') %}
                             Amis depuis le {{ relationUpdatedAt }}
@@ -207,7 +208,7 @@
                         </li>
                     </ul>
                 </div>
-            
+
                 <div class="row g-3">
                     <div class="col-md-6">
                         <a href="{{ path('app_macuisine_index') }}" class="card shadow-sm h-100 text-decoration-none text-reset">
@@ -236,37 +237,5 @@
         </div>
     </div>
 </div>
-
-{% if isConnectedUser %}
-    <div class="modal fade" id="pfpModal" tabindex="-1" aria-labelledby="pfpModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                {% form_theme pictureForm 'bootstrap_5_layout.html.twig' %}
-                {{ form_start(pictureForm, { action: path('app_profil_picture') }) }}
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="pfpModalLabel">
-                            <i class="bi bi-camera me-2 text-primary"></i>Changer la photo de profil
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                    </div>
-                    <div class="modal-body">
-                        {{ form_row(pictureForm.image) }}
-                        <p class="text-secondary small mb-0">
-                            Formats acceptés : AVIF, WebP, JPEG, PNG — 1 Mo maximum.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check2"></i> Enregistrer
-                        </button>
-                    </div>
-                {{ form_end(pictureForm) }}
-            </div>
-        </div>
-    </div>
-{% endif %}
 
 {% endblock %}

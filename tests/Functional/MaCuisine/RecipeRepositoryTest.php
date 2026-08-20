@@ -193,7 +193,8 @@ class RecipeRepositoryTest extends KernelTestCase
     {
         $user = new User();
         $user->setEmail(uniqid('recipe.search.', true) . '@test.local');
-        $user->setUsername('chef');
+        // Le nom d'utilisateur est unique en base et la base n'est pas vidée entre les tests.
+        $user->setUsername(uniqid('chef.', true));
         $user->setPassword('x');
         $user->setCreatedAt(new \DateTimeImmutable());
 
