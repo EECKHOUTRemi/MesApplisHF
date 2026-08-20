@@ -116,6 +116,23 @@ final class SettingsControllerTest extends AppWebTestCase
         $this->assertSelectorExists('input[name="profile_picture[image]"]');
     }
 
+    public function testIndexWiresThePicturePreview(): void
+    {
+        $this->login($this->createUser());
+
+        $this->client->request('GET', self::INDEX_PATH);
+
+        $this->assertResponseIsSuccessful();
+        // Le contrôleur Stimulus révèle la flèche et l'aperçu à droite de l'avatar actuel.
+        $this->assertSelectorExists('[data-controller="pfp-preview"]');
+        $this->assertSelectorExists(
+            'input[name="profile_picture[image]"][data-pfp-preview-target="input"]'
+                . '[data-action="change->pfp-preview#show"]'
+        );
+        $this->assertSelectorExists('i[data-pfp-preview-target="arrow"].d-none');
+        $this->assertSelectorExists('img[data-pfp-preview-target="preview"].d-none');
+    }
+
     public function testUpdatePictureStoresFileAndUpdatesUser(): void
     {
         $user = $this->createUser();

@@ -34,6 +34,57 @@
                 <div class="card-header bg-white">
                     <h5 class="mb-0"><i class="bi bi-camera-fill me-2 text-primary"></i>Photo de profil</h5>
                 </div>
+                <div class="card-body" data-controller="pfp-preview">
+                    <div class="d-flex align-items-center gap-4 mb-3">
+                        {% if app.user.image %}
+                            {% set imgPath = 'uploads/pfp/' ~ app.user.image %}
+                            {% if imgPath is ondisk %}
+                                <picture>
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('lil_avif') }}" type="image/avif">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('lil_png') }}" type="image/png">
+                                    <source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
+                                    <img src="{{ asset(imgPath) }}" alt="{{ app.user.username }}" loading="lazy" class="rounded-circle settings-pfp">
+                                </picture>
+                            {% else %}
+                                <div class="banner-fallback">
+                                    <i class="bi bi-image-alt" aria-hidden="true"></i>
+                                    <span>Image indisponible</span>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <i class="bi bi-person-circle text-secondary" style="font-size: 4rem;"></i>
+                        {% endif %}
+
+                        {# Flèche et aperçu révélés par le contrôleur Stimulus au choix d'un fichier. #}
+                        <i class="bi bi-arrow-right fs-3 text-secondary d-none" data-pfp-preview-target="arrow" aria-hidden="true"></i>
+                        <img data-pfp-preview-target="preview" alt="Aperçu de la nouvelle photo de profil" class="rounded-circle settings-pfp d-none">
+                    </div>
+
+                    {% form_theme pictureForm 'bootstrap_5_layout.html.twig' %}
+                    {{ form_start(pictureForm, { action: path('app_settings_picture') }) }}
+                        {{ form_row(pictureForm.image, {
+                            'attr': {
+                                'data-pfp-preview-target': 'input',
+                                'data-action': 'change->pfp-preview#show',
+                            },
+                        }) }}
+                        <p class="text-secondary small mb-3">
+                            Formats acceptés : AVIF, WebP, JPEG, PNG — 1 Mo maximum.
+                        </p>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check2"></i> Enregistrer
+                            </button>
+                        </div>
+                    {{ form_end(pictureForm) }}
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-camera-fill me-2 text-primary"></i>Photo de profil</h5>
+                </div>
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-4 mb-3">
                         {% if app.user.image %}
