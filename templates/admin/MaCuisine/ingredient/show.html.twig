@@ -5,13 +5,7 @@
 {% block body %}
 <div class="container py-4" style="max-width: 600px;">
 
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb mb-0 small">
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_ingredient_index') }}" class="text-decoration-none">Ingrédients</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ ingredient.name }}</li>
-        </ol>
-    </nav>
+    {{ include('_back_link.html.twig') }}
 
     <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
         <h1 class="h4 mb-0 fw-bold"><i class="bi bi-basket3 me-2" aria-hidden="true"></i>{{ ingredient.name }}</h1>

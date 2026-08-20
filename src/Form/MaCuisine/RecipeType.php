@@ -9,6 +9,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -72,9 +73,7 @@ class RecipeType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => 'Choisir une catégorie',
             ])
-            ->add('description', TextareaType::class, [
-                'required' => false,
-            ])
+            ->add('description', TextareaType::class)
             ->add('source', TextType::class, [
                 'required' => false,
                 'constraints' => [
@@ -94,6 +93,26 @@ class RecipeType extends AbstractType
                 'attr' => [
                     'class' => 'ingredients-select',
                 ],
+            ])
+            ->add('portions', IntegerType::class, [
+                'required' => false,
+            ])
+            ->add('time', IntegerType::class, [
+                'required' => false,
+            ])
+            ->add('difficulty', ChoiceType::class, [
+                'required' => false,
+                'expanded' => true,
+                'multiple' => false,
+                'placeholder' => false,
+                'choices' => ['5' => 5, '4' => 4, '3' => 3, '2' => 2, '1' => 1],
+            ])
+            ->add('cost', ChoiceType::class, [
+                'required' => false,
+                'expanded' => true,
+                'multiple' => false,
+                'placeholder' => false,
+                'choices' => ['5' => 5, '4' => 4, '3' => 3, '2' => 2, '1' => 1],
             ])
         ;
     }

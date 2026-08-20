@@ -113,6 +113,7 @@
             z-index: 5;
         }
     </style>
+    {{ include('MaCuisine/recipe/_meta_styles.html.twig') }}
 {% endblock %}
 
 {% block body %}
@@ -292,6 +293,12 @@
                                     <i class="bi bi-tools me-1" aria-hidden="true"></i>{{ utensil.name }}
                                 </span>
                             {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if recipe.portions or recipe.time or recipe.difficulty or recipe.cost %}
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            {{ include('MaCuisine/recipe/_meta_pills.html.twig', { recipe: recipe }) }}
                         </div>
                     {% endif %}
 

@@ -43,7 +43,17 @@ final class ProfilController extends AbstractController
             throw $this->createNotFoundException('Utilisateur introuvable.');
         }
 
-        $relationship   = $relationshipRepository->findRelationShipByUsers($this->getUser(), $other);
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+
+        // Le template bascule sur l'UI « mon profil » (dont la modale photo) dès que le profil
+        // consulté est celui de l'utilisateur connecté, or seul index() fournit `pictureForm`.
+        // On redirige donc vers l'URL canonique plutôt que de rendre une page incomplète.
+        if ($other->getId() === $currentUser->getId()) {
+            return $this->redirectToRoute('app_profil_index');
+        }
+
+        $relationship   = $relationshipRepository->findRelationShipByUsers($currentUser, $other);
 
         return $this->render('profil/index.html.twig', [
             'profil'         => $other,

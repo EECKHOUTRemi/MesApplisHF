@@ -35,7 +35,7 @@ class Recipe
     #[Assert\Length(max: 30, maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $name = null;
 
-    #[ORM\Column(length: 600, nullable: true)]
+    #[ORM\Column(length: 600)]
     #[Assert\Length(max: 600, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $description = null;
 
@@ -65,6 +65,18 @@ class Recipe
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $portions = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $time = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $difficulty = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $cost = null;
 
     public function __construct()
     {
@@ -240,6 +252,54 @@ class Recipe
     public function setImage(?string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getPortions(): ?int
+    {
+        return $this->portions;
+    }
+
+    public function setPortions(?int $portions): static
+    {
+        $this->portions = $portions;
+
+        return $this;
+    }
+
+    public function getTime(): ?int
+    {
+        return $this->time;
+    }
+
+    public function setTime(?int $time): static
+    {
+        $this->time = $time;
+
+        return $this;
+    }
+
+    public function getDifficulty(): ?int
+    {
+        return $this->difficulty;
+    }
+
+    public function setDifficulty(?int $difficulty): static
+    {
+        $this->difficulty = $difficulty;
+
+        return $this;
+    }
+
+    public function getCost(): ?int
+    {
+        return $this->cost;
+    }
+
+    public function setCost(?int $cost): static
+    {
+        $this->cost = $cost;
 
         return $this;
     }
