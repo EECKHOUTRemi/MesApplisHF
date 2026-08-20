@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/profil', name: 'app_profil_'), IsGranted('ROLE_USER')]
@@ -43,7 +44,7 @@ final class ProfilController extends AbstractController
             throw $this->createNotFoundException('Utilisateur introuvable.');
         }
 
-        /** @var User $currentUser */
+        /** @var UserInterface $currentUser */
         $currentUser = $this->getUser();
 
         // Le template bascule sur l'UI « mon profil » (dont la modale photo) dès que le profil

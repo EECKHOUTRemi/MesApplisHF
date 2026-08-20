@@ -37,7 +37,7 @@ class Recipe
 
     #[ORM\Column(length: 600)]
     #[Assert\Length(max: 600, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.')]
-    private ?string $description = null;
+    private string $description;
 
     /**
      * @var Collection<int, RefRecipeIngredient>
