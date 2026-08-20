@@ -403,6 +403,7 @@ class RecipeControllerTest extends AppWebTestCase
                 'recipe' => [
                     '_token' => $this->csrfToken(self::INDEX_PATH . '/new'),
                     'name' => $name,
+                    'description' => 'Recette de test avec image.',
                     'category' => '',
                 ],
             ],
@@ -448,6 +449,7 @@ class RecipeControllerTest extends AppWebTestCase
                 'recipe' => [
                     '_token' => $this->csrfToken($editPath),
                     'name' => $recipe->getName(),
+                    'description' => $recipe->getDescription(),
                     'category' => '',
                 ],
             ],

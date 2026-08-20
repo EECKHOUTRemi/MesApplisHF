@@ -360,6 +360,7 @@ final class ChatControllerTest extends AppWebTestCase
         $recipe = (new Recipe())
             ->setAuthor($this->reload($author))
             ->setName($name)
+            ->setDescription('Recette de test.')
             ->setCreatedAt(new \DateTimeImmutable());
 
         $this->em()->persist($recipe);

@@ -36,6 +36,7 @@ class Recipe
     private ?string $name = null;
 
     #[ORM\Column(length: 600)]
+    #[Assert\NotBlank(message: 'La description ne peut pas être vide.')]
     #[Assert\Length(max: 600, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.')]
     private string $description;
 
@@ -166,17 +167,17 @@ class Recipe
         return $this;
     }
 
-    /** @return string|null */
-    public function getDescription(): ?string
+    /** @return string */
+    public function getDescription(): string
     {
         return $this->description;
     }
 
     /**
-     * @param string|null $description
+     * @param string $description
      * @return static
      */
-    public function setDescription(?string $description): static
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 

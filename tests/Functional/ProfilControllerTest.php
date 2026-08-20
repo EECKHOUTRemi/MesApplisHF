@@ -24,6 +24,7 @@ final class ProfilControllerTest extends AppWebTestCase
         $recipe = (new Recipe())
             ->setAuthor($author)
             ->setName($name)
+            ->setDescription('Recette de test.')
             ->setCreatedAt(new \DateTimeImmutable());
 
         $this->em()->persist($recipe);
