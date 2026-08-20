@@ -10,6 +10,11 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        .profil-pfp {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
         .profil-recipe-thumb {
             width: 56px;
             height: 56px;
@@ -57,7 +62,7 @@
                                 <source srcset="{{ asset(imgPath) | imagine_filter('lil_webp') }}" type="image/webp">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('lil_png') }}" type="image/png">
                                 <source srcset="{{ asset(imgPath) | imagine_filter('lil_jpeg') }}" type="image/jpeg">
-                                <img src="{{ asset(imgPath)}}" alt="{{ profil.username }}" loading="lazy" class="rounded-4">
+                                <img src="{{ asset(imgPath)}}" alt="{{ profil.username }}" loading="lazy" class="rounded-circle profil-pfp">
                             </picture>
                         {% else %}
                             <div class="banner-fallback">
@@ -68,7 +73,7 @@
                     {% else %}
                         <i class="bi bi-person-circle text-secondary" style="font-size: 6rem;"></i>
                     {% endif %}
-                    
+
                 {% if isConnectedUser %}
                         <i class="bi bi-pencil position-absolute bottom-0 end-0 text-primary" style="font-size: 1.75rem;"></i>
                     </a>
@@ -117,7 +122,7 @@
                             <i class="bi bi-envelope"></i> {{ profil.email }}
                         </p>
                     {% endif %}
-                    
+
                     <p class="text-secondary small mt-3 mb-0">
                         {% if relationStatus is same as('accepted') %}
                             Amis depuis le {{ relationUpdatedAt }}
@@ -207,7 +212,7 @@
                         </li>
                     </ul>
                 </div>
-            
+
                 <div class="row g-3">
                     <div class="col-md-6">
                         <a href="{{ path('app_macuisine_index') }}" class="card shadow-sm h-100 text-decoration-none text-reset">
