@@ -84,10 +84,10 @@
 										{% set imgPath = friend.image ? 'uploads/pfp/' ~ friend.image : null %}
 										{% if imgPath and imgPath is ondisk %}
 											<picture>
-												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_avif') }}" type="image/avif">
-												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
-												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
-												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
+												<source srcset="{{ asset(imgPath) | imagine_filter('tiny_navbar_avif') }}" type="image/avif">
+												<source srcset="{{ asset(imgPath) | imagine_filter('tiny_navbar_webp') }}" type="image/webp">
+												<source srcset="{{ asset(imgPath) | imagine_filter('tiny_navbar_png') }}" type="image/png">
+												<source srcset="{{ asset(imgPath) | imagine_filter('tiny_navbar_jpeg') }}" type="image/jpeg">
 												<img src="{{ asset(imgPath) }}" alt="{{ friend.username }}" loading="lazy" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
 											</picture>
 										{% else %}

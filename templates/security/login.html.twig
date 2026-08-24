@@ -44,6 +44,9 @@
                                     <i class="bi bi-eye" aria-hidden="true" data-password-toggle-target="icon"></i>
                                 </button>
                             </div>
+                            <div class="text-end mt-1">
+                                <a href="{{ path('app_forgot_password_request') }}" class="small text-decoration-none">Mot de passe oublié ?</a>
+                            </div>
                         </div>
 
                         <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
