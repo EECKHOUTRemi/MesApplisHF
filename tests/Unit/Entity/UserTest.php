@@ -65,7 +65,9 @@ class UserTest extends TestCase
         $this->assertNull($user->getEmail());
         $this->assertNull($user->getUsername());
         $this->assertNull($user->getPassword());
-        $this->assertNull($user->getCreatedAt());
+        // Fixé à la construction (cf. constructeur de User), contrairement au
+        // reste de l'identité qui n'existe qu'après persistance.
+        $this->assertInstanceOf(\DateTimeImmutable::class, $user->getCreatedAt());
         $this->assertNull($user->getHeight());
     }
 
