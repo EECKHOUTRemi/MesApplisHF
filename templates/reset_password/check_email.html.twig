@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
 
+{% import 'reset_password/_expiration.html.twig' as expiration %}
+
 {% block title %}E-mail envoyé{% endblock %}
 
 {% block body %}
@@ -17,8 +19,7 @@
                         réinitialisation vient de vous être envoyé.
                     </p>
                     <p class="text-secondary">
-                        Ce lien expirera dans
-                        {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+                        Ce lien expirera dans {{ expiration.duration(resetToken) }}.
                     </p>
                     <p class="text-secondary small">
                         Vous ne recevez rien&nbsp;? Vérifiez vos spams ou
