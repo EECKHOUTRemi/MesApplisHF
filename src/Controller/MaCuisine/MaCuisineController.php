@@ -89,9 +89,32 @@ final class MaCuisineController extends AbstractController
         $ingredients = $request->query->all('ingredients');
         $utensils = $request->query->all('utensils');
         $categories = $request->query->all('categories');
+        $difficulty = $request->query->get('difficulty');
+        $cost = $request->query->get('cost');
+        $time = $request->query->get('time');
 
-        if (($query !== null && $query !== '') || $ingredients !== [] || $utensils !== [] || $categories !== []) {
-            $recipes = $recipeRepository->findWithQuery($query, $ingredients, $utensils, $categories);
+        $difficulty = ($difficulty !== null && $difficulty !== '') ? (int) $difficulty : null;
+        $cost = ($cost !== null && $cost !== '') ? (int) $cost : null;
+        $time = ($time !== null && $time !== '') ? (int) $time : null;
+
+        $hasFilters = ($query !== null && $query !== '')
+            || $ingredients !== []
+            || $utensils !== []
+            || $categories !== []
+            || $difficulty !== null
+            || $cost !== null
+            || $time !== null;
+
+        if ($hasFilters) {
+            $recipes = $recipeRepository->findWithQuery(
+                $query,
+                $ingredients,
+                $utensils,
+                $categories,
+                $difficulty,
+                $cost,
+                $time
+            );
         } else {
             $recipes = $recipeRepository->findAll();
         }

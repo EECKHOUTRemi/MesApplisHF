@@ -126,10 +126,10 @@
                             {# d-flex : sans cela l'image, en ligne, repose sur la ligne de base
                                et traîne un blanc sous elle qui décale l'icône. #}
                             <picture class="d-flex">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_navbar_avif') }}" type="image/avif">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_navbar_webp') }}" type="image/webp">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_navbar_png') }}" type="image/png">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_navbar_jpeg') }}" type="image/jpeg">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_avif') }}" type="image/avif">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_webp') }}" type="image/webp">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_png') }}" type="image/png">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_jpeg') }}" type="image/jpeg">
                                 <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
                             </picture>
                         {% else %}

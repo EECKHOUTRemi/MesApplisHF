@@ -59,13 +59,17 @@ class RecipeRepositoryTest extends KernelTestCase
         // r1 le plus ancien, r3 le plus récent (pour vérifier le tri décroissant)
         $base = new \DateTimeImmutable('2024-01-01 12:00:00');
 
+        // difficulté / budget / temps croissants de r1 à r3, pour les filtres « au plus ».
         $this->recipes['r1'] = $this->createRecipe(
             $author,
             'P1-' . $this->suffix,
             $base->modify('-2 hours'),
             [$tomate, $basilic],
             [$poele],
-            $plat
+            $plat,
+            1,
+            1,
+            15
         );
 
         $this->recipes['r2'] = $this->createRecipe(
@@ -74,7 +78,10 @@ class RecipeRepositoryTest extends KernelTestCase
             $base->modify('-1 hour'),
             [$tomate],
             [$fouet],
-            $dessert
+            $dessert,
+            3,
+            3,
+            60
         );
 
         $this->recipes['r3'] = $this->createRecipe(
@@ -83,7 +90,10 @@ class RecipeRepositoryTest extends KernelTestCase
             $base,
             [$basilic],
             [],
-            $plat
+            $plat,
+            5,
+            5,
+            240
         );
     }
 
@@ -179,6 +189,64 @@ class RecipeRepositoryTest extends KernelTestCase
         );
     }
 
+    public function testFilterByMaxDifficultyKeepsRecipesAtOrBelow(): void
+    {
+        $results = $this->repository->findWithQuery($this->suffix, null, null, null, 3);
+
+        $this->assertEqualsCanonicalizing(
+            [$this->recipes['r1']->getId(), $this->recipes['r2']->getId()],
+            $this->ids($results)
+        );
+    }
+
+    public function testFilterByMaxCostKeepsRecipesAtOrBelow(): void
+    {
+        $results = $this->repository->findWithQuery($this->suffix, null, null, null, null, 1);
+
+        $this->assertSame([$this->recipes['r1']->getId()], $this->ids($results));
+    }
+
+    public function testFilterByMaxTimeKeepsRecipesAtOrBelow(): void
+    {
+        $results = $this->repository->findWithQuery($this->suffix, null, null, null, null, null, 60);
+
+        $this->assertEqualsCanonicalizing(
+            [$this->recipes['r1']->getId(), $this->recipes['r2']->getId()],
+            $this->ids($results)
+        );
+    }
+
+    public function testDifficultyCostAndTimeAreCombinedWithAnd(): void
+    {
+        // difficulté <= 5 ET budget <= 3 ET temps <= 60 : seules r1 et r2 satisfont les trois
+        $results = $this->repository->findWithQuery($this->suffix, null, null, null, 5, 3, 60);
+
+        $this->assertEqualsCanonicalizing(
+            [$this->recipes['r1']->getId(), $this->recipes['r2']->getId()],
+            $this->ids($results)
+        );
+    }
+
+    public function testRecipesWithoutValueAreExcludedByRangeFilters(): void
+    {
+        $recipe = $this->createRecipe(
+            $this->createUser(),
+            'P4-' . $this->suffix,
+            new \DateTimeImmutable('2024-01-01 12:00:00'),
+            [],
+            [],
+            null
+        );
+
+        // La recette sans difficulté renseignée ne remonte pas quand le filtre est actif…
+        $filtered = $this->repository->findWithQuery($this->suffix, null, null, null, 5);
+        $this->assertNotContains($recipe->getId(), $this->ids($filtered));
+
+        // …mais reste visible sans ce filtre.
+        $unfiltered = $this->repository->findWithQuery($this->suffix, null, null, null);
+        $this->assertContains($recipe->getId(), $this->ids($unfiltered));
+    }
+
     /**
      * @param Recipe[] $recipes
      * @return int[]
@@ -262,6 +330,9 @@ class RecipeRepositoryTest extends KernelTestCase
      * @param Ingredient[] $ingredients
      * @param Utensil[] $utensils
      * @param Category|null $category
+     * @param int|null $difficulty
+     * @param int|null $cost
+     * @param int|null $time
      * @return Recipe
      */
     private function createRecipe(
@@ -271,6 +342,9 @@ class RecipeRepositoryTest extends KernelTestCase
         array $ingredients,
         array $utensils,
         ?Category $category,
+        ?int $difficulty = null,
+        ?int $cost = null,
+        ?int $time = null,
     ): Recipe {
         $recipe = new Recipe();
         $recipe->setName($name);
@@ -278,6 +352,9 @@ class RecipeRepositoryTest extends KernelTestCase
         $recipe->setAuthor($author);
         $recipe->setCreatedAt($createdAt);
         $recipe->setCategory($category);
+        $recipe->setDifficulty($difficulty);
+        $recipe->setCost($cost);
+        $recipe->setTime($time);
         foreach ($utensils as $utensil) {
             $recipe->addUtensil($utensil);
         }

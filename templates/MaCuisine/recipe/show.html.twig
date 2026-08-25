@@ -59,17 +59,8 @@
             line-height: 1.7;
             font-size: 1.05rem;
         }
-        .meta-pill {
-            background: #fff5ef;
-            color: #b3502f;
-            border-radius: 999px;
-            padding: .35rem .9rem;
-            font-size: .875rem;
-            display: inline-flex;
-            align-items: center;
-            gap: .35rem;
-        }
     </style>
+    {{ include('MaCuisine/recipe/_meta_styles.html.twig') }}
 {% endblock %}
 
 {% block body %}
@@ -89,13 +80,7 @@
 
 <div class="container py-4" style="max-width: 820px;">
 
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb mb-0 small">
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">Recettes</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ recipe.name }}</li>
-        </ol>
-    </nav>
+    {{ include('_back_link.html.twig') }}
 
     <section class="recipe-hero mb-4">
         <div class="row align-items-center g-3">
@@ -109,8 +94,27 @@
                 <h1 class="display-5 fw-bold mb-2">{{ recipe.name }}</h1>
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="author-avatar">{{ (recipe.author.username ?? "Compte supprimé")|first|upper }}</span>
-                        <span>par <strong>{{ recipe.author.username ?? "Compte supprimé" }}</strong></span>
+                        {% if recipe.author.username %}
+                            {% set author = recipe.author %}
+                            <a href="{{ path('app_profil_seeOtherUser', { id: author.id }) }}" class="text-decoration-none" style="color: white;">
+                                {% set imgPath = author.image ? 'uploads/pfp/' ~ author.image : null %}
+                                {% if imgPath and imgPath is ondisk %}
+                                    <picture class="me-2">
+                                        <source srcset="{{ asset(imgPath) | imagine_filter('tiny_avif') }}" type="image/avif">
+                                        <source srcset="{{ asset(imgPath) | imagine_filter('tiny_webp') }}" type="image/webp">
+                                        <source srcset="{{ asset(imgPath) | imagine_filter('tiny_png') }}" type="image/png">
+                                        <source srcset="{{ asset(imgPath) | imagine_filter('tiny_jpeg') }}" type="image/jpeg">
+                                        <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+                                    </picture>
+                                {% else %}
+                                    <span class="author-avatar">{{ (author.username)|first|upper }}</span>
+                                {% endif %}
+                                <span>par <strong>{{ author.username }}</strong></span>
+                            </a>
+                        {% else %}
+                            <span class="author-avatar">C</span>
+                            <span>par <strong>Compte supprimé</strong></span>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -153,6 +157,7 @@
                         <i class="bi bi-pencil" aria-hidden="true"></i>Mise à jour le {{ recipe.updatedAt|date('d/m/Y') }}
                     </span>
                 {% endif %}
+                {{ include('MaCuisine/recipe/_meta_pills.html.twig', { recipe: recipe }) }}
             </div>
 
             {% if recipe.utensil|length > 0 %}
@@ -188,7 +193,7 @@
         <div class="card-body p-4">
             <h2 class="h5 fw-bold mb-2"><i class="bi bi-journal-text text-primary me-1" aria-hidden="true"></i>Description</h2>
             <p class="recipe-description text-body mb-0">{{ recipe.description }}</p>
-            
+
         </div>
     </section>
 

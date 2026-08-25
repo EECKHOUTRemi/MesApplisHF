@@ -1,0 +1,21 @@
+{# Rendu personnalisé des champs difficulté / prix : radios masqués + icônes cliquables,
+   sur le même principe qu'une notation par étoiles (voir _form.html.twig pour les styles).
+   Le <input> est écrit à la main (plutôt que via form_widget(child)) pour rester un frère
+   direct du <label> : le CSS s'appuie sur le sélecteur ~ pour remplir les icônes précédentes. #}
+{% block _recipe_difficulty_widget %}
+    <div class="icon-rating icon-rating-difficulty">
+        {% for child in form %}
+            <input type="radio" id="{{ child.vars.id }}" name="{{ child.vars.full_name }}" value="{{ child.vars.value }}"{% if child.vars.checked %} checked{% endif %}>
+            <label for="{{ child.vars.id }}" class="bi bi-fire" aria-label="Difficulté {{ child.vars.value }} sur {{ form|length }}"></label>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block _recipe_cost_widget %}
+    <div class="icon-rating icon-rating-cost">
+        {% for child in form %}
+            <input type="radio" id="{{ child.vars.id }}" name="{{ child.vars.full_name }}" value="{{ child.vars.value }}"{% if child.vars.checked %} checked{% endif %}>
+            <label for="{{ child.vars.id }}" class="bi bi-currency-euro" aria-label="Prix {{ child.vars.value }} sur {{ form|length }}"></label>
+        {% endfor %}
+    </div>
+{% endblock %}

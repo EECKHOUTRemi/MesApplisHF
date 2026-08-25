@@ -20,12 +20,7 @@
 </style>
 <div class="container py-4" style="max-width: 1100px;">
 
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb mb-0 small">
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Images</li>
-        </ol>
-    </nav>
+    {{ include('_back_link.html.twig') }}
 
     {% for label, messages in app.flashes(['success', 'danger']) %}
         {% for message in messages %}

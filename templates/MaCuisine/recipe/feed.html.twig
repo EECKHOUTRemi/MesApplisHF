@@ -41,6 +41,20 @@
             font-weight: 600;
             color: #212529;
         }
+        .post-author-link:hover .post-author {
+            color: #ff7e5f;
+        }
+        .post-avatar-picture {
+            display: block;
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+        }
+        .post-avatar-img {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+        }
         .post-meta {
             color: #6c757d;
             font-size: .85rem;
@@ -113,6 +127,7 @@
             z-index: 5;
         }
     </style>
+    {{ include('MaCuisine/recipe/_meta_styles.html.twig') }}
 {% endblock %}
 
 {% block body %}
@@ -137,7 +152,12 @@
         {% set selectedIngredients = app.request.query.all('ingredients') %}
         {% set selectedUtensils = app.request.query.all('utensils') %}
         {% set selectedCategories = app.request.query.all('categories') %}
-        {% set activeFilterCount = selectedIngredients|length + selectedUtensils|length + selectedCategories|length %}
+        {% set selectedDifficulty = app.request.query.get('difficulty') %}
+        {% set selectedCost = app.request.query.get('cost') %}
+        {% set selectedTime = app.request.query.get('time') %}
+        {% set activeFilterCount = selectedIngredients|length + selectedUtensils|length + selectedCategories|length
+            + (selectedDifficulty ? 1 : 0) + (selectedCost ? 1 : 0) + (selectedTime ? 1 : 0) %}
+        {% set timeChoices = { 15: '15 min ou moins', 30: '30 min ou moins', 60: '1 h ou moins', 120: '2 h ou moins', 240: '4 h ou moins' } %}
 
         <section class="card feed-post shadow-sm mb-3">
             <div class="card-body">
@@ -193,6 +213,46 @@
                             </div>
                         </div>
 
+                        <div class="row g-3 mt-0">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label small fw-semibold text-secondary" for="filterDifficulty">
+                                    <i class="bi bi-fire me-1" aria-hidden="true"></i>Difficulté maximale
+                                </label>
+                                <select id="filterDifficulty" name="difficulty" class="form-select">
+                                    <option value="">Toutes les difficultés</option>
+                                    {% for level in 1..5 %}
+                                        <option value="{{ level }}" {{ selectedDifficulty == level ? 'selected' }}>
+                                            {{ level is same as(1) ? level ~ "/5" : level ~ "/5 et moins" }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label small fw-semibold text-secondary" for="filterCost">
+                                    <i class="bi bi-currency-euro me-1" aria-hidden="true"></i>Budget maximal
+                                </label>
+                                <select id="filterCost" name="cost" class="form-select">
+                                    <option value="">Tous les budgets</option>
+                                    {% for level in 1..5 %}
+                                        <option value="{{ level }}" {{ selectedCost == level ? 'selected' }}>
+                                            {{ level is same as(1) ? level ~ "/5" : level ~ "/5 et moins" }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label small fw-semibold text-secondary" for="filterTime">
+                                    <i class="bi bi-clock me-1" aria-hidden="true"></i>Temps maximal
+                                </label>
+                                <select id="filterTime" name="time" class="form-select">
+                                    <option value="">Tous les temps</option>
+                                    {% for value, label in timeChoices %}
+                                        <option value="{{ value }}" {{ selectedTime == value ? 'selected' }}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             {% if searchQuery or activeFilterCount > 0 %}
                                 <a href="{{ path('app_macuisine_feed') }}" class="btn btn-link text-secondary text-decoration-none">
@@ -215,9 +275,35 @@
                 <div class="card-body">
                     <header class="d-flex align-items-center justify-content-between mb-3">
                         <div class="d-flex align-items-center gap-3">
-                            <span class="post-avatar">{{ (recipe.author.username ?? "Compte supprimé")|first|upper }}</span>
-                            <div>
-                                <div class="post-author">{{ recipe.author.username ?? "Compte supprimé" }}</div>
+                            {% set author = recipe.author %}
+                            {% if author.username %}
+                                {% set imgPath = author.image ? 'uploads/pfp/' ~ author.image : null %}
+                                <a href="{{ path('app_profil_seeOtherUser', { id: author.id }) }}" class="text-decoration-none flex-shrink-0">
+                                    {% if imgPath and imgPath is ondisk %}
+                                        <picture class="post-avatar-picture">
+                                            <source srcset="{{ asset(imgPath) | imagine_filter('tiny_avif') }}" type="image/avif">
+                                            <source srcset="{{ asset(imgPath) | imagine_filter('tiny_webp') }}" type="image/webp">
+                                            <source srcset="{{ asset(imgPath) | imagine_filter('tiny_png') }}" type="image/png">
+                                            <source srcset="{{ asset(imgPath) | imagine_filter('tiny_jpeg') }}" type="image/jpeg">
+                                            <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle post-avatar-img">
+                                        </picture>
+                                    {% else %}
+                                        <span class="post-avatar">{{ (author.username)|first|upper }}</span>
+                                    {% endif %}
+                                </a>
+                            {% else %}
+                                <span class="post-avatar flex-shrink-0">C</span>
+                            {% endif %}
+
+                            <div class="d-flex flex-column">
+                                {% if author.username %}
+                                    <a href="{{ path('app_profil_seeOtherUser', { id: author.id }) }}" class="text-decoration-none post-author-link">
+                                        <span class="post-author">{{ author.username }}</span>
+                                    </a>
+                                {% else %}
+                                    <span class="post-author text-secondary">Compte supprimé</span>
+                                {% endif %}
+
                                 <div class="post-meta">
                                     {% if recipe.createdAt %}
                                         <i class="bi bi-clock me-1" aria-hidden="true"></i>{{ recipe.createdAt|date('d/m/Y à H:i') }}
@@ -266,7 +352,7 @@
                                     <source srcset="{{ asset(imgPath) | imagine_filter('big_jpeg') }}" type="image/jpeg">
                                     <img src="{{ asset(imgPath)}}" alt="{{ recipe.name }}" loading="lazy">
                                 </picture>
-                                
+
                             {% else %}
                                 <div class="banner-fallback">
                                     <i class="bi bi-image-alt" aria-hidden="true"></i>
@@ -292,6 +378,12 @@
                                     <i class="bi bi-tools me-1" aria-hidden="true"></i>{{ utensil.name }}
                                 </span>
                             {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if recipe.portions or recipe.time or recipe.difficulty or recipe.cost %}
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            {{ include('MaCuisine/recipe/_meta_pills.html.twig', { recipe: recipe }) }}
                         </div>
                     {% endif %}
 
