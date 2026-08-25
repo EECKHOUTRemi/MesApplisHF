@@ -158,6 +158,12 @@ final class MaCuisineController extends AbstractController
         ] + $this->feedFilterOptions($categoryRepository, $utensilRepository, $favoriteRepository, $recipes));
     }
 
+    /**
+     * @param Request $request
+     * @param RecipeFormHandler $recipeFormHandler
+     * @param UtensilRepository $utensilRepository
+     * @return Response
+     */
     #[Route('/new', name: 'recipe_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
@@ -198,8 +204,11 @@ final class MaCuisineController extends AbstractController
      * @return Response
      */
     #[Route('/{id}', name: 'recipe_show', methods: ['GET'])]
-    public function show(Recipe $recipe, FavoriteRepository $favoriteRepository, UserRepository $userRepository): Response
-    {
+    public function show(
+        Recipe $recipe,
+        FavoriteRepository $favoriteRepository,
+        UserRepository $userRepository
+    ): Response {
         $user = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
         $isFavorite = $favoriteRepository->isFavorite($recipe, $user);
 
@@ -237,7 +246,11 @@ final class MaCuisineController extends AbstractController
             $submittedData = $request->request->all();
             $recipeFormHandler->persistAndFlush($recipe, $submittedData);
 
-            return $this->redirectToRoute('app_macuisine_recipe_show', ['id' => $recipe->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute(
+                'app_macuisine_recipe_show',
+                ['id' => $recipe->getId()],
+                Response::HTTP_SEE_OTHER
+            );
         }
 
         $refs = $recipe->getRefRecipeIngredients();

@@ -15,8 +15,15 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/macuisine/favorite', name:'app_macuisine_favorite_'),
 IsGranted('ROLE_USER')]
+/** Favoris MaCuisine côté utilisateur : liste personnelle et bascule depuis les recettes. */
 final class FavoriteController extends AbstractController
 {
+    /**
+     * Page « Mes favoris » : les recettes mises en favori par l'utilisateur connecté.
+     *
+     * @param FavoriteRepository $favoriteRepository
+     * @return Response
+     */
     #[Route('/index', name: 'index')]
     public function index(FavoriteRepository $favoriteRepository): Response
     {
@@ -27,6 +34,17 @@ final class FavoriteController extends AbstractController
         ]);
     }
 
+    /**
+     * Ajoute ou retire la recette des favoris de l'utilisateur connecté, selon son état
+     * courant, puis renvoie sur la page d'origine.
+     *
+     * @param Request $request
+     * @param RecipeRepository $recipeRepository
+     * @param FavoriteRepository $favoriteRepository
+     * @param EntityManagerInterface $em
+     * @param UserRepository $userRepository
+     * @return Response
+     */
     #[Route("/toggleFavorite", name: 'toggle', methods: ['POST'])]
     public function toggleFavorite(
         Request $request,
