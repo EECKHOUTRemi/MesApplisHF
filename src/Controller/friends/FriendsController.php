@@ -176,7 +176,7 @@ final class FriendsController extends AbstractController
                         $assetUrl = $packages->getUrl($path);
 
                         foreach (['avif', 'webp', 'png', 'jpeg'] as $format) {
-                            $filter           = 'tiny_navbar_' . $format;
+                            $filter           = 'tiny_' . $format;
                             $sources[$format] = $imagineCacheManager->getBrowserPath($assetUrl, $filter);
                         }
                     }

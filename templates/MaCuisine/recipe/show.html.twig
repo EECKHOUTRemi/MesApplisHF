@@ -100,10 +100,10 @@
                                 {% set imgPath = author.image ? 'uploads/pfp/' ~ author.image : null %}
                                 {% if imgPath and imgPath is ondisk %}
                                     <picture class="me-2">
-                                        <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_avif') }}" type="image/avif">
-                                        <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
-                                        <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
-                                        <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
+                                        <source srcset="{{ asset(imgPath) | imagine_filter('tiny_avif') }}" type="image/avif">
+                                        <source srcset="{{ asset(imgPath) | imagine_filter('tiny_webp') }}" type="image/webp">
+                                        <source srcset="{{ asset(imgPath) | imagine_filter('tiny_png') }}" type="image/png">
+                                        <source srcset="{{ asset(imgPath) | imagine_filter('tiny_jpeg') }}" type="image/jpeg">
                                         <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
                                     </picture>
                                 {% else %}
