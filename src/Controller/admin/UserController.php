@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('admin/user'), IsGranted('ROLE_ADMIN')]
+#[Route('admin/user')]
 /** CRUD admin des comptes utilisateurs (gestion des rôles incluse). */
 final class UserController extends AbstractController
 {
