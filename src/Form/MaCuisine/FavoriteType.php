@@ -8,6 +8,7 @@ use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -47,6 +48,13 @@ class FavoriteType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Favorite::class,
+            // Favorite exige son utilisateur et sa recette à la construction : sans
+            // `empty_data`, la création admin (formulaire sans donnée initiale) échouerait
+            // à instancier l'entité.
+            'empty_data' => static fn (FormInterface $form) => new Favorite(
+                $form->get('user')->getData(),
+                $form->get('recipe')->getData()
+            ),
         ]);
     }
 }

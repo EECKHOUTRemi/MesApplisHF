@@ -27,11 +27,14 @@ final class FavoriteController extends AbstractController
     #[Route('/new', name: 'app_admin_ma_cuisine_favorite_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $favorite = new Favorite();
-        $form = $this->createForm(FavoriteType::class, $favorite);
+        // Pas d'entité pré-construite : Favorite exige son utilisateur et sa recette
+        // à la construction, c'est `empty_data` (cf. FavoriteType) qui l'instancie
+        // à partir des champs soumis.
+        $form = $this->createForm(FavoriteType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $favorite = $form->getData();
             $entityManager->persist($favorite);
             $entityManager->flush();
 
@@ -39,7 +42,6 @@ final class FavoriteController extends AbstractController
         }
 
         return $this->render('admin/MaCuisine/favorite/new.html.twig', [
-            'favorite' => $favorite,
             'form' => $form,
         ]);
     }

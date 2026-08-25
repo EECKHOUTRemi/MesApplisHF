@@ -3,6 +3,8 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Friends\Conversation;
+use App\Entity\MaCuisine\Favorite;
+use App\Entity\MaCuisine\Recipe;
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 
@@ -160,5 +162,44 @@ class UserTest extends TestCase
         $user->removeConversation(new Conversation());
 
         $this->assertCount(1, $user->getConversations());
+    }
+
+    public function testNewUserHasNoFavorite(): void
+    {
+        $this->assertCount(0, new User()->getFavorites());
+    }
+
+    public function testAddFavoriteRegistersItOnlyOnce(): void
+    {
+        $user     = new User();
+        $favorite = new Favorite($user, new Recipe());
+
+        $this->assertSame($user, $user->addFavorite($favorite));
+        $user->addFavorite($favorite);
+
+        $this->assertCount(1, $user->getFavorites());
+        $this->assertTrue($user->getFavorites()->contains($favorite));
+    }
+
+    public function testRemoveFavoriteDetachesIt(): void
+    {
+        $user     = new User();
+        $favorite = new Favorite($user, new Recipe());
+        $user->addFavorite($favorite);
+
+        $this->assertSame($user, $user->removeFavorite($favorite));
+
+        $this->assertCount(0, $user->getFavorites());
+    }
+
+    public function testRemoveAnUnknownFavoriteChangesNothing(): void
+    {
+        $user  = new User();
+        $known = new Favorite($user, new Recipe());
+        $user->addFavorite($known);
+
+        $user->removeFavorite(new Favorite($user, new Recipe()));
+
+        $this->assertCount(1, $user->getFavorites());
     }
 }

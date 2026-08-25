@@ -89,7 +89,9 @@ final class ProfilControllerTest extends AppWebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $links = $crawler->filter('a[href^="/macuisine/"]');
+        // Cible la liste des recettes du profil : la navbar contient d'autres liens
+        // /macuisine/ (dont « Mes favoris »).
+        $links = $crawler->filter('.list-group a[href^="/macuisine/"]');
 
         $this->assertCount(1, $links);
         $this->assertStringContainsString($name, $links->text());
@@ -134,5 +136,32 @@ final class ProfilControllerTest extends AppWebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertCount(0, $crawler->filter('button[formaction="/friends/chat/with/' . $stranger->getId() . '"]'));
+    }
+
+    /**
+     * Le template bascule sur l'UI « mon profil » (dont la modale photo, fournie par
+     * index() seulement) : consulter son propre profil par son identifiant doit
+     * rediriger vers l'URL canonique plutôt que rendre une page incomplète.
+     */
+    public function testOwnProfileByIdRedirectsToTheCanonicalUrl(): void
+    {
+        $me = $this->createUser();
+
+        $this->login($me);
+        $this->client->request('GET', self::INDEX_PATH . '/' . $me->getId());
+
+        $this->assertResponseRedirects(self::INDEX_PATH);
+
+        $this->client->followRedirect();
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testUnknownProfileReturns404(): void
+    {
+        $this->login($this->createUser());
+
+        $this->client->request('GET', self::INDEX_PATH . '/0');
+
+        $this->assertResponseStatusCodeSame(404);
     }
 }
