@@ -169,6 +169,10 @@
                 {{ include('MaCuisine/recipe/_meta_pills.html.twig', { recipe: recipe }) }}
             </div>
 
+            <p class="mb-3">
+                {{ include('MaCuisine/recipe/_favorite_count.html.twig', { count: favoriteCount }) }}
+            </p>
+
             {% if recipe.utensil|length > 0 %}
                 <h2 class="h5 fw-bold mb-2"><i class="bi bi-tools text-primary me-1" aria-hidden="true"></i>Ustensiles</h2>
                 <div class="d-flex flex-wrap gap-1 mb-3">

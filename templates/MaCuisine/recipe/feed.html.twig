@@ -403,7 +403,13 @@
                         </p>
                     {% endif %}
 
-                    <footer class="post-actions d-flex align-items-center justify-content-between border-top pt-2 mt-3">
+                    <div class="mt-3">
+                        {{ include('MaCuisine/recipe/_favorite_count.html.twig', {
+                            count: favoriteCounts[recipe.id]|default(0),
+                        }) }}
+                    </div>
+
+                    <footer class="post-actions d-flex align-items-center justify-content-between border-top pt-2 mt-2">
                         <a href="{{ path('app_macuisine_recipe_show', {'id': recipe.id}) }}" class="btn">
                             <i class="bi bi-eye me-1" aria-hidden="true"></i>Voir la recette
                         </a>

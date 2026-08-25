@@ -56,6 +56,31 @@ class FavoriteRepository extends ServiceEntityRepository
     }
 
     /**
+     * Nombre de favoris par recette, pour les recettes affichées.
+     * Une seule requête agrégée, pour éviter un COUNT par carte du fil.
+     *
+     * @param Recipe[] $recipes
+     * @return array<int, int> Nombre de favoris indexé par identifiant de recette
+     */
+    public function countByRecipes(array $recipes): array
+    {
+        if ($recipes === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('favorite')
+            ->select('IDENTITY(favorite.recipe) AS recipeId', 'COUNT(favorite.id) AS total')
+            ->andWhere('favorite.recipe IN (:recipes)')
+            ->setParameter('recipes', $recipes)
+            ->groupBy('favorite.recipe')
+            ->getQuery()
+            ->getScalarResult()
+        ;
+
+        return array_map('intval', array_column($rows, 'total', 'recipeId'));
+    }
+
+    /**
      * Identifiants des recettes mises en favori par l'utilisateur connecté,
      * pour afficher l'état du bouton favori sans charger les entités.
      *

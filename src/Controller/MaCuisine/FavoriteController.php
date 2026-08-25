@@ -46,16 +46,24 @@ final class FavoriteController extends AbstractController
 
         if ($favorite) {
             $em->remove($favorite);
+            $message = 'Recette retirée de vos favoris.';
         } else {
             $user = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
             $favorite = new Favorite($user, $recipe);
             $em->persist($favorite);
+            $message = 'Recette ajoutée à vos favoris !';
         }
 
         $em->flush();
 
-        $this->addFlash('success', 'Recette ajoutée aux favoris !');
+        $this->addFlash('success', $message);
 
-        return $this->redirectToRoute('app_macuisine_recipe_show', ['id' => $recipeId]);
+        // Retour à la page d'où vient le clic (fil, mes recettes, favoris…),
+        // avec la fiche recette en repli si le referer est absent.
+        $referer = $request->headers->get('referer');
+
+        return $referer !== null
+            ? $this->redirect($referer)
+            : $this->redirectToRoute('app_macuisine_recipe_show', ['id' => $recipe->getId()]);
     }
 }
