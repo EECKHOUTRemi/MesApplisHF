@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Friends\Conversation;
+use App\Entity\MaCuisine\Favorite;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -55,14 +56,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
-/**
+
+    /**
      * @var Collection<int, Conversation>
      */
     #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'users')]
     private Collection $conversations;
+
+    /**
+     * @var Collection<int, Favorite>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class, orphanRemoval: true)]
+    private Collection $favorites;
+
     public function __construct()
     {
         $this->conversations = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -270,6 +280,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->conversations->removeElement($conversation)) {
             $conversation->removeUser($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    /**
+     * @param Favorite $favorite
+     * @return static
+     */
+    public function addFavorite(Favorite $favorite): static
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Favorite $favorite
+     * @return static
+     */
+    public function removeFavorite(Favorite $favorite): static
+    {
+        $this->favorites->removeElement($favorite);
 
         return $this;
     }
