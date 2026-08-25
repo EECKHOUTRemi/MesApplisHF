@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/monpoids/measurement', name: 'app_admin_monpoids_measurement_'), IsGranted('ROLE_ADMIN')]
+#[Route('/admin/monpoids/measurement', name: 'app_admin_monpoids_measurement_')]
 /** Vue admin en lecture seule des mensurations de tous les utilisateurs. */
 final class MeasurementAdminController extends AbstractController
 {

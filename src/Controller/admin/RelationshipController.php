@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('admin/relationship'), IsGranted('ROLE_ADMIN')]
+#[Route('admin/relationship')]
 /** CRUD admin des relations entre utilisateurs. */
 final class RelationshipController extends AbstractController
 {

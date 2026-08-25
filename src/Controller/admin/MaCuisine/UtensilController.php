@@ -13,8 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/macuisine/utensil'),
-IsGranted('ROLE_ADMIN')]
+#[Route('/admin/macuisine/utensil')]
 /** CRUD admin des ustensiles MaCuisine. */
 final class UtensilController extends AbstractController
 {
