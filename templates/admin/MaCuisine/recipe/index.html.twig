@@ -5,7 +5,11 @@
 {% block body %}
 <div class="container py-4" style="max-width: 1100px;">
 
-    {{ include('_back_link.html.twig') }}
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Administration' },
+        { label: 'Recettes' },
+    ] }) }}
 
     <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
         <div>

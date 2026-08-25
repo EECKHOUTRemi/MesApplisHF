@@ -4,6 +4,15 @@
 
 {% block body %}
 <div class="container py-5">
+
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'MonPoids', path: path('app_mon_poids_global') },
+        { label: 'Mensurations', path: path('app_MonPoids_measurement_index') },
+        { label: 'Détail', path: path('app_MonPoids_measurement_show', {'id': measurement.id}) },
+        { label: 'Modifier' },
+    ] }) }}
+
     <div class="row justify-content-center">
         <div class="col-lg-7">
             <div class="d-flex align-items-center mb-4">

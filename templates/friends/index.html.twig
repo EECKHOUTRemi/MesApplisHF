@@ -13,6 +13,12 @@
 	<div
 		class="container py-5">
 
+		{{ include('_breadcrumb.html.twig', { items: [
+			{ label: 'Accueil', path: path('app_index') },
+			{ label: 'Amis' },
+		] }) }}
+
+
 		{# ── Barre de recherche ─────────────────────────────────────────── #}
 		<div class="row justify-content-center mb-5">
 			<div class="col-lg-6">

@@ -5,7 +5,13 @@
 {% block body %}
 <div class="container py-4" style="max-width: 600px;">
 
-    {{ include('_back_link.html.twig') }}
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Administration' },
+        { label: 'Ingrédients', path: path('app_macuisine_ingredient_index') },
+        { label: ingredient.name, path: path('app_macuisine_ingredient_show', {'id': ingredient.id}) },
+        { label: 'Modifier' },
+    ] }) }}
 
     <h1 class="h4 mb-4 fw-bold"><i class="bi bi-pencil-square me-2" aria-hidden="true"></i>Modifier l'ingrédient</h1>
 

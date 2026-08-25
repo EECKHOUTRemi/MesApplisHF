@@ -5,7 +5,13 @@
 {% block body %}
 <div class="container py-4" style="max-width: 720px;">
 
-    {{ include('_back_link.html.twig') }}
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Administration' },
+        { label: 'Recettes', path: path('app_admin_macuisine_recipe_index') },
+        { label: recipe.name, path: path('app_admin_macuisine_recipe_show', {'id': recipe.id}) },
+        { label: 'Modifier' },
+    ] }) }}
 
     <h1 class="h4 mb-4 fw-bold"><i class="bi bi-pencil-square me-2" aria-hidden="true"></i>Modifier la recette</h1>
 

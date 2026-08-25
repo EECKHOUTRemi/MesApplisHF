@@ -38,6 +38,12 @@
 
 {% block body %}
 <div class="container py-5">
+
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Profil' },
+    ] }) }}
+
     <div class="row justify-content-center">
         <div class="col-lg-8">
             {% for label, messages in app.flashes(['success', 'danger']) %}

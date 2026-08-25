@@ -80,7 +80,11 @@
 
 <div class="container py-4" style="max-width: 820px;">
 
-    {{ include('_back_link.html.twig') }}
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'MaCuisine', path: path('app_macuisine_index') },
+        { label: 'Recettes', path: path('app_macuisine_feed') },
+        { label: recipe.name },
+    ] }) }}
 
     <section class="recipe-hero mb-4">
         <div class="row align-items-center g-3">
@@ -211,10 +215,6 @@
     </section>
 
     <div class="d-flex flex-wrap gap-2 justify-content-between">
-        <a href="javascript:history.back()" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour en arrière
-        </a>
-
         {% if isAuthor %}
             <div class="d-flex gap-2">
                 <a href="{{ path('app_macuisine_recipe_edit', {'id': recipe.id}) }}" class="btn btn-warning">

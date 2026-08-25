@@ -5,7 +5,13 @@
 {% block body %}
 <div class="container py-4" style="max-width: 600px;">
 
-    {{ include('_back_link.html.twig') }}
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Administration' },
+        { label: 'Ustensiles', path: path('app_admin_ma_cuisine_utensil_index') },
+        { label: utensil.name, path: path('app_admin_ma_cuisine_utensil_show', {'id': utensil.id}) },
+        { label: 'Modifier' },
+    ] }) }}
 
     <h1 class="h4 mb-4 fw-bold"><i class="bi bi-pencil-square me-2" aria-hidden="true"></i>Modifier l'ustensile</h1>
 

@@ -5,7 +5,12 @@
 {% block body %}
 <div class="container py-4" style="max-width: 600px;">
 
-    {{ include('_back_link.html.twig') }}
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Administration' },
+        { label: 'Favoris', path: path('app_admin_ma_cuisine_favorite_index') },
+        { label: 'Nouveau favori' },
+    ] }) }}
 
     <h1 class="h4 mb-4 fw-bold"><i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Nouveau favori</h1>
 

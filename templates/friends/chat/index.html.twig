@@ -63,6 +63,11 @@
 		<div class="row justify-content-center">
 			<div class="col-lg-7">
 
+				{{ include('_breadcrumb.html.twig', { items: [
+					{ label: 'Accueil', path: path('app_index') },
+					{ label: 'Messages' },
+				] }) }}
+
 				{# ── En-tête ─────────────────────────────────────────────── #}
 				<div class="d-flex align-items-center justify-content-between gap-3 mb-3">
 					<h1 class="h4 fw-semibold mb-0">

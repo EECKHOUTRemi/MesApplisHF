@@ -141,6 +141,11 @@
 <div class="container py-4">
     <div class="feed-wrapper mx-auto">
 
+        {{ include('_breadcrumb.html.twig', { items: [
+            { label: 'MaCuisine', path: path('app_macuisine_index') },
+            { label: mine ? 'Mes recettes' : 'Recettes' },
+        ] }) }}
+
         <section class="feed-header mb-4">
             <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
                 <div>

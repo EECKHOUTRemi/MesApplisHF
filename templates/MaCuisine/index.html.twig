@@ -100,6 +100,12 @@
 {% block body %}
 <div class="container py-4">
 
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'MaCuisine' },
+    ] }) }}
+
+
     <section class="macuisine-hero">
         <div class="row align-items-center g-4">
             <div class="col-md-8">
