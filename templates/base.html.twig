@@ -130,6 +130,20 @@
         {% endif %}
 
         <main class="flex-grow-1">
+            {% set flashes = app.flashes(['success', 'danger', 'warning']) %}
+            {% if flashes is not empty %}
+                <div class="container mt-3">
+                    {% for label, messages in flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible fade show py-2 px-3 shadow-sm" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             {% block body %}{% endblock %}
         </main>
 
