@@ -16,7 +16,7 @@
             <h1 class="h4 mb-1 fw-bold"><i class="bi bi-star-fill me-2" aria-hidden="true"></i>Favoris</h1>
             <p class="text-secondary mb-0 small">Gestion administrateur des recettes mises en favori.</p>
         </div>
-        <a href="{{ path('app_admin_ma_cuisine_favorite_new') }}" class="btn btn-primary">
+        <a href="{{ path('app_admin_macuisine_favorite_new') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nouveau favori
         </a>
     </div>
@@ -38,7 +38,7 @@
                     <tr>
                         <td class="text-secondary">{{ favorite.id }}</td>
                         <td class="fw-semibold">
-                            <a href="{{ path('app_user_show', {'id': favorite.user.id}) }}" class="text-decoration-none">
+                            <a href="{{ path('app_admin_user_show', {'id': favorite.user.id}) }}" class="text-decoration-none">
                                 {{ favorite.user.username }}
                             </a>
                         </td>
@@ -51,10 +51,10 @@
                             {{ favorite.createdAt ? favorite.createdAt|date('d/m/Y H:i') : '—' }}
                         </td>
                         <td class="text-end">
-                            <a href="{{ path('app_admin_ma_cuisine_favorite_show', {'id': favorite.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                            <a href="{{ path('app_admin_macuisine_favorite_show', {'id': favorite.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
                                 <i class="bi bi-eye" aria-hidden="true"></i>
                             </a>
-                            <a href="{{ path('app_admin_ma_cuisine_favorite_edit', {'id': favorite.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <a href="{{ path('app_admin_macuisine_favorite_edit', {'id': favorite.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="bi bi-pencil-square" aria-hidden="true"></i>
                             </a>
                         </td>

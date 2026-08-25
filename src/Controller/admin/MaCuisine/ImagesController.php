@@ -54,7 +54,7 @@ final class ImagesController extends AbstractController
         $filename = basename($imageToDelete);
 
         try {
-            $imgHandler->removeImage($filename);
+            $imgHandler->removeRecipeImage($filename);
             $this->addFlash('success', sprintf('Image « %s » supprimée.', $filename));
         } catch (FileNotFoundException $e) {
             $this->addFlash('danger', sprintf('Image « %s » introuvable.', $filename));

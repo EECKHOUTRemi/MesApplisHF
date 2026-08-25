@@ -16,7 +16,7 @@
             <h1 class="h4 mb-1 fw-bold"><i class="bi bi-people-fill me-2" aria-hidden="true"></i>Utilisateurs</h1>
             <p class="text-secondary mb-0 small">Gestion administrateur des comptes.</p>
         </div>
-        <a href="{{ path('app_user_new') }}" class="btn btn-primary">
+        <a href="{{ path('app_admin_user_new') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nouvel utilisateur
         </a>
     </div>
@@ -53,10 +53,10 @@
                             {% endif %}
                         </td>
                         <td class="text-end">
-                            <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                            <a href="{{ path('app_admin_user_show', {'id': user.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
                                 <i class="bi bi-eye" aria-hidden="true"></i>
                             </a>
-                            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <a href="{{ path('app_admin_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="bi bi-pencil-square" aria-hidden="true"></i>
                             </a>
                         </td>
