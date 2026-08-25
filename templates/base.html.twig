@@ -16,6 +16,63 @@
                     margin-right: 0.25rem;
                     font-weight: bold;
                 }
+
+                /* Fil d'Ariane (_breadcrumb.html.twig), présent sur presque toutes les pages */
+                .app-breadcrumb .breadcrumb {
+                    --bs-breadcrumb-divider: '';
+                    align-items: center;
+                    flex-wrap: wrap;
+                    row-gap: .15rem;
+                    font-size: .875rem;
+                }
+                /* Chevron simple à la place du "/" par défaut de Bootstrap */
+                .app-breadcrumb .breadcrumb-item + .breadcrumb-item {
+                    padding-left: .25rem;
+                }
+                .app-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+                    content: "\203A";
+                    font-size: 1.1em;
+                    line-height: 1;
+                    color: var(--bs-gray-400, #ced4da);
+                    padding-right: .25rem;
+                }
+                .app-breadcrumb .breadcrumb-item a,
+                .app-breadcrumb .breadcrumb-item-plain {
+                    display: inline-flex;
+                    align-items: center;
+                    padding: .15rem .45rem;
+                    border-radius: .375rem;
+                    color: var(--bs-secondary-color, #6c757d);
+                    text-decoration: none;
+                    transition: color .15s ease, background-color .15s ease;
+                }
+                .app-breadcrumb .breadcrumb-item a:hover,
+                .app-breadcrumb .breadcrumb-item a:focus-visible {
+                    color: var(--bs-primary, #0d6efd);
+                    background-color: var(--bs-secondary-bg, #e9ecef);
+                }
+                .app-breadcrumb .breadcrumb-item.active {
+                    display: inline-flex;
+                    align-items: center;
+                    padding: .15rem .45rem;
+                    color: var(--bs-emphasis-color, #212529);
+                    font-weight: 600;
+                }
+                /* Les libellés dynamiques (nom de recette, pseudo…) peuvent être longs :
+                   on les tronque plutôt que de casser la mise en page. */
+                .app-breadcrumb .breadcrumb-label {
+                    display: inline-block;
+                    max-width: 20ch;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    vertical-align: bottom;
+                }
+                @media (max-width: 575.98px) {
+                    .app-breadcrumb .breadcrumb-label {
+                        max-width: 12ch;
+                    }
+                }
             </style>
             {% if is_granted('ROLE_USER') %}
                 <style>
