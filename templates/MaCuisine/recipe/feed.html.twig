@@ -121,6 +121,12 @@
             background: #fff5ef;
             color: #ff7e5f;
         }
+        .post-actions .btn.is-favorite {
+            color: #f0ad00;
+        }
+        .post-actions .btn.is-favorite:hover {
+            color: #c98f00;
+        }
         .feed-fab {
             position: sticky;
             bottom: 1rem;
@@ -401,8 +407,14 @@
                         <a href="{{ path('app_macuisine_recipe_show', {'id': recipe.id}) }}" class="btn">
                             <i class="bi bi-eye me-1" aria-hidden="true"></i>Voir la recette
                         </a>
-                        <span class="post-meta">
-                            <i class="bi bi-hash" aria-hidden="true"></i>{{ recipe.id }}
+                        <span class="d-flex align-items-center gap-2">
+                            {{ include('MaCuisine/recipe/_favorite_button.html.twig', {
+                                recipe: recipe,
+                                isFavorite: recipe.id in favoriteIds,
+                            }) }}
+                            <span class="post-meta lh-1">
+                                <i class="bi bi-hash" aria-hidden="true"></i>{{ recipe.id }}
+                            </span>
                         </span>
                     </footer>
                 </div>

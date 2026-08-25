@@ -85,11 +85,20 @@
     <section class="recipe-hero mb-4">
         <div class="row align-items-center g-3">
             <div class="col-md-9">
-                <div class="d-flex flex-wrap gap-1 mb-2">
+                <div class="d-flex flex-wrap align-items-center gap-1 mb-2">
                     <span class="badge bg-light text-dark"><i class="bi bi-egg-fried me-1" aria-hidden="true"></i>Recette</span>
                     {% if recipe.category %}
                         <span class="badge text-bg-warning"><i class="bi bi-tag-fill me-1" aria-hidden="true"></i>{{ recipe.category.name }}</span>
                     {% endif %}
+
+                    <form method="post" action="{{ path('app_macuisine_favorite_toggle') }}" class="ms-1 d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('favorite' ~ recipe.id) }}">
+                        <input type="hidden" name="recipeId" value="{{ recipe.id }}">
+                        <button type="submit" class="btn btn-link p-0 border-0 align-baseline" style="color: yellow;"
+                                title="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}">
+                            <i class="bi bi-star{{ isFavorite ? '-fill' : '' }}" style="font-size: 1.5rem;"></i>
+                        </button>
+                    </form>
                 </div>
                 <h1 class="display-5 fw-bold mb-2">{{ recipe.name }}</h1>
                 <div class="d-flex flex-wrap align-items-center gap-2">

@@ -41,9 +41,21 @@ class Favorite
         return $this->id;
     }
 
+    public function setId(?int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getUser(): User
     {
         return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+        return $this;
     }
 
     public function getRecipe(): Recipe
@@ -51,8 +63,20 @@ class Favorite
         return $this->recipe;
     }
 
+    public function setRecipe(Recipe $recipe): self
+    {
+        $this->recipe = $recipe;
+        return $this;
+    }
+
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
     }
 }

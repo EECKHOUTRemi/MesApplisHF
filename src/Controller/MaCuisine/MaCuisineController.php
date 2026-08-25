@@ -7,9 +7,11 @@ use App\Form\MaCuisine\RecipeType;
 use App\Handler\ImageHandler;
 use App\Handler\RecipeFormHandler;
 use App\Repository\MaCuisine\CategoryRepository;
+use App\Repository\MaCuisine\FavoriteRepository;
 use App\Repository\MaCuisine\IngredientRepository;
 use App\Repository\MaCuisine\RecipeRepository;
 use App\Repository\MaCuisine\UtensilRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -28,15 +30,18 @@ IsGranted('ROLE_USER')]
 final class MaCuisineController extends AbstractController
 {
     /**
-     * Options communes des filtres du fil (catégories + ustensiles) injectées dans le template.
+     * Options communes du fil (filtres catégories + ustensiles, favoris de l'utilisateur)
+     * injectées dans le template.
      *
      * @param CategoryRepository $categoryRepository
      * @param UtensilRepository $utensilRepository
+     * @param FavoriteRepository $favoriteRepository
      * @return array<string, mixed>
      */
     private function feedFilterOptions(
         CategoryRepository $categoryRepository,
-        UtensilRepository $utensilRepository
+        UtensilRepository $utensilRepository,
+        FavoriteRepository $favoriteRepository
     ): array {
         return [
             'categories' => $categoryRepository->findAll(),
@@ -44,6 +49,7 @@ final class MaCuisineController extends AbstractController
                 fn ($u) => ['id' => $u->getId(), 'name' => $u->getName()],
                 $utensilRepository->findAll()
             ),
+            'favoriteIds' => $favoriteRepository->findRecipeIdsForConnectedUser(),
         ];
     }
 
@@ -76,6 +82,7 @@ final class MaCuisineController extends AbstractController
      * @param RecipeRepository $recipeRepository
      * @param CategoryRepository $categoryRepository
      * @param UtensilRepository $utensilRepository
+     * @param FavoriteRepository $favoriteRepository
      * @return Response
      */
     #[Route('/feed', name: 'feed', methods: ['GET'])]
@@ -83,7 +90,8 @@ final class MaCuisineController extends AbstractController
         Request $request,
         RecipeRepository $recipeRepository,
         CategoryRepository $categoryRepository,
-        UtensilRepository $utensilRepository
+        UtensilRepository $utensilRepository,
+        FavoriteRepository $favoriteRepository
     ): Response {
         $query = $request->query->get('q');
         $ingredients = $request->query->all('ingredients');
@@ -122,25 +130,27 @@ final class MaCuisineController extends AbstractController
         return $this->render('MaCuisine/recipe/feed.html.twig', [
             'recipes' => $recipes,
             'mine' => false,
-        ] + $this->feedFilterOptions($categoryRepository, $utensilRepository));
+        ] + $this->feedFilterOptions($categoryRepository, $utensilRepository, $favoriteRepository));
     }
 
     /**
      * @param RecipeRepository $recipeRepository
      * @param CategoryRepository $categoryRepository
      * @param UtensilRepository $utensilRepository
+     * @param FavoriteRepository $favoriteRepository
      * @return Response
      */
     #[Route('/mine', name:'mine')]
     public function mine(
         RecipeRepository $recipeRepository,
         CategoryRepository $categoryRepository,
-        UtensilRepository $utensilRepository
+        UtensilRepository $utensilRepository,
+        FavoriteRepository $favoriteRepository
     ): Response {
         return $this->render('MaCuisine/recipe/feed.html.twig', [
             'recipes' => $recipeRepository->findBy(['author' => $this->getUser()]),
             'mine' => true,
-        ] + $this->feedFilterOptions($categoryRepository, $utensilRepository));
+        ] + $this->feedFilterOptions($categoryRepository, $utensilRepository, $favoriteRepository));
     }
 
     #[Route('/new', name: 'recipe_new', methods: ['GET', 'POST'])]
@@ -181,10 +191,14 @@ final class MaCuisineController extends AbstractController
      * @return Response
      */
     #[Route('/{id}', name: 'recipe_show', methods: ['GET'])]
-    public function show(Recipe $recipe): Response
+    public function show(Recipe $recipe, FavoriteRepository $favoriteRepository, UserRepository $userRepository): Response
     {
+        $user = $userRepository->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $isFavorite = $favoriteRepository->isFavorite($recipe, $user);
+
         return $this->render('MaCuisine/recipe/show.html.twig', [
             'recipe' => $recipe,
+            'isFavorite' => $isFavorite,
         ]);
     }
 
