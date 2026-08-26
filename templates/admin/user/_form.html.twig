@@ -1,8 +1,11 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
 {{ form_start(form) }}
+    {% include '_required_legend.html.twig' with { form: form } only %}
     {{ form_widget(form) }}
     <div class="d-flex justify-content-end mt-3">
         <button class="btn btn-primary">
-            <i class="bi bi-save"></i> {{ button_label|default('Save') }}
+            <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>{{ button_label|default('Enregistrer') }}
         </button>
     </div>
 {{ form_end(form) }}

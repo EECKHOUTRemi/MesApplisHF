@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_admin_macuisine_favorite_delete', {'id': favorite.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer ce favori ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ favorite.id) }}">
+    <button class="btn btn-outline-danger">
+        <i class="bi bi-trash3 me-1" aria-hidden="true"></i>Supprimer
+    </button>
+</form>

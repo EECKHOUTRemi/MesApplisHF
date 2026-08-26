@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,11 +21,13 @@ class EmailVerifier
      * @param VerifyEmailHelperInterface $verifyEmailHelper
      * @param MailerInterface $mailer
      * @param EntityManagerInterface $entityManager
+     * @param UserRepository $userRepo
      */
     public function __construct(
         private VerifyEmailHelperInterface $verifyEmailHelper,
         private MailerInterface $mailer,
         private EntityManagerInterface $entityManager,
+        private UserRepository $userRepo,
     ) {
     }
 
@@ -92,5 +95,17 @@ class EmailVerifier
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+    }
+
+    /**
+     * Vérifie si un compte existe déjà avec cette adresse maio
+     *
+     * @param string $email
+     * @return bool
+     */
+    public function checkIfEmailExists(string $email): bool
+    {
+        $email = $this->userRepo->findOneBy(['email' => $email]);
+        return isset($email);
     }
 }

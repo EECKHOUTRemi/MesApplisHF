@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Friends\Conversation;
+use App\Entity\MaCuisine\Favorite;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,7 +18,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
+#[UniqueEntity(fields: ['username'], message: 'Un compte avec le meme nom d\'utilisateur existe déjà.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -54,14 +56,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
-/**
+
+    /**
      * @var Collection<int, Conversation>
      */
     #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'users')]
     private Collection $conversations;
+
+    /**
+     * @var Collection<int, Favorite>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class, orphanRemoval: true)]
+    private Collection $favorites;
+
     public function __construct()
     {
         $this->conversations = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     /** @return int|null */
@@ -268,6 +280,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->conversations->removeElement($conversation)) {
             $conversation->removeUser($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    /**
+     * @param Favorite $favorite
+     * @return static
+     */
+    public function addFavorite(Favorite $favorite): static
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Favorite $favorite
+     * @return static
+     */
+    public function removeFavorite(Favorite $favorite): static
+    {
+        $this->favorites->removeElement($favorite);
 
         return $this;
     }

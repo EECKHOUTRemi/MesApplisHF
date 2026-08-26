@@ -5,19 +5,18 @@
 {% block body %}
 <div class="container py-4" style="max-width: 900px;">
 
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb mb-0 small">
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Catégories</li>
-        </ol>
-    </nav>
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Administration' },
+        { label: 'Catégories' },
+    ] }) }}
 
     <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
         <div>
             <h1 class="h4 mb-1 fw-bold"><i class="bi bi-tag-fill me-2" aria-hidden="true"></i>Catégories</h1>
             <p class="text-secondary mb-0 small">Gestion administrateur des catégories de recettes.</p>
         </div>
-        <a href="{{ path('app_admin_ma_cuisine_category_new') }}" class="btn btn-primary">
+        <a href="{{ path('app_admin_macuisine_category_new') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nouvelle catégorie
         </a>
     </div>
@@ -42,10 +41,10 @@
                             {{ category.createdAt ? category.createdAt|date('d/m/Y H:i') : '—' }}
                         </td>
                         <td class="text-end">
-                            <a href="{{ path('app_admin_ma_cuisine_category_show', {'id': category.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                            <a href="{{ path('app_admin_macuisine_category_show', {'id': category.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
                                 <i class="bi bi-eye" aria-hidden="true"></i>
                             </a>
-                            <a href="{{ path('app_admin_ma_cuisine_category_edit', {'id': category.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <a href="{{ path('app_admin_macuisine_category_edit', {'id': category.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="bi bi-pencil-square" aria-hidden="true"></i>
                             </a>
                         </td>

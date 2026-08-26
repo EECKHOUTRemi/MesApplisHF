@@ -5,7 +5,9 @@ A Symfony 7.4 application powering the **HF apps portal**.
 It hosts a collection of small personal apps:
 
 - **MonPoids** — a weight & body-measurement tracker with a BMI calculator (private to each user).
-- **MaCuisine** — a small social network for sharing recipes (with ingredients, ustensiles, categories).
+- **MaCuisine** — a small social network for sharing recipes (with ingredients, ustensiles,
+  categories, favorites and a filterable feed — see
+  [MaCuisine](#macuisine--recipes-filters--favorites)).
 - **Friends** — a social layer shared by both: search for people, send and accept friend
   requests, and chat in real time (see [Friends & chat](#friends--chat)).
 
@@ -99,6 +101,90 @@ Make sure the domain `mesapplishf.fr` is **verified** in the [Resend dashboard](
 | Trigger | Template |
 | ------- | -------- |
 | User registration | `templates/registration/confirmation_email.html.twig` |
+
+## MaCuisine — recipes, filters & favorites
+
+The recipe sub-app is rooted at `/macuisine`.
+
+| Route | What it does |
+| ----- | ------------ |
+| `/macuisine` | Dashboard — the 6 most recent recipes and a few counters |
+| `/macuisine/feed` | The feed: every recipe, plus the search & filter panel |
+| `/macuisine/mine` | The same feed, restricted to the recipes you authored |
+| `/macuisine/{id}` | A recipe sheet |
+| `/macuisine/new`, `/macuisine/{id}/edit` | Recipe form (redirects to the sheet after an edit) |
+| `/macuisine/favorite/index` | Your favorites |
+| `POST /macuisine/favorite/toggleFavorite` | Adds or removes a recipe from your favorites |
+
+### Recipe metadata
+
+Beyond name, description, category, ingredients and utensils, a recipe carries four
+optional metadata columns, all rendered as "pills" on the sheet and on the feed cards
+(`templates/MaCuisine/recipe/_meta_pills.html.twig`):
+
+| Column | Meaning | Scale |
+| ------ | ------- | ----- |
+| `portions` | Servings | free integer |
+| `time` | Total preparation time, in **minutes** | free integer, displayed as `1 h 30` |
+| `difficulty` | How hard it is | 1 (easy) → 5 (hard) |
+| `cost` | Budget | 1 (cheap) → 5 (expensive) |
+
+`description` is **required** since this release — the column is no longer nullable.
+
+### Feed filters
+
+`RecipeRepository::findWithQuery()` backs the filter panel. Filters combine with **AND**;
+inside a multi-valued filter (ingredients, utensils, categories) a recipe matches as soon
+as it holds **one** of the selected values.
+
+| Query parameter | Semantics |
+| --------------- | --------- |
+| `q` | Name contains, accent- and case-insensitive |
+| `ingredients[]`, `utensils[]`, `categories[]` | "at least one of" |
+| `difficulty`, `cost`, `time` | **Ceilings** — `r.<column> <= value` |
+
+> Because the three ceilings compare against nullable columns, a recipe that leaves
+> `difficulty`, `cost` or `time` empty is filtered **out** as soon as the matching filter
+> is used. An empty string (the "all difficulties" option) is treated as no filter at all.
+
+### Favorites
+
+A `Favorite` row is a (user, recipe) pair, unique by construction
+(`uniq_favorite_user_recipe`), with both foreign keys in `ON DELETE CASCADE`. The toggle
+route flips that row and returns to the page the click came from — the `Referer` header,
+falling back to the recipe sheet.
+
+The feed would otherwise run one `COUNT` per card, so `FavoriteRepository` exposes two
+batched helpers used by `MaCuisineController::feedFilterOptions()`:
+
+- `countByRecipes(array $recipes)` — favorite count per recipe id, in a single aggregate
+  query. Recipes with no favorite are simply absent from the result; the template falls
+  back to `0`.
+- `findRecipeIdsForConnectedUser()` — the ids you favorited, as **integers**, so the
+  template can test `recipe.id in favoriteIds` without loading entities.
+
+Admin CRUD lives at `/admin/macuisine/favorite`.
+
+> `Favorite` requires its user and its recipe at construction. The admin *create* form
+> therefore builds the entity through the `empty_data` callback declared in
+> `App\Form\MaCuisine\FavoriteType`, not through a bare `new Favorite()`.
+
+### Breadcrumbs
+
+`templates/_breadcrumb.html.twig` is the shared breadcrumb, included by nearly every page.
+It takes an `items` list of `{ label, path }` dictionaries: the last entry is the current
+page (its `path` is ignored and it gets `aria-current="page"`), an entry with no `path`
+renders as plain text (useful for a purely structural level such as "Administration"),
+and the first entry gets a house icon unless you pass `icon: false`. The styles live in
+the `stylesheets` block of `base.html.twig`.
+
+```twig
+{{ include('_breadcrumb.html.twig', { items: [
+    { label: 'MaCuisine', path: path('app_macuisine_index') },
+    { label: 'Recettes',  path: path('app_macuisine_feed') },
+    { label: recipe.name },
+] }) }}
+```
 
 ## Friends & chat
 
@@ -282,14 +368,14 @@ updates so they can be asserted on. Nothing needs to be running.
 │   ├── Controller/          # HTTP controllers
 │   │   ├── admin/           # admin sections (ROLE_ADMIN), incl. MaCuisine/ & MonPoids/
 │   │   ├── friends/         # FriendsController (requests), ChatController (messaging)
-│   │   ├── MaCuisine/       # public MaCuisine pages (recipes, ajax)
+│   │   ├── MaCuisine/       # public MaCuisine pages (recipes, favorites, ajax)
 │   │   ├── MonPoids/        # public MonPoids pages (BMI, measurements)
 │   │   ├── LegalController  # /cgu, /confidentialite
 │   │   └── …                # Security, Settings, Profil, Brochure, Index
 │   ├── Doctrine/DQL/        # custom DQL functions
 │   ├── Entity/              # Doctrine entities (see "Database schema" below)
 │   │   ├── Friends/         # Relationship, Conversation, Message
-│   │   ├── MaCuisine/       # Recipe, Ingredient, Utensil, Category, RefRecipeIngredient
+│   │   ├── MaCuisine/       # Recipe, Ingredient, Utensil, Category, RefRecipeIngredient, Favorite
 │   │   └── MonPoids/        # Bmi, Measurement
 │   ├── EventSubscriber/     # MercureCookieSubscriber — signs the SSE cookie per page
 │   ├── Form/                # Symfony form types (mirrors Entity/ subfolders)
@@ -302,10 +388,11 @@ updates so they can be asserted on. Nothing needs to be running.
 │   └── Kernel.php           # Micro-kernel
 ├── templates/
 │   ├── _navbar.html.twig    # shared navbar, carries the unread badge
+│   ├── _breadcrumb.html.twig     # shared breadcrumb, driven by an `items` list
 │   ├── _chat_realtime.html.twig  # the site-wide SSE connection
 │   ├── friends/             # friend search & requests
 │   │   └── chat/            # conversation list, thread, message bubble
-│   ├── MaCuisine/           # recipe feed, show, form
+│   ├── MaCuisine/           # recipe feed, show, form, meta pills, favorites
 │   ├── MonPoids/            # BMI & measurements views
 │   └── legal/               # CGU & politique de confidentialité
 ├── tests/
@@ -322,22 +409,15 @@ updates so they can be asserted on. Nothing needs to be running.
 
 ## Database schema
 
+One ER diagram per bounded context, to keep the auto-layout readable. `USER` (and
+`RECIPE`, for the chat attachment) is repeated as a bare reference box wherever another
+context points to it — its full column list only appears once, in **Core (users & auth)**.
+
+### Core (users & auth)
+
 ```mermaid
 erDiagram
-    USER ||--o{ RELATIONSHIP            : "user1 / user2"
-    USER }o--o{ CONVERSATION            : "participates in"
-    CONVERSATION ||--o{ MESSAGE         : contains
-    USER ||--o{ MESSAGE                 : authors
-    RECIPE |o--o{ MESSAGE               : "attached to"
-    USER ||--o{ BMI                     : has
-    USER ||--o{ MEASUREMENT             : has
-    USER ||--o{ RECIPE                  : authors
-    USER ||--o{ CATEGORY                : "created"
-    USER ||--o{ UTENSIL                 : "created"
-    CATEGORY ||--o{ RECIPE              : classifies
-    RECIPE ||--o{ REF_RECIPE_INGREDIENT : contains
-    INGREDIENT ||--o{ REF_RECIPE_INGREDIENT : "used in"
-    RECIPE }o--o{ UTENSIL               : "uses"
+    USER ||--o{ RESET_PASSWORD_REQUEST : requests
 
     USER {
         int             id PK
@@ -348,7 +428,94 @@ erDiagram
         bool            isVerified
         float           height "nullable"
         datetime_immut  createdAt
+        string(255)     image "nullable, pfp filename on disk"
     }
+
+    RESET_PASSWORD_REQUEST {
+        int             id PK
+        int             user_id FK
+        string(20)      selector
+        string(100)     hashedToken
+        datetime_immut  requestedAt
+        datetime_immut  expiresAt
+    }
+```
+
+### MaCuisine — recipes, favorites & catalog
+
+```mermaid
+erDiagram
+    USER ||--o{ RECIPE                  : authors
+    USER ||--o{ CATEGORY                : "created"
+    USER ||--o{ UTENSIL                 : "created"
+    USER ||--o{ FAVORITE                : bookmarks
+    CATEGORY ||--o{ RECIPE              : classifies
+    RECIPE ||--o{ REF_RECIPE_INGREDIENT : contains
+    INGREDIENT ||--o{ REF_RECIPE_INGREDIENT : "used in"
+    RECIPE }o--o{ UTENSIL               : "uses"
+    RECIPE ||--o{ FAVORITE              : "bookmarked in"
+
+    RECIPE {
+        int             id PK
+        int             author_id FK
+        int             category_id FK "nullable"
+        string(30)      name
+        string(600)     description
+        string(255)     source "nullable, plain text — links rejected"
+        string(255)     image "nullable, filename on disk"
+        int             portions "nullable"
+        int             time "nullable, minutes"
+        int             difficulty "nullable, 1..5"
+        int             cost "nullable, 1..5"
+        datetime_immut  createdAt
+        datetime_immut  updatedAt "nullable"
+    }
+
+    CATEGORY {
+        int             id PK
+        int             created_by_id FK
+        string(32)      name
+        datetime_immut  createdAt
+        datetime_immut  updatedAt "nullable"
+    }
+
+    UTENSIL {
+        int             id PK
+        int             created_by_id FK
+        string(32)      name
+        datetime_immut  createdAt
+        datetime_immut  updatedAt "nullable"
+    }
+
+    INGREDIENT {
+        int             id PK
+        string(255)     name
+    }
+
+    REF_RECIPE_INGREDIENT {
+        int             recipe_id PK,FK
+        int             ingredient_id PK,FK
+        float           quantity
+        string(10)      unite
+    }
+
+    FAVORITE {
+        int             id PK
+        int             user_id FK "on delete cascade"
+        int             recipe_id FK "on delete cascade"
+        datetime_immut  createdAt
+    }
+```
+
+### Friends & chat
+
+```mermaid
+erDiagram
+    USER ||--o{ RELATIONSHIP    : "user1 / user2"
+    USER }o--o{ CONVERSATION    : "participates in"
+    CONVERSATION ||--o{ MESSAGE : contains
+    USER ||--o{ MESSAGE         : authors
+    RECIPE |o--o{ MESSAGE       : "attached to"
 
     RELATIONSHIP {
         int             id PK
@@ -371,10 +538,17 @@ erDiagram
         int             author_id FK
         text            content "nullable"
         int             recipe_attached_id FK "nullable"
-        string(255)     file_attached "nullable"
         datetime_immut  sentAt
         datetime_immut  readAt "nullable, null = unread"
     }
+```
+
+### MonPoids — BMI & measurements
+
+```mermaid
+erDiagram
+    USER ||--o{ BMI         : has
+    USER ||--o{ MEASUREMENT : has
 
     BMI {
         int             id PK
@@ -394,44 +568,6 @@ erDiagram
         float           waist
         datetime_immut  createdAt
     }
-
-    RECIPE {
-        int             id PK
-        int             author_id FK
-        int             category_id FK "nullable"
-        string(30)      name
-        string(600)     description
-        datetime_immut  createdAt
-        datetime_immut  updatedAt "nullable"
-    }
-
-    INGREDIENT {
-        int             id PK
-        string(255)     name
-    }
-
-    REF_RECIPE_INGREDIENT {
-        int             recipe_id PK,FK
-        int             ingredient_id PK,FK
-        float           quantity
-        string(10)      unite
-    }
-
-    CATEGORY {
-        int             id PK
-        int             created_by_id FK
-        string(32)      name
-        datetime_immut  createdAt
-        datetime_immut  updatedAt "nullable"
-    }
-
-    UTENSIL {
-        int             id PK
-        int             created_by_id FK
-        string(32)      name
-        datetime_immut  createdAt
-        datetime_immut  updatedAt "nullable"
-    }
 ```
 
 > Table and column names follow Doctrine's default snake-case mapping. The `user` table is quoted (`` `user` ``) because it's a reserved keyword on most engines.
@@ -439,6 +575,9 @@ erDiagram
 > The many-to-many between `USER` and `CONVERSATION` is stored in the `conversation_user`
 > join table. `MESSAGE.readAt` doubles as the unread flag: `null` means the recipient has
 > not opened the thread since it arrived, which is what the badge counts.
+>
+> `FAVORITE` carries a unique constraint on `(user_id, recipe_id)` — a recipe can only be
+> bookmarked once per person, which is what makes the toggle idempotent.
 
 ## Testing
 
@@ -457,7 +596,8 @@ php bin/phpunit tests/Functional/Friends/ChatControllerTest.php
 ```
 
 The database-backed suites read `DATABASE_URL` from `.env.test.local`; Doctrine appends
-`_test` to the database name. Create and migrate it once:
+`_test` to the database name. Create it once, and **re-run the migrations whenever you
+pull new ones** — a stale test schema shows up as `relation "…" does not exist`:
 
 ```bash
 php bin/console --env=test doctrine:database:create --if-not-exists
@@ -465,6 +605,40 @@ php bin/console --env=test doctrine:migrations:migrate --no-interaction
 ```
 
 No Mercure hub is needed — `config/services_test.yaml` swaps the real hub for `MockHub`.
+
+### Writing functional tests
+
+The test database is **never truncated between tests**. `tests/Functional/AppWebTestCase.php`
+works around it by giving every fixture a unique identifier (`uniqid`, `random_bytes`), and
+your tests should do the same — a fixed username or recipe name will start failing the
+moment a second test run reuses it.
+
+The same rule applies to anything that depends on *global* ordering. `createdAt` is stored
+to the second, so several tests creating rows within the same second tie on
+`ORDER BY createdAt DESC`; assert on your own fixtures rather than on "the most recent row",
+or date the fixture explicitly to make the ordering deterministic.
+
+> **Local rot.** Because nothing is truncated, fixtures pile up run after run, and
+> `/macuisine/feed` renders every recipe it finds (no pagination yet). After enough local
+> runs the crawler will blow the default 128 MB limit. Either bump it
+> (`php -d memory_limit=512M vendor/bin/phpunit`) or start over:
+>
+> ```bash
+> php bin/console --env=test doctrine:database:drop --force --if-exists
+> php bin/console --env=test doctrine:database:create
+> php bin/console --env=test doctrine:migrations:migrate --no-interaction
+> ```
+>
+> CI is unaffected — it builds the database from scratch on every job.
+
+Repository methods that read the connected user through `Security` (for instance
+`FavoriteRepository::findAllForConnectedUser()`) can be tested from a `KernelTestCase` by
+putting a token in the storage directly — see `tests/Functional/MaCuisine/FavoriteRepositoryTest.php`:
+
+```php
+static::getContainer()->get(TokenStorageInterface::class)
+    ->setToken(new UsernamePasswordToken($user, 'main', $user->getRoles()));
+```
 
 ## Code quality
 
@@ -511,7 +685,7 @@ API documentation is generated from the source PHPDoc with
 **📚 <https://eeckhoutremi.github.io/MesApplisHF>**
 
 It is rebuilt automatically on every push to `main` (the `docs` job in
-`.github/workflows/deploy.yml`). To build it locally:
+`.github/workflows/ci.yml`). To build it locally:
 
 ```bash
 vendor/bin/phpdoc        # outputs to docs/.build (git-ignored)

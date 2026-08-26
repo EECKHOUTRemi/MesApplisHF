@@ -5,19 +5,18 @@
 {% block body %}
 <div class="container py-4" style="max-width: 900px;">
 
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb mb-0 small">
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Ustensiles</li>
-        </ol>
-    </nav>
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Administration' },
+        { label: 'Ustensiles' },
+    ] }) }}
 
     <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
         <div>
             <h1 class="h4 mb-1 fw-bold"><i class="bi bi-fork-knife me-2" aria-hidden="true"></i>Ustensiles</h1>
             <p class="text-secondary mb-0 small">Gestion administrateur des ustensiles de cuisine.</p>
         </div>
-        <a href="{{ path('app_admin_ma_cuisine_utensil_new') }}" class="btn btn-primary">
+        <a href="{{ path('app_admin_macuisine_utensil_new') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nouvel ustensile
         </a>
     </div>
@@ -42,10 +41,10 @@
                             {{ utensil.createdAt ? utensil.createdAt|date('d/m/Y H:i') : '—' }}
                         </td>
                         <td class="text-end">
-                            <a href="{{ path('app_admin_ma_cuisine_utensil_show', {'id': utensil.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                            <a href="{{ path('app_admin_macuisine_utensil_show', {'id': utensil.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
                                 <i class="bi bi-eye" aria-hidden="true"></i>
                             </a>
-                            <a href="{{ path('app_admin_ma_cuisine_utensil_edit', {'id': utensil.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <a href="{{ path('app_admin_macuisine_utensil_edit', {'id': utensil.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="bi bi-pencil-square" aria-hidden="true"></i>
                             </a>
                         </td>

@@ -1,0 +1,162 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes favoris · MaCuisine{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ include('MaCuisine/recipe/_meta_styles.html.twig') }}
+    <style>
+        .favorite-card {
+            border: 0;
+            border-radius: .9rem;
+            overflow: hidden;
+            height: 100%;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .favorite-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.1);
+        }
+        .favorite-card .recipe-thumb {
+            height: 140px;
+            background: linear-gradient(135deg, #ffe5d9 0%, #ffc9b0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.75rem;
+            color: #ff7e5f;
+            overflow: hidden;
+        }
+        .favorite-card .recipe-thumb picture {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .favorite-card .recipe-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .favorite-card .btn-unfavorite {
+            color: #f0ad00;
+        }
+        .favorite-card .btn-unfavorite:hover {
+            color: #c98f00;
+        }
+        .section-title .bi {
+            color: #ff7e5f;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'MaCuisine', path: path('app_macuisine_index') },
+        { label: 'Mes favoris' },
+    ] }) }}
+
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
+        <div>
+            <h1 class="h3 fw-bold mb-1">
+                <i class="bi bi-star-fill text-warning me-2" aria-hidden="true"></i>Mes favoris
+            </h1>
+            <p class="text-secondary mb-0">
+                {% if favorites|length > 0 %}
+                    {{ favorites|length }} recette{{ favorites|length > 1 ? 's' }} mise{{ favorites|length > 1 ? 's' }} de côté.
+                {% else %}
+                    Les recettes que vous mettez de côté apparaissent ici.
+                {% endif %}
+            </p>
+        </div>
+        <a href="{{ path('app_macuisine_feed') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-compass me-1" aria-hidden="true"></i>Explorer le fil
+        </a>
+    </div>
+
+    {% if favorites|length > 0 %}
+        <div class="row g-3">
+            {% for favorite in favorites %}
+                {% set recipe = favorite.recipe %}
+                <div class="col-md-6 col-lg-4">
+                    <article class="card favorite-card shadow-sm">
+                        <a href="{{ path('app_macuisine_recipe_show', {'id': recipe.id}) }}" class="text-decoration-none text-reset">
+                            <div class="recipe-thumb">
+                                {% if recipe.image %}
+                                    {% set imgPath = 'uploads/recipes/' ~ recipe.image %}
+                                    {% if imgPath is ondisk %}
+                                        <picture>
+                                            <source srcset="{{ asset(imgPath) | imagine_filter('med_avif') }}" type="image/avif">
+                                            <source srcset="{{ asset(imgPath) | imagine_filter('med_webp') }}" type="image/webp">
+                                            <source srcset="{{ asset(imgPath) | imagine_filter('med_png') }}" type="image/png">
+                                            <source srcset="{{ asset(imgPath) | imagine_filter('med_jpeg') }}" type="image/jpeg">
+                                            <img src="{{ asset(imgPath) }}" alt="{{ recipe.name }}" loading="lazy">
+                                        </picture>
+                                    {% else %}
+                                        <i class="bi bi-image-alt" aria-hidden="true"></i>
+                                    {% endif %}
+                                {% else %}
+                                    <i class="bi bi-egg-fried" aria-hidden="true"></i>
+                                {% endif %}
+                            </div>
+                        </a>
+
+                        <div class="card-body pb-2">
+                            <a href="{{ path('app_macuisine_recipe_show', {'id': recipe.id}) }}" class="text-decoration-none text-reset">
+                                <h2 class="h5 card-title mb-1">{{ recipe.name }}</h2>
+                            </a>
+                            <p class="text-secondary small mb-2">
+                                <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
+                                {{ recipe.author.username ?? 'Compte supprimé' }}
+                                {% if recipe.category %}
+                                    <span class="mx-1">·</span>
+                                    <i class="bi bi-tag-fill me-1" aria-hidden="true"></i>{{ recipe.category.name }}
+                                {% endif %}
+                            </p>
+
+                            {% set pills %}{{ include('MaCuisine/recipe/_meta_pills.html.twig', { recipe: recipe }) }}{% endset %}
+                            {% if pills|trim is not empty %}
+                                <div class="d-flex flex-wrap gap-1 mb-2">{{ pills|raw }}</div>
+                            {% endif %}
+
+                            <p class="card-text text-secondary mb-0">
+                                {{ recipe.description|length > 110 ? recipe.description|slice(0, 110) ~ '…' : recipe.description }}
+                            </p>
+                        </div>
+
+                        <footer class="card-footer bg-transparent border-top d-flex align-items-center justify-content-between">
+                            <span class="text-secondary small">
+                                <i class="bi bi-bookmark-star me-1" aria-hidden="true"></i>
+                                Ajoutée le {{ favorite.createdAt|date('d/m/Y') }}
+                            </span>
+                            <form method="post" action="{{ path('app_macuisine_favorite_toggle') }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('favorite' ~ recipe.id) }}">
+                                <input type="hidden" name="recipeId" value="{{ recipe.id }}">
+                                <button type="submit" class="btn btn-link btn-unfavorite p-0 border-0 text-decoration-none" title="Retirer des favoris">
+                                    <i class="bi bi-star-fill" aria-hidden="true"></i>
+                                    <span class="small ms-1">Retirer</span>
+                                </button>
+                            </form>
+                        </footer>
+                    </article>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-star display-4 text-secondary mb-3 d-block" aria-hidden="true"></i>
+                <h2 class="h5">Aucun favori pour le moment</h2>
+                <p class="text-secondary mb-3">
+                    Parcourez le fil et cliquez sur l'étoile d'une recette pour la retrouver ici.
+                </p>
+                <a href="{{ path('app_macuisine_feed') }}" class="btn btn-primary">
+                    <i class="bi bi-compass me-1" aria-hidden="true"></i>Explorer le fil
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

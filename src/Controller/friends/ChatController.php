@@ -177,9 +177,14 @@ final class ChatController extends AbstractController
             throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
-        $content  = trim($request->request->getString('message'));
-        $recipeId = $request->request->getInt('recipe');
-        $recipe   = $recipeId > 0 ? $recipes->find($recipeId) : null;
+        $content = trim($request->request->getString('message'));
+
+        // getInt() rejette "" (valeur par défaut du champ caché quand aucune
+        // recette n'est jointe) : FILTER_VALIDATE_INT échoue dessus et lève,
+        // faute de FILTER_NULL_ON_FAILURE. D'où le passage par getString().
+        $rawRecipeId = trim($request->request->getString('recipe'));
+        $recipeId    = $rawRecipeId === '' ? 0 : (int) $rawRecipeId;
+        $recipe      = $recipeId > 0 ? $recipes->find($recipeId) : null;
 
         if ($recipeId > 0 && $recipe === null) {
             return $this->json(['error' => 'Recette introuvable.'], Response::HTTP_UNPROCESSABLE_ENTITY);

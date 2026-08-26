@@ -4,9 +4,15 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\ChangePasswordType;
+use App\Form\ProfilePictureType;
 use App\Form\ProfileSettingsType;
+use App\Handler\ImageHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use Imagine\Exception\RuntimeException;
+use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -16,10 +22,19 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/settings', name: 'app_settings_'), IsGranted('ROLE_USER')]
 /**
- * Paramètres du compte : mise à jour du profil, changement de mot de passe et suppression du compte.
+ * Paramètres du compte : mise à jour du profil et de la photo, changement de mot de passe
+ * et suppression du compte.
  */
 final class SettingsController extends AbstractController
 {
+    /**
+     * @param string $profileImagesDirectory Chemin absolu du dossier de stockage des photos de profil
+     */
+    public function __construct(
+        #[Autowire(param: 'profile_images_directory')] private readonly string $profileImagesDirectory,
+    ) {
+    }
+
     /**
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -33,6 +48,7 @@ final class SettingsController extends AbstractController
 
         $profileForm = $this->createForm(ProfileSettingsType::class, $user);
         $passwordForm = $this->createForm(ChangePasswordType::class);
+        $pictureForm = $this->createForm(ProfilePictureType::class);
 
         $profileForm->handleRequest($request);
 
@@ -46,7 +62,58 @@ final class SettingsController extends AbstractController
         return $this->render('settings/index.html.twig', [
             'profileForm' => $profileForm,
             'passwordForm' => $passwordForm,
+            'pictureForm' => $pictureForm,
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param ImageHandler $imageHandler
+     * @return Response
+     * @throws RandomException
+     */
+    #[Route('/photo', name: 'picture', methods: ['POST'])]
+    public function updatePicture(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ImageHandler $imageHandler
+    ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(ProfilePictureType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+
+            $extension = strtolower((string) ($imageFile->guessExtension() ?:
+                $imageFile->getClientOriginalExtension() ?: 'bin'));
+            $newFilename = bin2hex(random_bytes(16)) . '.' . $extension;
+
+            try {
+                $imageHandler->compressAndStore($imageFile, $this->profileImagesDirectory, $newFilename);
+            } catch (RuntimeException) {
+                $this->addFlash('danger', 'Le fichier fourni n\'est pas une image valide.');
+
+                return $this->redirectToRoute('app_settings_index');
+            }
+
+            if ($user->getImage() !== null) {
+                $filesystem = new Filesystem();
+                $filesystem->remove($this->profileImagesDirectory . '/' . $user->getImage());
+            }
+
+            $user->setImage($newFilename);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Photo de profil mise à jour.');
+        } else {
+            $this->addFlash('danger', 'La photo de profil n\'a pas pu être mise à jour.');
+        }
+
+        return $this->redirectToRoute('app_settings_index');
     }
 
     /**
@@ -66,6 +133,7 @@ final class SettingsController extends AbstractController
 
         $profileForm = $this->createForm(ProfileSettingsType::class, $user);
         $passwordForm = $this->createForm(ChangePasswordType::class);
+        $pictureForm = $this->createForm(ProfilePictureType::class);
         $passwordForm->handleRequest($request);
 
         if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
@@ -81,6 +149,7 @@ final class SettingsController extends AbstractController
         return $this->render('settings/index.html.twig', [
             'profileForm' => $profileForm,
             'passwordForm' => $passwordForm,
+            'pictureForm' => $pictureForm,
         ]);
     }
 

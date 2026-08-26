@@ -1,0 +1,33 @@
+{# Pastilles portions / temps / difficulté / prix, partagées entre la vue détail et les cartes du fil.
+   Les quatre colonnes sont nullables : chaque pastille n'apparaît que si la valeur est renseignée.
+   Les styles vivent dans _meta_styles.html.twig, à inclure dans le bloc `stylesheets` de la page. #}
+{% if recipe.portions %}
+    <span class="meta-pill">
+        <i class="bi bi-people" aria-hidden="true"></i>{{ recipe.portions }} portion{{ recipe.portions > 1 ? 's' }}
+    </span>
+{% endif %}
+{% if recipe.time %}
+    {% set hours = recipe.time // 60 %}
+    {% set minutes = recipe.time % 60 %}
+    <span class="meta-pill">
+        <i class="bi bi-clock" aria-hidden="true"></i>
+        {%- if hours > 0 %} {{ hours }} h{{ minutes > 0 ? ' ' ~ ('%02d'|format(minutes)) }}
+        {%- else %} {{ minutes }} min{% endif %}
+    </span>
+{% endif %}
+{% if recipe.difficulty %}
+    <span class="meta-pill">
+        Difficulté
+        {{ include('MaCuisine/recipe/_rating_static.html.twig', {
+            value: recipe.difficulty, icon: 'bi-fire', variant: 'difficulty',
+        }) }}
+    </span>
+{% endif %}
+{% if recipe.cost %}
+    <span class="meta-pill">
+        Prix
+        {{ include('MaCuisine/recipe/_rating_static.html.twig', {
+            value: recipe.cost, icon: 'bi-currency-euro', variant: 'cost',
+        }) }}
+    </span>
+{% endif %}

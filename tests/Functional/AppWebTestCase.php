@@ -44,7 +44,9 @@ abstract class AppWebTestCase extends WebTestCase
     ): User {
         $user = new User();
         $user->setEmail(uniqid('user.', true) . '@test.local');
-        $user->setUsername('testeur');
+        // Le nom d'utilisateur est unique en base (voir User) : la base n'étant pas
+        // vidée entre les tests, un nom fixe ferait échouer tous les tests suivants.
+        $user->setUsername(uniqid('test.', true));
         $user->setRoles($roles);
         $user->setIsVerified($isVerified);
         $user->setCreatedAt(new \DateTimeImmutable());

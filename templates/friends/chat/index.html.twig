@@ -63,6 +63,11 @@
 		<div class="row justify-content-center">
 			<div class="col-lg-7">
 
+				{{ include('_breadcrumb.html.twig', { items: [
+					{ label: 'Accueil', path: path('app_index') },
+					{ label: 'Messages' },
+				] }) }}
+
 				{# ── En-tête ─────────────────────────────────────────────── #}
 				<div class="d-flex align-items-center justify-content-between gap-3 mb-3">
 					<h1 class="h4 fw-semibold mb-0">
@@ -102,10 +107,10 @@
 										{% set imgPath = row.friend and row.friend.image ? 'uploads/pfp/' ~ row.friend.image : null %}
 										{% if imgPath and imgPath is ondisk %}
 											<picture>
-												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_avif') }}" type="image/avif">
-												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
-												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
-												<source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
+												<source srcset="{{ asset(imgPath) | imagine_filter('tiny_avif') }}" type="image/avif">
+												<source srcset="{{ asset(imgPath) | imagine_filter('tiny_webp') }}" type="image/webp">
+												<source srcset="{{ asset(imgPath) | imagine_filter('tiny_png') }}" type="image/png">
+												<source srcset="{{ asset(imgPath) | imagine_filter('tiny_jpeg') }}" type="image/jpeg">
 												<img src="{{ asset(imgPath) }}" alt="" loading="lazy" class="rounded-circle chat-avatar">
 											</picture>
 										{% else %}

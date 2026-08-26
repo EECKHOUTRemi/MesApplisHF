@@ -37,6 +37,7 @@ FROM base AS prod
 ENV APP_ENV=prod
 
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY docker/php/uploads.ini "$PHP_INI_DIR/conf.d/uploads.ini"
 
 # Install PHP dependencies first to leverage Docker layer caching.
 COPY composer.json composer.lock symfony.lock ./
@@ -67,6 +68,7 @@ FROM base AS dev
 ENV APP_ENV=dev
 
 RUN cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+COPY docker/php/uploads.ini "$PHP_INI_DIR/conf.d/uploads.ini"
 
 # Install ALL dependencies (including require-dev) so dev bundles are present.
 COPY composer.json composer.lock symfony.lock ./

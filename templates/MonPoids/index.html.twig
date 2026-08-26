@@ -4,6 +4,12 @@
 
 {% block body %}
 <div class="container d-flex flex-column justify-content-center py-5" style="min-height: calc(100vh - 70px);">
+
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'MonPoids' },
+    ] }) }}
+
     <div class="text-center mb-5">
         <h1 class="display-3 fw-bold">MonPoids <i class="bi bi-heart-pulse text-primary"></i></h1>
         <p class="lead text-secondary">Suivez votre IMC et vos mesures corporelles au fil du temps.</p>

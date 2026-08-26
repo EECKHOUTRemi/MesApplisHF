@@ -1,0 +1,40 @@
+{# Fil d'Ariane partagé.
+
+   Attend `items` : une liste de dictionnaires { label, path }.
+   Le dernier élément représente la page courante : son `path` est ignoré et il
+   est marqué `aria-current="page"`.
+   Un élément sans `path` s'affiche en texte simple (utile pour un niveau
+   purement structurel comme « Administration », qui n'a pas de route).
+   Le premier élément reçoit une icône maison ; passez `icon: false` pour la retirer.
+
+   Les styles (.app-breadcrumb) vivent dans le bloc `stylesheets` de base.html.twig,
+   le fil étant présent sur presque toutes les pages.
+
+   {{ include('_breadcrumb.html.twig', { items: [
+       { label: 'MaCuisine', path: path('app_macuisine_index') },
+       { label: 'Recettes',  path: path('app_macuisine_feed') },
+       { label: recipe.name },
+   ] }) }}
+#}
+{% if items|default([])|length > 0 %}
+    <nav aria-label="Fil d'Ariane" class="app-breadcrumb mb-3">
+        <ol class="breadcrumb mb-0">
+            {% for item in items %}
+                {% set label %}
+                    {%- if loop.first and item.icon|default(true) -%}
+                        <i class="bi bi-house-door-fill me-1" aria-hidden="true"></i>
+                    {%- endif -%}
+                    <span class="breadcrumb-label" title="{{ item.label }}">{{ item.label }}</span>
+                {% endset %}
+
+                {% if loop.last %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ label }}</li>
+                {% elseif item.path is defined %}
+                    <li class="breadcrumb-item"><a href="{{ item.path }}">{{ label }}</a></li>
+                {% else %}
+                    <li class="breadcrumb-item breadcrumb-item-plain">{{ label }}</li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </nav>
+{% endif %}

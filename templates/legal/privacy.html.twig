@@ -5,6 +5,11 @@
 {% block body %}
 <div class="container py-4" style="max-width: 820px;">
 
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Confidentialité' },
+    ] }) }}
+
     <h1 class="mb-1">Politique de confidentialité</h1>
     <p class="text-secondary small mb-4">Dernière mise à jour : 11 août 2026</p>
 
@@ -222,8 +227,8 @@
         </p>
     </section>
 
-    <a href="javascript:history.back()" class="btn btn-outline-secondary mt-2">
-        <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour
+    <a href="{{ path('app_index') }}" class="btn btn-outline-secondary mt-2">
+        <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour à l'accueil
     </a>
 </div>
 {% endblock %}
