@@ -28,6 +28,14 @@ class RecipeAdminType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $choiceTypeParams = [
+            'required' => false,
+            'expanded' => true,
+            'multiple' => false,
+            'placeholder' => false,
+            'choices' => ['5' => 5, '4' => 4, '3' => 3, '2' => 2, '1' => 1],
+        ];
+
         $builder
             // l'entité attend des DateTimeImmutable ; par défaut DateTimeType produit un DateTime
             ->add('createdAt', DateTimeType::class, [
@@ -60,20 +68,8 @@ class RecipeAdminType extends AbstractType
             ->add('time', IntegerType::class, [
                 'required' => false,
             ])
-            ->add('difficulty', ChoiceType::class, [
-                'required' => false,
-                'expanded' => true,
-                'multiple' => false,
-                'placeholder' => false,
-                'choices' => ['5' => 5, '4' => 4, '3' => 3, '2' => 2, '1' => 1],
-            ])
-            ->add('cost', ChoiceType::class, [
-                'required' => false,
-                'expanded' => true,
-                'multiple' => false,
-                'placeholder' => false,
-                'choices' => ['5' => 5, '4' => 4, '3' => 3, '2' => 2, '1' => 1],
-            ])
+            ->add('difficulty', ChoiceType::class, $choiceTypeParams)
+            ->add('cost', ChoiceType::class, $choiceTypeParams)
         ;
     }
 
