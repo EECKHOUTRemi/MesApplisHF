@@ -3,6 +3,7 @@
 namespace App\Notifier;
 
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 
@@ -89,6 +90,36 @@ class EmailNotifier
         $this->sendEmail(
             [$to],
             'Tentative de création de compte',
+            'emails/notification.html.twig',
+            $content,
+        );
+    }
+
+    /**
+     * @param string $to
+     * @param string $password
+     * @return void
+     * @throws TransportExceptionInterface
+     */
+    public function sendPasswordChangeRequestEmail(string $to, string $password): void
+    {
+        $content = '<p>Bonjour,</p>
+            <p>Un administrateur a créé un compte avec votre adresse mail. Voici votre mot de passe temporaire : '
+            . $password . '.</p>
+            <p>Nous vous recommandons de le changer en vous connectant via
+            <a href="https://mesapplishf.fr/login">ce lien</a>, en cliquant sur l\'icône de profil en haut à droite
+            puis en allant dans "Modifier le profil". Vous trouverez une section permettant de changer de mot de passe
+            où il vous sera demandé de renseigner votre mot de passe actuel (présent ci-dessus) puis de renseigner
+            deux fois votre nouveau mot de passe.</p>
+            <p>À la suite de cette démarche, vous pourrez modifier votre profil plus précisemment et commencer à
+            naviguer à travers nos divers outils.</p>
+            <p>Si c\'est une erreur, veuillez nous contacter à
+            <a href="mailto:contact@mesapplishf.fr">contact@mesapplishf.fr</a>.</p>
+        ';
+
+        $this->sendEmail(
+            [$to],
+            'Nouveau compte créé',
             'emails/notification.html.twig',
             $content,
         );

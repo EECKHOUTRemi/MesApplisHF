@@ -63,7 +63,7 @@ final class UserControllerTest extends AppWebTestCase
     {
         $this->login($this->createAdmin());
         $email = uniqid('nouveau.', true) . '@test.local';
-        $username = uniqid('nouveau.', true);
+        $username = uniqid('nouv.', true);
 
         $crawler = $this->client->request('GET', self::BASE_PATH . '/new');
         self::assertResponseIsSuccessful();
@@ -99,7 +99,7 @@ final class UserControllerTest extends AppWebTestCase
     {
         $user = $this->createUser();
         $this->login($this->createAdmin());
-        $newUsername = uniqid('modifie.', true);
+        $newUsername = uniqid('modif.', true);
 
         $crawler = $this->client->request('GET', self::BASE_PATH . '/' . $user->getId() . '/edit');
         self::assertResponseIsSuccessful();

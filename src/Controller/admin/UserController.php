@@ -4,11 +4,17 @@ namespace App\Controller\admin;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Generator\RandomStringGenerator;
+use App\Notifier\EmailNotifier;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -28,16 +34,31 @@ final class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws RandomException
+     * @throws TransportExceptionInterface
+     */
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        RandomStringGenerator $randomStringGenerator,
+        EmailNotifier $emailNotifier,
+        UserPasswordHasherInterface $passwordHasher,
+    ): Response {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $password = $randomStringGenerator->generateRandomString();
+            $passwordHashed = $passwordHasher->hashPassword($user, $password);
+
+            $user->setPassword($passwordHashed);
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $emailNotifier->sendPasswordChangeRequestEmail($user->getEmail(), $password);
 
             return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
         }
