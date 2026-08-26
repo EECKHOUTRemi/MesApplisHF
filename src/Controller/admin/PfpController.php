@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class PfpController extends AbstractController
 {
     /**
-     * @param string $recipesImagesDirectory Chemin absolu du dossier des images de recettes
+     * @param string $profilesImagesDirectory
      * @return Response
      */
     #[Route(name: 'index', methods: ['GET'])]
