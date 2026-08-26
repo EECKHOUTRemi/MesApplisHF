@@ -14,6 +14,7 @@ use App\Repository\MaCuisine\RecipeRepository;
 use App\Repository\MaCuisine\UtensilRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Imagine\Exception\RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -163,7 +164,11 @@ final class MaCuisineController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
-                $recipeFormHandler->addImage($imageFile, $recipe);
+                try {
+                    $recipeFormHandler->addImage($imageFile, $recipe);
+                } catch (RuntimeException) {
+                    $this->addFlash('danger', 'Le fichier image fourni n\'est pas une image valide.');
+                }
             }
 
             $submittedData = $request->request->all();
@@ -226,7 +231,11 @@ final class MaCuisineController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
-                $recipeFormHandler->addImage($imageFile, $recipe, $currentImage);
+                try {
+                    $recipeFormHandler->addImage($imageFile, $recipe, $currentImage);
+                } catch (RuntimeException) {
+                    $this->addFlash('danger', 'Le fichier image fourni n\'est pas une image valide.');
+                }
             }
 
             $submittedData = $request->request->all();

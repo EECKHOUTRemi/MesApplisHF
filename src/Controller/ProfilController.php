@@ -31,7 +31,7 @@ final class ProfilController extends AbstractController
      * @param RecipeRepository $recipeRepository
      * @return Response
      */
-    #[Route('/{id}', name: 'seeOtherUser', methods: ['GET'], requirements: ['id' => '[0-9]+'])]
+    #[Route('/{id}', name: 'seeOtherUser', requirements: ['id' => '[0-9]+'], methods: ['GET'])]
     public function seeOtherUser(
         int $id,
         UserRepository $userRepository,

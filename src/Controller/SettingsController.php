@@ -6,7 +6,10 @@ use App\Entity\User;
 use App\Form\ChangePasswordType;
 use App\Form\ProfilePictureType;
 use App\Form\ProfileSettingsType;
+use App\Handler\ImageHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use Imagine\Exception\RuntimeException;
+use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
@@ -66,11 +69,16 @@ final class SettingsController extends AbstractController
     /**
      * @param Request $request
      * @param EntityManagerInterface $entityManager
+     * @param ImageHandler $imageHandler
      * @return Response
+     * @throws RandomException
      */
     #[Route('/photo', name: 'picture', methods: ['POST'])]
-    public function updatePicture(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function updatePicture(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ImageHandler $imageHandler
+    ): Response {
         /** @var User $user */
         $user = $this->getUser();
 
@@ -80,17 +88,23 @@ final class SettingsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageFile = $form->get('image')->getData();
 
-            $filesystem = new Filesystem();
-            $filesystem->mkdir($this->profileImagesDirectory);
-
-            if ($user->getImage() !== null) {
-                $filesystem->remove($this->profileImagesDirectory . '/' . $user->getImage());
-            }
-
             $extension = strtolower((string) ($imageFile->guessExtension() ?:
                 $imageFile->getClientOriginalExtension() ?: 'bin'));
             $newFilename = bin2hex(random_bytes(16)) . '.' . $extension;
-            $imageFile->move($this->profileImagesDirectory, $newFilename);
+
+            try {
+                $imageHandler->compressAndStore($imageFile, $this->profileImagesDirectory, $newFilename);
+            } catch (RuntimeException) {
+                $this->addFlash('danger', 'Le fichier fourni n\'est pas une image valide.');
+
+                return $this->redirectToRoute('app_settings_index');
+            }
+
+            if ($user->getImage() !== null) {
+                $filesystem = new Filesystem();
+                $filesystem->remove($this->profileImagesDirectory . '/' . $user->getImage());
+            }
+
             $user->setImage($newFilename);
             $entityManager->flush();
 
