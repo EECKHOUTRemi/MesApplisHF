@@ -22,12 +22,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/macuisine', name:'app_macuisine_'),
-IsGranted('ROLE_USER')]
 /**
  * CRUD des recettes MaCuisine côté utilisateur.
  * L'endpoint AJAX /ajax/ingredients alimente l'autocomplete d'ingrédients dans le formulaire.
  */
+#[Route('/macuisine', name:'app_macuisine_'),
+IsGranted('ROLE_USER')]
 final class MaCuisineController extends AbstractController
 {
     /**

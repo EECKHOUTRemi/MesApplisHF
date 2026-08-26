@@ -13,6 +13,24 @@
             {{ form_row(form.author, {'label': 'Auteur'}) }}
         </div>
         <div class="col-12 col-md-6">
+            {{ form_row(form.category, {'label': 'Catégorie'}) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.source, {'label': 'Source', 'attr': {'placeholder': 'Ex. Livre de recettes de mamie'}}) }}
+        </div>
+        <div class="col-6 col-md-3">
+            {{ form_row(form.portions, {'label': 'Portions'}) }}
+        </div>
+        <div class="col-6 col-md-3">
+            {{ form_row(form.time, {'label': 'Temps (min)'}) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.difficulty, {'label': 'Difficulté', 'label_attr': {'class': 'radio-inline'}}) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_row(form.cost, {'label': 'Prix', 'label_attr': {'class': 'radio-inline'}}) }}
+        </div>
+        <div class="col-12 col-md-6">
             {{ form_row(form.createdAt, {'label': 'Créée le'}) }}
         </div>
         <div class="col-12 col-md-6">
