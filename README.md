@@ -409,24 +409,15 @@ updates so they can be asserted on. Nothing needs to be running.
 
 ## Database schema
 
+One ER diagram per bounded context, to keep the auto-layout readable. `USER` (and
+`RECIPE`, for the chat attachment) is repeated as a bare reference box wherever another
+context points to it — its full column list only appears once, in **Core (users & auth)**.
+
+### Core (users & auth)
+
 ```mermaid
 erDiagram
-    USER ||--o{ RELATIONSHIP            : "user1 / user2"
-    USER }o--o{ CONVERSATION            : "participates in"
-    CONVERSATION ||--o{ MESSAGE         : contains
-    USER ||--o{ MESSAGE                 : authors
-    RECIPE |o--o{ MESSAGE               : "attached to"
-    USER ||--o{ BMI                     : has
-    USER ||--o{ MEASUREMENT             : has
-    USER ||--o{ RECIPE                  : authors
-    USER ||--o{ CATEGORY                : "created"
-    USER ||--o{ UTENSIL                 : "created"
-    CATEGORY ||--o{ RECIPE              : classifies
-    RECIPE ||--o{ REF_RECIPE_INGREDIENT : contains
-    INGREDIENT ||--o{ REF_RECIPE_INGREDIENT : "used in"
-    RECIPE }o--o{ UTENSIL               : "uses"
-    USER ||--o{ FAVORITE                : bookmarks
-    RECIPE ||--o{ FAVORITE              : "bookmarked in"
+    USER ||--o{ RESET_PASSWORD_REQUEST : requests
 
     USER {
         int             id PK
@@ -437,7 +428,94 @@ erDiagram
         bool            isVerified
         float           height "nullable"
         datetime_immut  createdAt
+        string(255)     image "nullable, pfp filename on disk"
     }
+
+    RESET_PASSWORD_REQUEST {
+        int             id PK
+        int             user_id FK
+        string(20)      selector
+        string(100)     hashedToken
+        datetime_immut  requestedAt
+        datetime_immut  expiresAt
+    }
+```
+
+### MaCuisine — recipes, favorites & catalog
+
+```mermaid
+erDiagram
+    USER ||--o{ RECIPE                  : authors
+    USER ||--o{ CATEGORY                : "created"
+    USER ||--o{ UTENSIL                 : "created"
+    USER ||--o{ FAVORITE                : bookmarks
+    CATEGORY ||--o{ RECIPE              : classifies
+    RECIPE ||--o{ REF_RECIPE_INGREDIENT : contains
+    INGREDIENT ||--o{ REF_RECIPE_INGREDIENT : "used in"
+    RECIPE }o--o{ UTENSIL               : "uses"
+    RECIPE ||--o{ FAVORITE              : "bookmarked in"
+
+    RECIPE {
+        int             id PK
+        int             author_id FK
+        int             category_id FK "nullable"
+        string(30)      name
+        string(600)     description
+        string(255)     source "nullable, plain text — links rejected"
+        string(255)     image "nullable, filename on disk"
+        int             portions "nullable"
+        int             time "nullable, minutes"
+        int             difficulty "nullable, 1..5"
+        int             cost "nullable, 1..5"
+        datetime_immut  createdAt
+        datetime_immut  updatedAt "nullable"
+    }
+
+    CATEGORY {
+        int             id PK
+        int             created_by_id FK
+        string(32)      name
+        datetime_immut  createdAt
+        datetime_immut  updatedAt "nullable"
+    }
+
+    UTENSIL {
+        int             id PK
+        int             created_by_id FK
+        string(32)      name
+        datetime_immut  createdAt
+        datetime_immut  updatedAt "nullable"
+    }
+
+    INGREDIENT {
+        int             id PK
+        string(255)     name
+    }
+
+    REF_RECIPE_INGREDIENT {
+        int             recipe_id PK,FK
+        int             ingredient_id PK,FK
+        float           quantity
+        string(10)      unite
+    }
+
+    FAVORITE {
+        int             id PK
+        int             user_id FK "on delete cascade"
+        int             recipe_id FK "on delete cascade"
+        datetime_immut  createdAt
+    }
+```
+
+### Friends & chat
+
+```mermaid
+erDiagram
+    USER ||--o{ RELATIONSHIP    : "user1 / user2"
+    USER }o--o{ CONVERSATION    : "participates in"
+    CONVERSATION ||--o{ MESSAGE : contains
+    USER ||--o{ MESSAGE         : authors
+    RECIPE |o--o{ MESSAGE       : "attached to"
 
     RELATIONSHIP {
         int             id PK
@@ -460,10 +538,17 @@ erDiagram
         int             author_id FK
         text            content "nullable"
         int             recipe_attached_id FK "nullable"
-        string(255)     file_attached "nullable"
         datetime_immut  sentAt
         datetime_immut  readAt "nullable, null = unread"
     }
+```
+
+### MonPoids — BMI & measurements
+
+```mermaid
+erDiagram
+    USER ||--o{ BMI         : has
+    USER ||--o{ MEASUREMENT : has
 
     BMI {
         int             id PK
@@ -482,57 +567,6 @@ erDiagram
         float           thigh
         float           waist
         datetime_immut  createdAt
-    }
-
-    RECIPE {
-        int             id PK
-        int             author_id FK
-        int             category_id FK "nullable"
-        string(30)      name
-        string(600)     description
-        string(255)     source "nullable, plain text — links rejected"
-        string(255)     image "nullable, filename on disk"
-        int             portions "nullable"
-        int             time "nullable, minutes"
-        int             difficulty "nullable, 1..5"
-        int             cost "nullable, 1..5"
-        datetime_immut  createdAt
-        datetime_immut  updatedAt "nullable"
-    }
-
-    FAVORITE {
-        int             id PK
-        int             user_id FK "on delete cascade"
-        int             recipe_id FK "on delete cascade"
-        datetime_immut  createdAt
-    }
-
-    INGREDIENT {
-        int             id PK
-        string(255)     name
-    }
-
-    REF_RECIPE_INGREDIENT {
-        int             recipe_id PK,FK
-        int             ingredient_id PK,FK
-        float           quantity
-        string(10)      unite
-    }
-
-    CATEGORY {
-        int             id PK
-        int             created_by_id FK
-        string(32)      name
-        datetime_immut  createdAt
-        datetime_immut  updatedAt "nullable"
-    }
-
-    UTENSIL {
-        int             id PK
-        int             created_by_id FK
-        string(32)      name
-        datetime_immut  createdAt
-        datetime_immut  updatedAt "nullable"
     }
 ```
 
