@@ -26,7 +26,13 @@ final class EmailNotifierTest extends TestCase
                 return true;
             }));
 
-        $notifier = new EmailNotifier($mailer);
+        $notifier = new EmailNotifier(
+            $mailer,
+            'register@mesapplishf.fr',
+            'MesApplisHF',
+            'contact@mesapplishf.fr',
+            'https://mesapplishf.fr',
+        );
         $notifier->sendRegisterAttemptEmail('titulaire@test.local');
 
         $this->assertInstanceOf(TemplatedEmail::class, $sent);
