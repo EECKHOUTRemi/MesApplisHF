@@ -10,8 +10,18 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * Formulaire de contact : e-mail, sujet et message, non mappés à une entité.
+ *
+ * @extends AbstractType<array<string, mixed>>
+ */
 class ContactFormType extends AbstractType
 {
+    /**
+     * @param FormBuilderInterface<array<string, mixed>|null> $builder
+     * @param array<string, mixed> $options
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -33,6 +43,10 @@ class ContactFormType extends AbstractType
         ;
     }
 
+    /**
+     * @param OptionsResolver $resolver
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
