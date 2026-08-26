@@ -39,6 +39,7 @@ class PfpController extends AbstractController
     /**
      * @param Request $request La requête HTTP courante
      * @param string $imageToDelete Nom du fichier image à supprimer
+     * @param ImageHandler $imgHandler
      * @return Response
      */
     #[Route('/delete/{imageToDelete}', name: 'delete', methods: ['POST'])]
@@ -46,7 +47,7 @@ class PfpController extends AbstractController
     {
         if (!$this->isCsrfTokenValid('delete-image', $request->request->get('_token'))) {
             $this->addFlash('danger', 'Jeton CSRF invalide.');
-            return $this->redirectToRoute('app_admin_macuisine_images_index');
+            return $this->redirectToRoute('app_admin_pfp_index');
         }
 
         $filename = basename($imageToDelete);
