@@ -285,6 +285,7 @@ final class MaCuisineController extends AbstractController
      * @param Request $request
      * @param Recipe $recipe
      * @param EntityManagerInterface $entityManager
+     * @param ImageHandler $imgHandler
      * @return Response
      */
     #[Route('/{id}', name: 'recipe_delete', methods: ['POST'])]
@@ -298,7 +299,7 @@ final class MaCuisineController extends AbstractController
             $filename = $recipe->getImage();
             if ($filename) {
                 try {
-                    $imgHandler->removeImage($filename);
+                    $imgHandler->removeRecipeImage($filename);
                 } catch (FileNotFoundException  $th) {
                     $filename = null;
                 }
@@ -328,14 +329,14 @@ final class MaCuisineController extends AbstractController
         } else {
             $rawIngredients = $ingredientRepository->findNameLike($term);
         }
-        $handeledIngredients = [];
+        $handledIngredients = [];
         foreach ($rawIngredients as $ingredient) {
-            array_push($handeledIngredients, [
+            $handledIngredients[] = [
                 'id' => $ingredient->getId(),
                 'name' => $ingredient->getName(),
-            ]);
+            ];
         }
 
-        return $this->json($handeledIngredients);
+        return $this->json($handledIngredients);
     }
 }
