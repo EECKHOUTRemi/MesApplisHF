@@ -16,7 +16,7 @@
             <h1 class="h4 mb-1 fw-bold"><i class="bi bi-people me-2" aria-hidden="true"></i>Relations</h1>
             <p class="text-secondary mb-0 small">Gestion administrateur des relations entre utilisateurs.</p>
         </div>
-        <a href="{{ path('app_relationship_new') }}" class="btn btn-primary">
+        <a href="{{ path('app_admin_relationship_new') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nouvelle relation
         </a>
     </div>
@@ -60,10 +60,10 @@
                             {{ relationship.updatedAt ? relationship.updatedAt|date('d/m/Y H:i') : '—' }}
                         </td>
                         <td class="text-end">
-                            <a href="{{ path('app_relationship_show', {'id': relationship.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
+                            <a href="{{ path('app_admin_relationship_show', {'id': relationship.id}) }}" class="btn btn-sm btn-outline-secondary" title="Voir">
                                 <i class="bi bi-eye" aria-hidden="true"></i>
                             </a>
-                            <a href="{{ path('app_relationship_edit', {'id': relationship.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <a href="{{ path('app_admin_relationship_edit', {'id': relationship.id}) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
                                 <i class="bi bi-pencil-square" aria-hidden="true"></i>
                             </a>
                         </td>

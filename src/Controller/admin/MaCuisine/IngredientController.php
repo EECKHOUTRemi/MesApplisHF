@@ -5,6 +5,7 @@ namespace App\Controller\admin\MaCuisine;
 use App\Entity\MaCuisine\Ingredient;
 use App\Form\MaCuisine\IngredientType;
 use App\Repository\MaCuisine\IngredientRepository;
+use App\Repository\MaCuisine\RefRecipeIngredientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/macuisine/ingredient', name:'app_macuisine_ingredient_')]
+#[Route('/admin/macuisine/ingredient', name:'app_admin_macuisine_ingredient_')]
 /** CRUD admin des ingrédients MaCuisine. */
 final class IngredientController extends AbstractController
 {
@@ -39,7 +40,7 @@ final class IngredientController extends AbstractController
             $entityManager->persist($ingredient);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_macuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_macuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/MaCuisine/ingredient/new.html.twig', [
@@ -75,7 +76,7 @@ final class IngredientController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_macuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_macuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/MaCuisine/ingredient/edit.html.twig', [
@@ -88,16 +89,33 @@ final class IngredientController extends AbstractController
      * @param Request $request
      * @param Ingredient $ingredient
      * @param EntityManagerInterface $entityManager
+     * @param RefRecipeIngredientRepository $refRecipeIngredientRepository
      * @return Response
      */
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
-    public function delete(Request $request, Ingredient $ingredient, EntityManagerInterface $entityManager): Response
-    {
+    public function delete(
+        Request $request,
+        Ingredient $ingredient,
+        EntityManagerInterface $entityManager,
+        RefRecipeIngredientRepository $refRecipeIngredientRepository
+    ): Response {
         if ($this->isCsrfTokenValid('delete' . $ingredient->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($ingredient);
-            $entityManager->flush();
+            if ($refRecipeIngredientRepository->count(['ingredient' => $ingredient]) > 0) {
+                $this->addFlash(
+                    'danger',
+                    sprintf(
+                        'Impossible de supprimer « %s » : cet ingrédient est utilisé dans au moins une recette.',
+                        $ingredient->getName()
+                    )
+                );
+            } else {
+                $entityManager->remove($ingredient);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Ingrédient supprimé.');
+            }
         }
 
-        return $this->redirectToRoute('app_macuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_admin_macuisine_ingredient_index', [], Response::HTTP_SEE_OTHER);
     }
 }

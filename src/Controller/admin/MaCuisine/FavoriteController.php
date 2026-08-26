@@ -17,14 +17,14 @@ use Symfony\Component\Routing\Attribute\Route;
  * L'accès est réservé à ROLE_ADMIN par `access_control` sur `^/admin`
  * (cf. config/packages/security.yaml), sans attribut IsGranted sur la classe.
  */
-#[Route('/admin/macuisine/favorite')]
+#[Route('/admin/macuisine/favorite', name: 'app_admin_macuisine_favorite_')]
 final class FavoriteController extends AbstractController
 {
     /**
      * @param FavoriteRepository $favoriteRepository
      * @return Response
      */
-    #[Route(name: 'app_admin_ma_cuisine_favorite_index', methods: ['GET'])]
+    #[Route(name: 'index', methods: ['GET'])]
     public function index(FavoriteRepository $favoriteRepository): Response
     {
         return $this->render('admin/MaCuisine/favorite/index.html.twig', [
@@ -37,7 +37,7 @@ final class FavoriteController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    #[Route('/new', name: 'app_admin_ma_cuisine_favorite_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         // Pas d'entité pré-construite : Favorite exige son utilisateur et sa recette
@@ -51,7 +51,7 @@ final class FavoriteController extends AbstractController
             $entityManager->persist($favorite);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_admin_ma_cuisine_favorite_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_macuisine_favorite_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/MaCuisine/favorite/new.html.twig', [
@@ -63,7 +63,7 @@ final class FavoriteController extends AbstractController
      * @param Favorite $favorite
      * @return Response
      */
-    #[Route('/{id}', name: 'app_admin_ma_cuisine_favorite_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Favorite $favorite): Response
     {
         return $this->render('admin/MaCuisine/favorite/show.html.twig', [
@@ -77,7 +77,7 @@ final class FavoriteController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    #[Route('/{id}/edit', name: 'app_admin_ma_cuisine_favorite_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Favorite $favorite, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(FavoriteType::class, $favorite);
@@ -86,7 +86,7 @@ final class FavoriteController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_admin_ma_cuisine_favorite_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_macuisine_favorite_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/MaCuisine/favorite/edit.html.twig', [
@@ -101,7 +101,7 @@ final class FavoriteController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    #[Route('/{id}', name: 'app_admin_ma_cuisine_favorite_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Favorite $favorite, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete' . $favorite->getId(), $request->getPayload()->getString('_token'))) {
@@ -109,6 +109,6 @@ final class FavoriteController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_admin_ma_cuisine_favorite_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_admin_macuisine_favorite_index', [], Response::HTTP_SEE_OTHER);
     }
 }

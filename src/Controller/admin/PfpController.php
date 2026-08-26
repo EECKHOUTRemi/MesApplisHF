@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\admin\MaCuisine;
+namespace App\Controller\admin;
 
 use App\Handler\ImageHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,31 +9,29 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/macuisine/images', name: 'app_admin_macuisine_images_')]
-/** Galerie admin de toutes les images stockées dans public/uploads/recipes. */
-final class ImagesController extends AbstractController
+#[Route('admin/pfp', name: 'app_admin_pfp_')]
+class PfpController extends AbstractController
 {
     /**
-     * @param string $recipesImagesDirectory Chemin absolu du dossier des images de recettes
+     * @param string $profilesImagesDirectory
      * @return Response
      */
     #[Route(name: 'index', methods: ['GET'])]
     public function index(
-        #[Autowire(param: 'recipes_images_directory')] string $recipesImagesDirectory,
+        #[Autowire(param: 'profile_images_directory')] string $profilesImagesDirectory,
     ): Response {
         $images = [];
 
-        if (is_dir($recipesImagesDirectory)) {
-            foreach (scandir($recipesImagesDirectory) ?: [] as $file) {
+        if (is_dir($profilesImagesDirectory)) {
+            foreach (scandir($profilesImagesDirectory) ?: [] as $file) {
                 if (preg_match('/\.(jpe?g|png|gif|webp|avif)$/i', $file)) {
                     $images[] = $file;
                 }
             }
         }
 
-        return $this->render('admin/MaCuisine/images/index.html.twig', [
+        return $this->render('admin/user/pfp.html.twig', [
             'images' => $images,
         ]);
     }
@@ -41,6 +39,7 @@ final class ImagesController extends AbstractController
     /**
      * @param Request $request La requête HTTP courante
      * @param string $imageToDelete Nom du fichier image à supprimer
+     * @param ImageHandler $imgHandler
      * @return Response
      */
     #[Route('/delete/{imageToDelete}', name: 'delete', methods: ['POST'])]
@@ -48,18 +47,18 @@ final class ImagesController extends AbstractController
     {
         if (!$this->isCsrfTokenValid('delete-image', $request->request->get('_token'))) {
             $this->addFlash('danger', 'Jeton CSRF invalide.');
-            return $this->redirectToRoute('app_admin_macuisine_images_index');
+            return $this->redirectToRoute('app_admin_pfp_index');
         }
 
         $filename = basename($imageToDelete);
 
         try {
-            $imgHandler->removeRecipeImage($filename);
+            $imgHandler->removePfpImage($filename);
             $this->addFlash('success', sprintf('Image « %s » supprimée.', $filename));
         } catch (FileNotFoundException $e) {
             $this->addFlash('danger', sprintf('Image « %s » introuvable.', $filename));
         }
 
-        return $this->redirectToRoute('app_admin_macuisine_images_index');
+        return $this->redirectToRoute('app_admin_pfp_index');
     }
 }

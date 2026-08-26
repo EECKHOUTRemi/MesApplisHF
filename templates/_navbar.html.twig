@@ -37,13 +37,18 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
                             <li><h6 class="dropdown-header">Administration</h6></li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_user_index') }}">
-                                    <i class="bi bi-people-fill"></i> Utilisateurs
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_admin_user_index') }}">
+                                    <i class="bi bi-person-fill"></i> Utilisateurs
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_relationship_index') }}">
-                                    <i class="bi bi-people"></i> Relations
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_admin_pfp_index') }}">
+                                    <i class="bi bi-person-square"></i> Photos de profil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_admin_relationship_index') }}">
+                                    <i class="bi bi-people-fill"></i> Relations
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
@@ -53,22 +58,22 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_ma_cuisine_favorite_index') }}">
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_favorite_index') }}">
                                     <i class="bi bi-star-fill"></i> Favoris
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_macuisine_ingredient_index') }}">
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_ingredient_index') }}">
                                     <i class="bi bi-basket-fill"></i> Ingrédients
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_ma_cuisine_utensil_index') }}">
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_utensil_index') }}">
                                     <i class="bi bi-tools"></i> Ustensiles
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_ma_cuisine_category_index') }}">
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_category_index') }}">
                                     <i class="bi bi-tag-fill"></i> Catégories
                                 </a>
                             </li>

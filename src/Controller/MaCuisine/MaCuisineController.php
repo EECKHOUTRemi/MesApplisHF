@@ -6,6 +6,7 @@ use App\Entity\MaCuisine\Recipe;
 use App\Form\MaCuisine\RecipeType;
 use App\Handler\ImageHandler;
 use App\Handler\RecipeFormHandler;
+use App\Provider\RecipeFeedOptionProvider;
 use App\Repository\MaCuisine\CategoryRepository;
 use App\Repository\MaCuisine\FavoriteRepository;
 use App\Repository\MaCuisine\IngredientRepository;
@@ -21,41 +22,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/macuisine', name:'app_macuisine_'),
-IsGranted('ROLE_USER')]
 /**
  * CRUD des recettes MaCuisine côté utilisateur.
  * L'endpoint AJAX /ajax/ingredients alimente l'autocomplete d'ingrédients dans le formulaire.
  */
+#[Route('/macuisine', name:'app_macuisine_'),
+IsGranted('ROLE_USER')]
 final class MaCuisineController extends AbstractController
 {
-    /**
-     * Options communes du fil (filtres catégories + ustensiles, favoris de l'utilisateur)
-     * injectées dans le template.
-     *
-     * @param CategoryRepository $categoryRepository
-     * @param UtensilRepository $utensilRepository
-     * @param FavoriteRepository $favoriteRepository
-     * @param Recipe[] $recipes
-     * @return array<string, mixed>
-     */
-    private function feedFilterOptions(
-        CategoryRepository $categoryRepository,
-        UtensilRepository $utensilRepository,
-        FavoriteRepository $favoriteRepository,
-        array $recipes
-    ): array {
-        return [
-            'categories' => $categoryRepository->findAll(),
-            'utensils' => array_map(
-                fn ($u) => ['id' => $u->getId(), 'name' => $u->getName()],
-                $utensilRepository->findAll()
-            ),
-            'favoriteIds' => $favoriteRepository->findRecipeIdsForConnectedUser(),
-            'favoriteCounts' => $favoriteRepository->countByRecipes($recipes),
-        ];
-    }
-
     /**
      * Tableau de bord MaCuisine : recettes récentes et compteurs globaux.
      *
@@ -94,7 +68,8 @@ final class MaCuisineController extends AbstractController
         RecipeRepository $recipeRepository,
         CategoryRepository $categoryRepository,
         UtensilRepository $utensilRepository,
-        FavoriteRepository $favoriteRepository
+        FavoriteRepository $favoriteRepository,
+        RecipeFeedOptionProvider $recipeFeedOptionProvider,
     ): Response {
         $query = $request->query->get('q');
         $ingredients = $request->query->all('ingredients');
@@ -133,7 +108,12 @@ final class MaCuisineController extends AbstractController
         return $this->render('MaCuisine/recipe/feed.html.twig', [
             'recipes' => $recipes,
             'mine' => false,
-        ] + $this->feedFilterOptions($categoryRepository, $utensilRepository, $favoriteRepository, $recipes));
+        ] + $recipeFeedOptionProvider->feedFilterOptions(
+            $categoryRepository,
+            $utensilRepository,
+            $favoriteRepository,
+            $recipes
+        ));
     }
 
     /**
@@ -148,14 +128,20 @@ final class MaCuisineController extends AbstractController
         RecipeRepository $recipeRepository,
         CategoryRepository $categoryRepository,
         UtensilRepository $utensilRepository,
-        FavoriteRepository $favoriteRepository
+        FavoriteRepository $favoriteRepository,
+        RecipeFeedOptionProvider $recipeFeedOptionProvider,
     ): Response {
         $recipes = $recipeRepository->findBy(['author' => $this->getUser()]);
 
         return $this->render('MaCuisine/recipe/feed.html.twig', [
             'recipes' => $recipes,
             'mine' => true,
-        ] + $this->feedFilterOptions($categoryRepository, $utensilRepository, $favoriteRepository, $recipes));
+        ] + $recipeFeedOptionProvider->feedFilterOptions(
+            $categoryRepository,
+            $utensilRepository,
+            $favoriteRepository,
+            $recipes
+        ));
     }
 
     /**
@@ -285,6 +271,7 @@ final class MaCuisineController extends AbstractController
      * @param Request $request
      * @param Recipe $recipe
      * @param EntityManagerInterface $entityManager
+     * @param ImageHandler $imgHandler
      * @return Response
      */
     #[Route('/{id}', name: 'recipe_delete', methods: ['POST'])]
@@ -298,7 +285,7 @@ final class MaCuisineController extends AbstractController
             $filename = $recipe->getImage();
             if ($filename) {
                 try {
-                    $imgHandler->removeImage($filename);
+                    $imgHandler->removeRecipeImage($filename);
                 } catch (FileNotFoundException  $th) {
                     $filename = null;
                 }
@@ -328,14 +315,14 @@ final class MaCuisineController extends AbstractController
         } else {
             $rawIngredients = $ingredientRepository->findNameLike($term);
         }
-        $handeledIngredients = [];
+        $handledIngredients = [];
         foreach ($rawIngredients as $ingredient) {
-            array_push($handeledIngredients, [
+            $handledIngredients[] = [
                 'id' => $ingredient->getId(),
                 'name' => $ingredient->getName(),
-            ]);
+            ];
         }
 
-        return $this->json($handeledIngredients);
+        return $this->json($handledIngredients);
     }
 }

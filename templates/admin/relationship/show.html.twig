@@ -8,7 +8,7 @@
  {{ include('_breadcrumb.html.twig', { items: [
      { label: 'Accueil', path: path('app_index') },
      { label: 'Administration' },
-     { label: 'Relations', path: path('app_relationship_index') },
+     { label: 'Relations', path: path('app_admin_relationship_index') },
      { label: 'Relation #' ~ relationship.id },
  ] }) }}
 
@@ -19,7 +19,7 @@
 			</h1>
 			<p class="text-secondary mb-0 small">Détail de la relation entre deux comptes.</p>
 		</div>
-		<a href="{{ path('app_relationship_edit', { id: relationship.id }) }}" class="btn btn-primary">
+		<a href="{{ path('app_admin_relationship_edit', { id: relationship.id }) }}" class="btn btn-primary">
 			<i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Modifier
 		</a>
 	</div>
@@ -59,7 +59,7 @@
 	</div>
 
 	<div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
-		<a href="{{ path('app_relationship_index') }}" class="btn btn-outline-secondary">
+		<a href="{{ path('app_admin_relationship_index') }}" class="btn btn-outline-secondary">
 			<i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Retour à la liste
 		</a>
 		{{ include('admin/relationship/_delete_form.html.twig') }}

@@ -1,5 +1,5 @@
 <form method="post"
-      action="{{ path('app_relationship_delete', { id: relationship.id }) }}"
+      action="{{ path('app_admin_relationship_delete', { id: relationship.id }) }}"
       onsubmit="return confirm('Supprimer définitivement cette relation ? Les conversations liées deviendront en lecture seule.');">
 	<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ relationship.id) }}">
 	<button class="btn btn-outline-danger">
