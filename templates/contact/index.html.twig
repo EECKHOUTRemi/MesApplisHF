@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact{% endblock %}
+
+{% block body %}
+<div class="container d-flex flex-column justify-content-center py-5" style="min-height: calc(100vh - 70px);">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h3 mb-4 text-center">
+                        <i class="bi bi-envelope text-primary"></i>
+                        Contactez-nous
+                    </h1>
+
+                    <p class="text-secondary text-center">
+                        Une question, une suggestion ? Écrivez-nous, nous vous répondrons rapidement.
+                    </p>
+
+                    {% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+                    {{ form_errors(form) }}
+
+                    {{ form_start(form, { action: path('app_contact_send') }) }}
+                        {% include '_required_legend.html.twig' with { form: form } only %}
+                        {{ form_row(form.email, { label: 'Adresse e-mail' }) }}
+                        {{ form_row(form.subject, { label: 'Sujet' }) }}
+                        {{ form_row(form.content, { label: 'Message', attr: { rows: 6 } }) }}
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-send"></i> Envoyer
+                        </button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

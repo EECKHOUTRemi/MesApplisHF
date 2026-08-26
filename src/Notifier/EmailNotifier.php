@@ -3,6 +3,7 @@
 namespace App\Notifier;
 
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -10,27 +11,41 @@ use Symfony\Component\Mime\Address;
 class EmailNotifier
 {
     private MailerInterface $mailer;
+    private string $defaultFromAddress;
+    private string $defaultFromName;
+    private string $contactAddress;
+    private string $baseUrl;
 
     /**
      * @param MailerInterface $mailer
+     * @param string $defaultFromAddress
+     * @param string $defaultFromName
+     * @param string $contactAddress
+     * @param string $baseUrl
      */
-    public function __construct(MailerInterface $mailer)
-    {
+    public function __construct(
+        MailerInterface $mailer,
+        #[Autowire(env: 'MAILER_FROM_ADDRESS')] string $defaultFromAddress,
+        #[Autowire(env: 'MAILER_FROM_NAME')] string $defaultFromName,
+        #[Autowire(env: 'MAILER_CONTACT_ADDRESS')] string $contactAddress,
+        #[Autowire(env: 'APP_BASE_URL')] string $baseUrl,
+    ) {
         $this->mailer = $mailer;
+        $this->defaultFromAddress = $defaultFromAddress;
+        $this->defaultFromName = $defaultFromName;
+        $this->contactAddress = $contactAddress;
+        $this->baseUrl = $baseUrl;
     }
 
     private static string $signature = "L'équipe de MesApplisHF";
     private static string $application = "MesApplisHF";
-    private static string $defaultFromAddress = 'register@mesapplishf.fr';
-    private static string $defaultFromName = 'MesApplisHF';
 
     /**
      * @param list<string> $to
      * @param string $subject
-     * @param string $template
      * @param string $content
      * @param array{address: string, name: string}|null $from
-     * @param string|null $attachmentPath
+     * @param string|null $replyTo
      *
      * @return void
      * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
@@ -38,15 +53,14 @@ class EmailNotifier
     private function sendEmail(
         array $to,
         string $subject,
-        string $template,
         string $content,
         ?array $from = null,
-        ?string $attachmentPath = null
+        ?string $replyTo = null
     ): void {
         $email = (new TemplatedEmail())
             ->to(...$to)
             ->subject($subject)
-            ->htmlTemplate($template)
+            ->htmlTemplate('emails/notification.html.twig')
             ->context([
                 'content' => $content,
                 'signature' => self::$signature,
@@ -57,11 +71,11 @@ class EmailNotifier
         if ($from) {
             $email->from(new Address($from['address'], $from['name']));
         } else {
-            $email->from(new Address(self::$defaultFromAddress, self::$defaultFromName));
+            $email->from(new Address($this->defaultFromAddress, $this->defaultFromName));
         }
 
-        if ($attachmentPath) {
-            $email->attachFromPath($attachmentPath, basename($attachmentPath));
+        if ($replyTo) {
+            $email->replyTo(new Address($replyTo));
         }
 
         $this->mailer->send($email);
@@ -90,7 +104,6 @@ class EmailNotifier
         $this->sendEmail(
             [$to],
             'Tentative de création de compte',
-            'emails/notification.html.twig',
             $content,
         );
     }
@@ -104,24 +117,46 @@ class EmailNotifier
     public function sendPasswordChangeRequestEmail(string $to, string $password): void
     {
         $content = '<p>Bonjour,</p>
-            <p>Un administrateur a créé un compte avec votre adresse mail. Voici votre mot de passe temporaire : '
-            . $password . '.</p>
+            <p>Un administrateur a créé un compte avec votre adresse mail. Voici votre mot de passe temporaire :
+            <strong>' . $password . '</strong>.</p>
             <p>Nous vous recommandons de le changer en vous connectant via
-            <a href="https://mesapplishf.fr/login">ce lien</a>, en cliquant sur l\'icône de profil en haut à droite
-            puis en allant dans "Modifier le profil". Vous trouverez une section permettant de changer de mot de passe
-            où il vous sera demandé de renseigner votre mot de passe actuel (présent ci-dessus) puis de renseigner
-            deux fois votre nouveau mot de passe.</p>
+            <a href="' . $this->baseUrl . '/login">ce lien</a>, en cliquant sur l\'icône de profil en haut à droite
+            puis en allant dans <strong>Modifier le profil</strong>. Vous trouverez une section permettant de changer
+            de mot de passe où il vous sera demandé de renseigner votre mot de passe actuel (présent ci-dessus) puis de
+            renseigner deux fois votre nouveau mot de passe.</p>
             <p>À la suite de cette démarche, vous pourrez modifier votre profil plus précisemment et commencer à
             naviguer à travers nos divers outils.</p>
-            <p>Si c\'est une erreur, veuillez nous contacter à
-            <a href="mailto:contact@mesapplishf.fr">contact@mesapplishf.fr</a>.</p>
+            <p>Si c\'est une erreur, veuillez nous contacter via
+            <a href="' . $this->baseUrl . '/contact">ce lien de contact</a>.</p>
         ';
 
         $this->sendEmail(
             [$to],
             'Nouveau compte créé',
-            'emails/notification.html.twig',
             $content,
+        );
+    }
+
+    /**
+     * Transmet un message envoyé depuis le formulaire de contact à l'équipe MesApplisHF.
+     *
+     * @param string $from
+     * @param string $subject
+     * @param string $message
+     * @return void
+     * @throws TransportExceptionInterface
+     */
+    public function sendContactEmail(string $from, string $subject, string $message): void
+    {
+        $content = '<p>Message envoyé par <strong>' . htmlspecialchars($from, ENT_QUOTES) . '</strong> :</p>
+            <p>' . nl2br(htmlspecialchars($message, ENT_QUOTES)) . '</p>';
+
+        $this->sendEmail(
+            [$this->contactAddress],
+            'Formulaire de contact : ' . $subject,
+            $content,
+            ['name' => $this->defaultFromName, 'address' => $this->contactAddress],
+            $from,
         );
     }
 }
