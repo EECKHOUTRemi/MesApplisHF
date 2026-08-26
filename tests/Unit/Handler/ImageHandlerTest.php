@@ -3,13 +3,18 @@
 namespace App\Tests\Unit\Handler;
 
 use App\Handler\ImageHandler;
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
+use Imagine\Image\Palette\RGB;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Teste ImageHandler : suppression d'un fichier présent, exception si le fichier est absent,
- * pour les deux répertoires gérés (recettes et photos de profil).
+ * pour les deux répertoires gérés (recettes et photos de profil), et la compression/redimensionnement
+ * effectué par compressAndStore.
  */
 final class ImageHandlerTest extends TestCase
 {
@@ -21,6 +26,9 @@ final class ImageHandlerTest extends TestCase
 
     private ImageHandler $handler;
 
+    /** @var list<string> Chemins des fichiers temporaires créés par un test, nettoyés en fin de test. */
+    private array $tempFiles = [];
+
     protected function setUp(): void
     {
         $this->filesystem = new Filesystem();
@@ -28,12 +36,36 @@ final class ImageHandlerTest extends TestCase
         $this->recipesDirectory = sys_get_temp_dir() . '/image_handler_test_recipes_' . $suffix;
         $this->pfpDirectory = sys_get_temp_dir() . '/image_handler_test_pfp_' . $suffix;
         $this->filesystem->mkdir([$this->recipesDirectory, $this->pfpDirectory]);
-        $this->handler = new ImageHandler($this->filesystem, $this->recipesDirectory, $this->pfpDirectory);
+        $this->handler = new ImageHandler(
+            $this->filesystem,
+            $this->recipesDirectory,
+            $this->pfpDirectory,
+            new Imagine(),
+        );
     }
 
     protected function tearDown(): void
     {
-        $this->filesystem->remove([$this->recipesDirectory, $this->pfpDirectory]);
+        $this->filesystem->remove([$this->recipesDirectory, $this->pfpDirectory, ...$this->tempFiles]);
+        $this->tempFiles = [];
+    }
+
+    /**
+     * Crée un UploadedFile de test contenant une image PNG unie de la taille donnée.
+     *
+     * @param int $width
+     * @param int $height
+     * @return UploadedFile
+     */
+    private function uploadedImage(int $width, int $height): UploadedFile
+    {
+        $image = (new Imagine())->create(new Box($width, $height), (new RGB())->color('#3366ff'));
+        $path = tempnam(sys_get_temp_dir(), 'image_handler_src_') . '.png';
+        $image->save($path);
+        $this->tempFiles[] = $path;
+
+        // dernier argument à true : mode test, court-circuite la vérification is_uploaded_file()
+        return new UploadedFile($path, 'source.png', 'image/png', null, true);
     }
 
     public function testRemoveRecipeImageDeletesExistingFile(): void
@@ -89,5 +121,53 @@ final class ImageHandlerTest extends TestCase
         } catch (FileNotFoundException) {
             $this->assertFileExists($this->pfpDirectory . '/avatar.png');
         }
+    }
+
+    public function testCompressAndStoreDownscalesAnOversizedImage(): void
+    {
+        $upload = $this->uploadedImage(3000, 2000);
+
+        $this->handler->compressAndStore($upload, $this->recipesDirectory, 'big.jpg', 1600);
+
+        $path = $this->recipesDirectory . '/big.jpg';
+        $this->assertFileExists($path);
+
+        $size = (new Imagine())->open($path)->getSize();
+        // ratio conservé, le plus grand côté (largeur) est ramené à maxDimension
+        $this->assertSame(1600, $size->getWidth());
+        $this->assertSame(1067, $size->getHeight());
+    }
+
+    public function testCompressAndStoreDoesNotUpscaleASmallImage(): void
+    {
+        $upload = $this->uploadedImage(200, 100);
+
+        $this->handler->compressAndStore($upload, $this->recipesDirectory, 'small.jpg', 1600);
+
+        $size = (new Imagine())->open($this->recipesDirectory . '/small.jpg')->getSize();
+        $this->assertSame(200, $size->getWidth());
+        $this->assertSame(100, $size->getHeight());
+    }
+
+    public function testCompressAndStoreCreatesTheDestinationDirectory(): void
+    {
+        $upload = $this->uploadedImage(50, 50);
+        $missingDir = $this->recipesDirectory . '/nested';
+
+        $this->handler->compressAndStore($upload, $missingDir, 'photo.jpg');
+
+        $this->assertFileExists($missingDir . '/photo.jpg');
+    }
+
+    public function testCompressAndStoreShrinksFileSize(): void
+    {
+        // grande image unie : très compressible, la sortie doit être nettement plus légère
+        $upload = $this->uploadedImage(2400, 2400);
+        $originalSize = filesize($upload->getPathname());
+
+        $this->handler->compressAndStore($upload, $this->pfpDirectory, 'avatar.jpg', 800, 70);
+
+        $compressedSize = filesize($this->pfpDirectory . '/avatar.jpg');
+        $this->assertLessThan($originalSize, $compressedSize);
     }
 }

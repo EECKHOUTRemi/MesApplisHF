@@ -16,8 +16,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 final class SettingsControllerTest extends AppWebTestCase
 {
-    private const INDEX_PATH = '/settings';
-    private const PICTURE_PATH = '/settings/photo';
+    private const string INDEX_PATH = '/settings';
+    private const string PICTURE_PATH = '/settings/photo';
 
     private Filesystem $filesystem;
 
@@ -47,8 +47,9 @@ final class SettingsControllerTest extends AppWebTestCase
     }
 
     /**
-     * Construit un upload PNG 1x1 valide : la contrainte File vérifie le type réel
-     * du fichier, on a donc besoin d'octets PNG authentiques, pas d'un fichier vide.
+     * Construit un upload PNG 4x4 valide : la contrainte File vérifie le type réel
+     * du fichier et ImageHandler::compressAndStore() le décode réellement via GD,
+     * on a donc besoin d'octets PNG authentiques que GD sait ouvrir, pas d'un fichier vide.
      *
      * @param string $originalName
      * @return UploadedFile
@@ -56,7 +57,8 @@ final class SettingsControllerTest extends AppWebTestCase
     private function pngUpload(string $originalName = 'photo.png'): UploadedFile
     {
         $bytes = base64_decode(
-            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M8AAAMBAQDJ/pLvAAAAAElFTkSuQmCC'
+            'iVBORw0KGgoAAAANSUhEUgAAAAQAAAAEAQMAAACTPww9AAAAA1BMVEU8Wv/nXXt9AAAACXBIWXMAAA7EAAAOxAGVKw4b'
+            . 'AAAAC0lEQVQImWNggAAAAAgAAa9T6iIAAAAASUVORK5CYII='
         );
         $path = tempnam(sys_get_temp_dir(), 'pfp_png_');
         file_put_contents($path, $bytes);

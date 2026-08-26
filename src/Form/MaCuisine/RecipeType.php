@@ -43,7 +43,7 @@ class RecipeType extends AbstractType
                 'required' => false,
                 'constraints' => [
                     new Assert\File(
-                        maxSize: '1024k',
+                        maxSize: '10240k',
                         extensions: [
                             // Certains convertisseurs (ex. convertio.co) écrivent l'AVIF avec un
                             // major_brand ISOBMFF générique ; libmagic le détecte alors comme HEIF.

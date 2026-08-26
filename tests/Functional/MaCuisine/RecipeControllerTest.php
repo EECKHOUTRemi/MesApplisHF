@@ -216,8 +216,9 @@ class RecipeControllerTest extends AppWebTestCase
     }
 
     /**
-     * Construit un upload PNG 1x1 valide : la contrainte File vérifie le type réel
-     * du fichier, on a donc besoin d'octets PNG authentiques, pas d'un fichier vide.
+     * Construit un upload PNG 4x4 valide : la contrainte File vérifie le type réel
+     * du fichier et ImageHandler::compressAndStore() le décode réellement via GD,
+     * on a donc besoin d'octets PNG authentiques que GD sait ouvrir, pas d'un fichier vide.
      *
      * @param string $originalName
      * @return UploadedFile
@@ -225,13 +226,32 @@ class RecipeControllerTest extends AppWebTestCase
     private function pngUpload(string $originalName = 'photo.png'): UploadedFile
     {
         $bytes = base64_decode(
-            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M8AAAMBAQDJ/pLvAAAAAElFTkSuQmCC'
+            'iVBORw0KGgoAAAANSUhEUgAAAAQAAAAEAQMAAACTPww9AAAAA1BMVEU8Wv/nXXt9AAAACXBIWXMAAA7EAAAOxAGVKw4b'
+            . 'AAAAC0lEQVQImWNggAAAAAgAAa9T6iIAAAAASUVORK5CYII='
         );
         $path = tempnam(sys_get_temp_dir(), 'recipe_png_');
         file_put_contents($path, $bytes);
 
         // dernier argument à true : mode test, court-circuite la vérification is_uploaded_file()
         return new UploadedFile($path, $originalName, 'image/png', null, true);
+    }
+
+    /**
+     * Construit un upload dont l'en-tête PNG passe la contrainte File (basée sur getimagesize/finfo)
+     * mais que le décodeur GD refuse d'ouvrir : sert à déclencher la RuntimeException
+     * d'ImageHandler::compressAndStore() sans être bloqué en amont par la validation du formulaire.
+     *
+     * @return UploadedFile
+     */
+    private function corruptPngUpload(): UploadedFile
+    {
+        $bytes = base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M8AAAMBAQDJ/pLvAAAAAElFTkSuQmCC'
+        );
+        $path = tempnam(sys_get_temp_dir(), 'recipe_corrupt_png_');
+        file_put_contents($path, $bytes);
+
+        return new UploadedFile($path, 'corrompue.png', 'image/png', null, true);
     }
 
     public function testNewCreatesRecipeWithIngredientsAndUtensils(): void
@@ -536,7 +556,7 @@ class RecipeControllerTest extends AppWebTestCase
         $this->assertFileExists($storedFile);
 
         // nettoyage du fichier déposé pendant le test
-        (new Filesystem())->remove($storedFile);
+        new Filesystem()->remove($storedFile);
     }
 
     public function testEditReplacesImageAndRemovesOldFile(): void
@@ -584,5 +604,87 @@ class RecipeControllerTest extends AppWebTestCase
         $this->assertFileExists($dir . '/' . $newImage);
 
         $filesystem->remove($dir . '/' . $newImage);
+    }
+
+    public function testNewWithInvalidImageShowsFlashAndCreatesRecipeWithoutImage(): void
+    {
+        $user = $this->createUser();
+        $this->login($user);
+
+        $name = $this->uniqueName('BadImg-');
+        $this->client->request(
+            'POST',
+            self::INDEX_PATH . '/new',
+            [
+                'recipe' => [
+                    '_token' => $this->csrfToken(self::INDEX_PATH . '/new'),
+                    'name' => $name,
+                    'description' => 'Recette de test avec image corrompue.',
+                    'category' => '',
+                ],
+            ],
+            [
+                'recipe' => ['image' => $this->corruptPngUpload()],
+            ],
+        );
+
+        // le fichier ne passe pas le décodage GD, mais le reste de la recette est valide :
+        // la création aboutit quand même, sans image.
+        $this->assertResponseRedirects(self::REDIRECT_PATH);
+
+        $this->em()->clear();
+        $recipe = $this->em()->getRepository(Recipe::class)->findOneBy(['name' => $name]);
+        $this->assertNotNull($recipe);
+        $this->assertNull($recipe->getImage());
+
+        $this->client->followRedirect();
+        $this->assertSelectorTextContains('.alert-danger', "n'est pas une image valide");
+    }
+
+    public function testEditWithInvalidImageShowsFlashAndKeepsOldImage(): void
+    {
+        $user = $this->createUser();
+        $this->login($user);
+
+        $dir = $this->recipesImagesDirectory();
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($dir);
+        $oldImage = 'old_' . bin2hex(random_bytes(6)) . '.png';
+        file_put_contents($dir . '/' . $oldImage, 'fake-old-image');
+
+        $recipe = $this->createRecipe($user, $this->uniqueName('EditBadImg-'));
+        $recipe->setImage($oldImage);
+        $this->em()->flush();
+
+        $editPath = self::INDEX_PATH . '/' . $recipe->getId() . '/edit';
+        $this->client->request(
+            'POST',
+            $editPath,
+            [
+                'recipe' => [
+                    '_token' => $this->csrfToken($editPath),
+                    'name' => $recipe->getName(),
+                    'description' => $recipe->getDescription(),
+                    'category' => '',
+                ],
+            ],
+            [
+                'recipe' => ['image' => $this->corruptPngUpload()],
+            ],
+        );
+
+        $this->assertResponseRedirects(self::INDEX_PATH . '/' . $recipe->getId());
+
+        $this->em()->clear();
+        $reloaded = $this->em()->find(Recipe::class, $recipe->getId());
+        // l'échec de décodage a lieu avant toute suppression de l'ancien fichier :
+        // l'image d'origine est conservée, ni écrasée ni perdue.
+        $this->assertSame($oldImage, $reloaded->getImage());
+        $this->assertFileExists($dir . '/' . $oldImage);
+
+        $this->client->followRedirect();
+        $this->assertSelectorTextContains('.alert-danger', "n'est pas une image valide");
+
+        $filesystem->remove($dir . '/' . $oldImage);
     }
 }
