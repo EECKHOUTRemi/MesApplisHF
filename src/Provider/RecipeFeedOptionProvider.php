@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Handler;
+namespace App\Provider;
 
 use App\Entity\MaCuisine\Recipe;
 use App\Repository\MaCuisine\CategoryRepository;
