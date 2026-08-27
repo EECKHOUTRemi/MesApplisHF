@@ -5,12 +5,11 @@
 {% block body %}
 <div class="container py-4" style="max-width: 1100px;">
 
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb mb-0 small">
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Recettes</li>
-        </ol>
-    </nav>
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Administration' },
+        { label: 'Recettes' },
+    ] }) }}
 
     <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
         <div>
@@ -30,6 +29,8 @@
                         <th scope="col" style="width: 70px;">#</th>
                         <th scope="col">Nom</th>
                         <th scope="col" class="d-none d-md-table-cell">Description</th>
+                        <th scope="col" class="d-none d-lg-table-cell" style="width: 140px;">Auteur</th>
+                        <th scope="col" class="d-none d-lg-table-cell" style="width: 140px;">Catégorie</th>
                         <th scope="col" class="d-none d-lg-table-cell" style="width: 150px;">Créée le</th>
                         <th scope="col" class="d-none d-lg-table-cell" style="width: 150px;">Mise à jour</th>
                         <th scope="col" class="text-end" style="width: 140px;">Actions</th>
@@ -42,6 +43,12 @@
                         <td class="fw-semibold">{{ recipe.name }}</td>
                         <td class="d-none d-md-table-cell text-secondary">
                             {{ recipe.description|length > 80 ? recipe.description|slice(0, 80) ~ '…' : recipe.description }}
+                        </td>
+                        <td class="d-none d-lg-table-cell text-secondary small">
+                            {{ recipe.author ? recipe.author.username : '—' }}
+                        </td>
+                        <td class="d-none d-lg-table-cell text-secondary small">
+                            {{ recipe.category ? recipe.category.name : '—' }}
                         </td>
                         <td class="d-none d-lg-table-cell text-secondary small">
                             {{ recipe.createdAt ? recipe.createdAt|date('d/m/Y H:i') : '—' }}
@@ -60,7 +67,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6" class="text-center text-secondary py-4">
+                        <td colspan="8" class="text-center text-secondary py-4">
                             <i class="bi bi-inbox d-block fs-3 mb-2" aria-hidden="true"></i>
                             Aucune recette enregistrée.
                         </td>

@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau mot de passe{% endblock %}
+
+{% block body %}
+<div class="container d-flex flex-column justify-content-center py-5" style="min-height: calc(100vh - 70px);">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h3 mb-4 text-center">
+                        <i class="bi bi-shield-lock text-primary"></i>
+                        Nouveau mot de passe
+                    </h1>
+
+                    <p class="text-secondary">
+                        Choisissez un nouveau mot de passe pour votre compte.
+                    </p>
+
+                    {% form_theme resetForm 'bootstrap_5_layout.html.twig' %}
+
+                    {{ form_errors(resetForm) }}
+
+                    {{ form_start(resetForm) }}
+                        <div class="mb-3" data-controller="password-toggle">
+                            {{ form_label(resetForm.plainPassword.first, 'Nouveau mot de passe') }}
+                            <div class="input-group">
+                                {{ form_widget(resetForm.plainPassword.first, { attr: { 'data-password-toggle-target': 'input' } }) }}
+                                <button type="button" class="btn btn-outline-secondary" aria-label="Afficher le mot de passe" data-password-toggle-target="button" data-action="click->password-toggle#toggle">
+                                    <i class="bi bi-eye" aria-hidden="true" data-password-toggle-target="icon"></i>
+                                </button>
+                            </div>
+                            {{ form_errors(resetForm.plainPassword.first) }}
+                        </div>
+
+                        <div class="mb-3" data-controller="password-toggle">
+                            {{ form_label(resetForm.plainPassword.second, 'Retapez votre mot de passe') }}
+                            <div class="input-group">
+                                {{ form_widget(resetForm.plainPassword.second, { attr: { 'data-password-toggle-target': 'input' } }) }}
+                                <button type="button" class="btn btn-outline-secondary" aria-label="Afficher le mot de passe" data-password-toggle-target="button" data-action="click->password-toggle#toggle">
+                                    <i class="bi bi-eye" aria-hidden="true" data-password-toggle-target="icon"></i>
+                                </button>
+                            </div>
+                            {{ form_errors(resetForm.plainPassword.second) }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Réinitialiser le mot de passe
+                        </button>
+                    {{ form_end(resetForm) }}
+                </div>
+                <div class="text-center pb-4 px-4">
+                    <a href="{{ path('app_login') }}">
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                        Retour à la connexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

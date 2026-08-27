@@ -10,10 +10,13 @@ use App\Repository\MaCuisine\IngredientRepository;
 use App\Repository\MaCuisine\UtensilRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Imagine\Exception\RuntimeException;
+use Random\RandomException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Orchestre la persistance d'une recette depuis le formulaire utilisateur.
@@ -28,6 +31,7 @@ class RecipeFormHandler
     private UtensilRepository $utensilRepository;
     private TokenStorageInterface $tokenStorage;
     private string $recipesImagesDirectory;
+    private ImageHandler $imageHandler;
 
     /**
      * @param EntityManagerInterface $em
@@ -35,6 +39,7 @@ class RecipeFormHandler
      * @param UtensilRepository $utensilRepository
      * @param TokenStorageInterface $tokenStorage
      * @param string $recipesImagesDirectory Chemin absolu du dossier de stockage des images de recettes
+     * @param ImageHandler $imageHandler
      */
     public function __construct(
         EntityManagerInterface $em,
@@ -42,23 +47,25 @@ class RecipeFormHandler
         UtensilRepository $utensilRepository,
         TokenStorageInterface $tokenStorage,
         #[Autowire(param: 'recipes_images_directory')] string $recipesImagesDirectory,
+        ImageHandler $imageHandler,
     ) {
         $this->em = $em;
         $this->ingredientRepository = $ingredientRepository;
         $this->utensilRepository = $utensilRepository;
         $this->tokenStorage = $tokenStorage;
         $this->recipesImagesDirectory = $recipesImagesDirectory;
+        $this->imageHandler = $imageHandler;
     }
 
     /**
      * Retourne l'utilisateur courant depuis le token de sécurité, ou null si non authentifié.
      *
-     * @return \Symfony\Component\Security\Core\User\UserInterface|null
+     * @return UserInterface|null
      */
-    private function getUser()
+    private function getUser(): UserInterface|null
     {
         $token = $this->tokenStorage->getToken();
-        return $token ? $token->getUser() : null;
+        return $token?->getUser();
     }
 
     /**
@@ -68,7 +75,7 @@ class RecipeFormHandler
      * @param array<string, mixed> $submittedData Données brutes de la requête (clés `recipe` et `extras`)
      * @return void
      */
-    public function persistAndFlush(Recipe $recipe, array $submittedData)
+    public function persistAndFlush(Recipe $recipe, array $submittedData): void
     {
         $this->stampRecipe($recipe);
         $this->em->persist($recipe);
@@ -79,9 +86,7 @@ class RecipeFormHandler
             $this->syncIngredientRefs($recipe, $submittedData['extras'] ?? []);
         }
 
-        if (isset($submittedData['recipe']['utensil'])) {
-            $this->syncUtensils($recipe, $submittedData['recipe']['utensil'] ?? []);
-        }
+        $this->syncUtensils($recipe, $submittedData['recipe']['utensil'] ?? []);
 
         $this->em->flush();
     }
@@ -144,7 +149,7 @@ class RecipeFormHandler
             $id = $ingredientObj->getId();
             $submittedIds[$id] = true;
 
-            $ref = $existing[$id] ?? (new RefRecipeIngredient())
+            $ref = $existing[$id] ?? new RefRecipeIngredient()
                 ->setRecipe($recipe)
                 ->setIngredient($ingredientObj);
 
@@ -203,7 +208,7 @@ class RecipeFormHandler
      * @param mixed $utensilValue
      * @return Utensil|null
      */
-    private function resolveUtensil($utensilValue): ?Utensil
+    private function resolveUtensil(mixed $utensilValue): ?Utensil
     {
         if (is_numeric($utensilValue)) {
             return $this->utensilRepository->find($utensilValue);
@@ -222,24 +227,27 @@ class RecipeFormHandler
      * Déplace l'image téléversée dans le dossier des recettes, enregistre son nom
      * sur la recette, et supprime l'ancien fichier le cas échéant (mise à jour).
      *
-     * @param UploadedFile $imageFile    Fichier image validé issu du formulaire
-     * @param Recipe       $recipe       Recette à mettre à jour avec le nouveau nom de fichier
-     * @param string|null  $currentImage Nom de l'image à remplacer, ou null lors d'une création
+     * @param UploadedFile $imageFile Fichier image validé issu du formulaire
+     * @param Recipe $recipe Recette à mettre à jour avec le nouveau nom de fichier
+     * @param string|null $currentImage Nom de l'image à remplacer, ou null lors d'une création
      * @return void
+     * @throws RandomException
+     * @throws RuntimeException Si le fichier fourni n'est pas une image valide (échec de décodage GD).
      */
-    public function addImage(UploadedFile $imageFile, Recipe $recipe, ?string $currentImage = null): void
-    {
-        $filesystem = new Filesystem();
-        $filesystem->mkdir($this->recipesImagesDirectory);
-
-        if ($currentImage !== null) {
-            $filesystem->remove($this->recipesImagesDirectory . '/' . $currentImage);
-        }
-
+    public function addImage(
+        UploadedFile $imageFile,
+        Recipe $recipe,
+        ?string $currentImage = null
+    ): void {
         $extension = strtolower((string) ($imageFile->guessExtension() ?:
             $imageFile->getClientOriginalExtension() ?: 'bin'));
         $newFilename = bin2hex(random_bytes(16)) . '.' . $extension;
-        $imageFile->move($this->recipesImagesDirectory, $newFilename);
+        $this->imageHandler->compressAndStore($imageFile, $this->recipesImagesDirectory, $newFilename);
+
+        if ($currentImage !== null) {
+            (new Filesystem())->remove($this->recipesImagesDirectory . '/' . $currentImage);
+        }
+
         $recipe->setImage($newFilename);
     }
 }

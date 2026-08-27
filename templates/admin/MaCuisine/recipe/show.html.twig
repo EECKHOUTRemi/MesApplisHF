@@ -2,16 +2,20 @@
 
 {% block title %}{{ recipe.name }} · Admin MaCuisine{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {{ include('MaCuisine/recipe/_meta_styles.html.twig') }}
+{% endblock %}
+
 {% block body %}
 <div class="container py-4" style="max-width: 720px;">
 
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb mb-0 small">
-            <li class="breadcrumb-item"><a href="{{ path('app_macuisine_index') }}" class="text-decoration-none">MaCuisine</a></li>
-            <li class="breadcrumb-item"><a href="{{ path('app_admin_macuisine_recipe_index') }}" class="text-decoration-none">Recettes</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ recipe.name }}</li>
-        </ol>
-    </nav>
+    {{ include('_breadcrumb.html.twig', { items: [
+        { label: 'Accueil', path: path('app_index') },
+        { label: 'Administration' },
+        { label: 'Recettes', path: path('app_admin_macuisine_recipe_index') },
+        { label: recipe.name },
+    ] }) }}
 
     <div class="d-flex align-items-center justify-content-between gap-3 mb-4 flex-wrap">
         <h1 class="h4 mb-0 fw-bold"><i class="bi bi-journal-text me-2" aria-hidden="true"></i>{{ recipe.name }}</h1>
@@ -37,8 +41,37 @@
                         <td style="white-space: pre-line;">{{ recipe.description }}</td>
                     </tr>
                     <tr>
+                        <th scope="row" class="text-secondary">Image</th>
+                        <td>
+                            {% set imgPath = recipe.image ? 'uploads/recipes/' ~ recipe.image : null %}
+                            {% if imgPath and imgPath is ondisk %}
+                                <img src="{{ asset(imgPath) }}" alt="{{ recipe.name }}" class="rounded" width="96" height="96" style="object-fit: cover;">
+                            {% else %}
+                                <span class="text-secondary">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="text-secondary">Auteur</th>
                         <td>{{ recipe.author ? recipe.author.username : '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-secondary">Catégorie</th>
+                        <td>{{ recipe.category ? recipe.category.name : '—' }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-secondary">Source</th>
+                        <td>{{ recipe.source|default('—') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-secondary">Détails</th>
+                        <td class="d-flex flex-wrap gap-2">
+                            {% if recipe.portions or recipe.time or recipe.difficulty or recipe.cost %}
+                                {{ include('MaCuisine/recipe/_meta_pills.html.twig', { recipe: recipe }) }}
+                            {% else %}
+                                <span class="text-secondary">—</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr>
                         <th scope="row" class="text-secondary">Créée le</th>

@@ -13,8 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/macuisine/utensil'),
-IsGranted('ROLE_ADMIN')]
+#[Route('/admin/macuisine/utensil', name: 'app_admin_macuisine_utensil_')]
 /** CRUD admin des ustensiles MaCuisine. */
 final class UtensilController extends AbstractController
 {
@@ -22,7 +21,7 @@ final class UtensilController extends AbstractController
      * @param UtensilRepository $utensilRepository
      * @return Response
      */
-    #[Route(name: 'app_admin_ma_cuisine_utensil_index', methods: ['GET'])]
+    #[Route(name: 'index', methods: ['GET'])]
     public function index(UtensilRepository $utensilRepository): Response
     {
         return $this->render('admin/MaCuisine/utensil/index.html.twig', [
@@ -30,7 +29,7 @@ final class UtensilController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_admin_ma_cuisine_utensil_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $utensil = new Utensil();
@@ -43,7 +42,7 @@ final class UtensilController extends AbstractController
             $entityManager->persist($utensil);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_admin_ma_cuisine_utensil_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_macuisine_utensil_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/MaCuisine/utensil/new.html.twig', [
@@ -56,7 +55,7 @@ final class UtensilController extends AbstractController
      * @param Utensil $utensil
      * @return Response
      */
-    #[Route('/{id}', name: 'app_admin_ma_cuisine_utensil_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(Utensil $utensil): Response
     {
         return $this->render('admin/MaCuisine/utensil/show.html.twig', [
@@ -70,7 +69,7 @@ final class UtensilController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    #[Route('/{id}/edit', name: 'app_admin_ma_cuisine_utensil_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Utensil $utensil, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(UtensilType::class, $utensil);
@@ -80,7 +79,7 @@ final class UtensilController extends AbstractController
             $utensil->setUpdatedAt(new DateTimeImmutable());
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_admin_ma_cuisine_utensil_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_macuisine_utensil_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/MaCuisine/utensil/edit.html.twig', [
@@ -95,7 +94,7 @@ final class UtensilController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @return Response
      */
-    #[Route('/{id}', name: 'app_admin_ma_cuisine_utensil_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Utensil $utensil, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete' . $utensil->getId(), $request->getPayload()->getString('_token'))) {
@@ -103,6 +102,6 @@ final class UtensilController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_admin_ma_cuisine_utensil_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_admin_macuisine_utensil_index', [], Response::HTTP_SEE_OTHER);
     }
 }

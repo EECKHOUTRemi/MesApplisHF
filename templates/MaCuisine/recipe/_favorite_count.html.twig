@@ -1,0 +1,12 @@
+{# Mention du nombre d'utilisateurs ayant mis la recette en favori.
+   Attend `count` (entier). Le pluriel du verbe et du sujet suit le nombre. #}
+<span class="favorite-count text-secondary small">
+    <i class="bi bi-star-fill text-warning me-1" aria-hidden="true"></i>
+    {%- if count == 0 %}
+        Personne n'a encore mis cette recette en favoris
+    {%- elseif count == 1 %}
+        1 utilisateur a mis cette recette en favoris
+    {%- else %}
+        {{ count }} utilisateurs ont mis cette recette en favoris
+    {%- endif %}
+</span>

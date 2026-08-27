@@ -12,8 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/macuisine/recipe'),
-IsGranted('ROLE_ADMIN')]
+#[Route('/admin/macuisine/recipe')]
 /** CRUD admin des recettes MaCuisine (formulaire simplifié sans gestion d'ingrédients JS). */
 final class RecipeAdminController extends AbstractController
 {

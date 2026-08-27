@@ -23,18 +23,30 @@ class RecipeRepository extends ServiceEntityRepository
     }
 
     /**
-     * Recherche des recettes par nom et/ou filtres (ingrédients, ustensiles, catégories).
-     * Les filtres se combinent en ET ; à l'intérieur d'un filtre multivalué, une recette
-     * correspond dès qu'elle contient l'un des éléments sélectionnés.
+     * Recherche des recettes par nom et/ou filtres (ingrédients, ustensiles, catégories,
+     * difficulté, budget, temps). Les filtres se combinent en ET ; à l'intérieur d'un filtre
+     * multivalué, une recette correspond dès qu'elle contient l'un des éléments sélectionnés.
+     * Difficulté, budget et temps sont des plafonds : une recette sans valeur renseignée
+     * n'est retenue que si le filtre correspondant n'est pas utilisé.
      *
      * @param string|null $query
      * @param int[]|null $ingredients
      * @param int[]|null $utensils
      * @param int[]|null $category
+     * @param int|null $maxDifficulty
+     * @param int|null $maxCost
+     * @param int|null $maxTime
      * @return Recipe[]
      */
-    public function findWithQuery(?string $query, ?array $ingredients, ?array $utensils, ?array $category): array
-    {
+    public function findWithQuery(
+        ?string $query,
+        ?array $ingredients,
+        ?array $utensils,
+        ?array $category,
+        ?int $maxDifficulty = null,
+        ?int $maxCost = null,
+        ?int $maxTime = null
+    ): array {
         $qb = $this->createQueryBuilder('r');
 
         if ($query !== null && $query !== '') {
@@ -57,6 +69,21 @@ class RecipeRepository extends ServiceEntityRepository
         if ($category) {
             $qb->andWhere('IDENTITY(r.category) IN (:category)')
                 ->setParameter('category', $category);
+        }
+
+        if ($maxDifficulty !== null) {
+            $qb->andWhere('r.difficulty <= :maxDifficulty')
+                ->setParameter('maxDifficulty', $maxDifficulty);
+        }
+
+        if ($maxCost !== null) {
+            $qb->andWhere('r.cost <= :maxCost')
+                ->setParameter('maxCost', $maxCost);
+        }
+
+        if ($maxTime !== null) {
+            $qb->andWhere('r.time <= :maxTime')
+                ->setParameter('maxTime', $maxTime);
         }
 
         return $qb->distinct()

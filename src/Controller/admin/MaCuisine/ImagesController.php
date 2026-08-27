@@ -11,8 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/macuisine/images', name: 'app_admin_macuisine_images_'),
-IsGranted('ROLE_ADMIN')]
+#[Route('/admin/macuisine/images', name: 'app_admin_macuisine_images_')]
 /** Galerie admin de toutes les images stockées dans public/uploads/recipes. */
 final class ImagesController extends AbstractController
 {
@@ -55,7 +54,7 @@ final class ImagesController extends AbstractController
         $filename = basename($imageToDelete);
 
         try {
-            $imgHandler->removeImage($filename);
+            $imgHandler->removeRecipeImage($filename);
             $this->addFlash('success', sprintf('Image « %s » supprimée.', $filename));
         } catch (FileNotFoundException $e) {
             $this->addFlash('danger', sprintf('Image « %s » introuvable.', $filename));

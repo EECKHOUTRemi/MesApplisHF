@@ -171,6 +171,31 @@ final class ChatControllerTest extends AppWebTestCase
         self::assertSame([], $this->publisher()->updates());
     }
 
+    public function testSendMessageSucceedsWhenTheRecipeFieldIsAnEmptyString(): void
+    {
+        // Le champ caché "recipe" du formulaire vaut toujours "" quand aucune recette
+        // n'est jointe (voir show.html.twig#recipeInput), jamais absent de la requête.
+        [$me, $friend] = $this->createFriends();
+        $conversation  = $this->createConversation($me, $friend);
+
+        $this->login($me);
+        $tokens = $this->openConversation($conversation);
+
+        $this->client->request('POST', $this->messageUrl($conversation), [
+            'message' => self::CONTENT,
+            'recipe'  => '',
+            '_token'  => $tokens['message'],
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+
+        $sent = $this->em()->getRepository(Message::class)->findOneBy(['conversation' => $conversation]);
+
+        self::assertInstanceOf(Message::class, $sent);
+        self::assertSame(self::CONTENT, $sent->getContent());
+        self::assertNull($sent->getRecipeAttached());
+    }
+
     public function testSendMessageAttachesARecipeWithoutAnyText(): void
     {
         [$me, $friend] = $this->createFriends();
@@ -335,6 +360,7 @@ final class ChatControllerTest extends AppWebTestCase
         $recipe = (new Recipe())
             ->setAuthor($this->reload($author))
             ->setName($name)
+            ->setDescription('Recette de test.')
             ->setCreatedAt(new \DateTimeImmutable());
 
         $this->em()->persist($recipe);

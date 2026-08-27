@@ -2,11 +2,14 @@
 
 namespace App\Form\MaCuisine;
 
+use App\Entity\MaCuisine\Category;
 use App\Entity\MaCuisine\Recipe;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -25,6 +28,14 @@ class RecipeAdminType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $choiceTypeParams = [
+            'required' => false,
+            'expanded' => true,
+            'multiple' => false,
+            'placeholder' => false,
+            'choices' => ['5' => 5, '4' => 4, '3' => 3, '2' => 2, '1' => 1],
+        ];
+
         $builder
             // l'entité attend des DateTimeImmutable ; par défaut DateTimeType produit un DateTime
             ->add('createdAt', DateTimeType::class, [
@@ -42,6 +53,23 @@ class RecipeAdminType extends AbstractType
                 'class' => User::class,
                 'choice_label' => 'id',
             ])
+            ->add('category', EntityType::class, [
+                'required' => false,
+                'class' => Category::class,
+                'choice_label' => 'name',
+                'placeholder' => 'Choisir une catégorie',
+            ])
+            ->add('source', TextType::class, [
+                'required' => false,
+            ])
+            ->add('portions', IntegerType::class, [
+                'required' => false,
+            ])
+            ->add('time', IntegerType::class, [
+                'required' => false,
+            ])
+            ->add('difficulty', ChoiceType::class, $choiceTypeParams)
+            ->add('cost', ChoiceType::class, $choiceTypeParams)
         ;
     }
 

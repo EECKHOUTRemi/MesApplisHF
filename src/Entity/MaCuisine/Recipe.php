@@ -35,9 +35,10 @@ class Recipe
     #[Assert\Length(max: 30, maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $name = null;
 
-    #[ORM\Column(length: 600, nullable: true)]
+    #[ORM\Column(length: 600)]
+    #[Assert\NotBlank(message: 'La description ne peut pas être vide.')]
     #[Assert\Length(max: 600, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.')]
-    private ?string $description = null;
+    private string $description;
 
     /**
      * @var Collection<int, RefRecipeIngredient>
@@ -65,6 +66,22 @@ class Recipe
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
+
+    /** Nombre de parts servies. Facultatif : la pastille n'apparaît que si la valeur est renseignée. */
+    #[ORM\Column(nullable: true)]
+    private ?int $portions = null;
+
+    /** Temps total de préparation, en minutes ; le gabarit le reformate en heures/minutes. */
+    #[ORM\Column(nullable: true)]
+    private ?int $time = null;
+
+    /** Difficulté de 1 (facile) à 5 (difficile). Filtrée « au plus » dans le fil. */
+    #[ORM\Column(nullable: true)]
+    private ?int $difficulty = null;
+
+    /** Budget de 1 (bon marché) à 5 (onéreux). Filtré « au plus » dans le fil. */
+    #[ORM\Column(nullable: true)]
+    private ?int $cost = null;
 
     public function __construct()
     {
@@ -154,17 +171,17 @@ class Recipe
         return $this;
     }
 
-    /** @return string|null */
-    public function getDescription(): ?string
+    /** @return string */
+    public function getDescription(): string
     {
         return $this->description;
     }
 
     /**
-     * @param string|null $description
+     * @param string $description
      * @return static
      */
-    public function setDescription(?string $description): static
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -220,11 +237,16 @@ class Recipe
         return $this;
     }
 
+    /** @return string|null */
     public function getSource(): ?string
     {
         return $this->source;
     }
 
+    /**
+     * @param string|null $source
+     * @return static
+     */
     public function setSource(?string $source): static
     {
         $this->source = $source;
@@ -232,14 +254,87 @@ class Recipe
         return $this;
     }
 
+    /** @return string|null */
     public function getImage(): ?string
     {
         return $this->image;
     }
 
+    /**
+     * @param string|null $image
+     * @return static
+     */
     public function setImage(?string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /** @return int|null */
+    public function getPortions(): ?int
+    {
+        return $this->portions;
+    }
+
+    /**
+     * @param int|null $portions
+     * @return static
+     */
+    public function setPortions(?int $portions): static
+    {
+        $this->portions = $portions;
+
+        return $this;
+    }
+
+    /** @return int|null */
+    public function getTime(): ?int
+    {
+        return $this->time;
+    }
+
+    /**
+     * @param int|null $time
+     * @return static
+     */
+    public function setTime(?int $time): static
+    {
+        $this->time = $time;
+
+        return $this;
+    }
+
+    /** @return int|null */
+    public function getDifficulty(): ?int
+    {
+        return $this->difficulty;
+    }
+
+    /**
+     * @param int|null $difficulty
+     * @return static
+     */
+    public function setDifficulty(?int $difficulty): static
+    {
+        $this->difficulty = $difficulty;
+
+        return $this;
+    }
+
+    /** @return int|null */
+    public function getCost(): ?int
+    {
+        return $this->cost;
+    }
+
+    /**
+     * @param int|null $cost
+     * @return static
+     */
+    public function setCost(?int $cost): static
+    {
+        $this->cost = $cost;
 
         return $this;
     }

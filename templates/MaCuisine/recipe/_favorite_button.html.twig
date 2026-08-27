@@ -1,0 +1,15 @@
+{# Bouton d'ajout/retrait des favoris.
+   Attend `recipe` et `isFavorite` (booléen). Poste vers app_macuisine_favorite_toggle,
+   qui bascule l'état puis redirige.
+   Le style du bouton vient de la page qui l'inclut (ex. `.post-actions .btn` dans le fil) ;
+   la classe `is-favorite` sert à colorer l'étoile quand la recette est déjà en favori. #}
+<form method="post" action="{{ path('app_macuisine_favorite_toggle') }}" class="d-inline">
+    <input type="hidden" name="_token" value="{{ csrf_token('favorite' ~ recipe.id) }}">
+    <input type="hidden" name="recipeId" value="{{ recipe.id }}">
+    <button type="submit"
+            class="btn d-inline-flex align-items-center gap-1{{ isFavorite ? ' is-favorite' : '' }}"
+            title="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}">
+        <i class="bi bi-star{{ isFavorite ? '-fill' : '' }}" aria-hidden="true"></i>
+        <span>{{ isFavorite ? 'Retirer' : 'Ajouter' }}</span>
+    </button>
+</form>

@@ -37,13 +37,18 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
                             <li><h6 class="dropdown-header">Administration</h6></li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_user_index') }}">
-                                    <i class="bi bi-people-fill"></i> Utilisateurs
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_admin_user_index') }}">
+                                    <i class="bi bi-person-fill"></i> Utilisateurs
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_relationship_index') }}">
-                                    <i class="bi bi-people"></i> Relations
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_admin_pfp_index') }}">
+                                    <i class="bi bi-person-square"></i> Photos de profil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{{ path('app_admin_relationship_index') }}">
+                                    <i class="bi bi-people-fill"></i> Relations
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
@@ -53,17 +58,22 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_macuisine_ingredient_index') }}">
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_favorite_index') }}">
+                                    <i class="bi bi-star-fill"></i> Favoris
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_ingredient_index') }}">
                                     <i class="bi bi-basket-fill"></i> Ingrédients
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_ma_cuisine_utensil_index') }}">
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_utensil_index') }}">
                                     <i class="bi bi-tools"></i> Ustensiles
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_ma_cuisine_category_index') }}">
+                                <a class="dropdown-item d-flex align-items-center gap-2" tabindex="-1" href="{{ path('app_admin_macuisine_category_index') }}">
                                     <i class="bi bi-tag-fill"></i> Catégories
                                 </a>
                             </li>
@@ -87,9 +97,14 @@
                     </li>
                 {% endif %}
                 <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-2 {% if 'favorite' in currentRoute and 'admin' not in currentRoute %}active{% endif %}" href="{{ path('app_macuisine_favorite_index') }}" title="Favoris">
+                        <i class="bi bi-star-fill fs-4" aria-hidden="true"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
                     {# Rendue même à zéro, et masquée : le flux Mercure l'incrémente sans recharger la page. #}
                     {% set unreadCount = unread_messages_count() %}
-                    <a class="nav-link d-flex align-items-center gap-2 {% if 'chat' in currentRoute %}active{% endif %}" href="{{ path('app_friends_chat_index') }}" title="Chat">
+                    <a class="nav-link d-flex align-items-center gap-2 {% if 'chat' in currentRoute %}active{% endif %}" href="{{ path('app_friends_chat_index') }}" title="Messages">
                         {# La pastille se superpose au coin de l'icône : `position-relative`
                            sur l'enveloppe, absolue sur la pastille. #}
                         <span class="position-relative d-inline-flex">
@@ -126,10 +141,10 @@
                             {# d-flex : sans cela l'image, en ligne, repose sur la ligne de base
                                et traîne un blanc sous elle qui décale l'icône. #}
                             <picture class="d-flex">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_avif') }}" type="image/avif">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_webp') }}" type="image/webp">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_png') }}" type="image/png">
-                                <source srcset="{{ asset(imgPath) | imagine_filter('pfp_navbar_jpeg') }}" type="image/jpeg">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_avif') }}" type="image/avif">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_webp') }}" type="image/webp">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_png') }}" type="image/png">
+                                <source srcset="{{ asset(imgPath) | imagine_filter('tiny_jpeg') }}" type="image/jpeg">
                                 <img src="{{ asset(imgPath) }}" alt="Profil" loading="lazy" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
                             </picture>
                         {% else %}

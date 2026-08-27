@@ -29,7 +29,7 @@ class UserJourneyTest extends WebTestCase
         $this->assertSelectorTextContains('h1', 'Inscription');
         $this->client->submitForm("S'inscrire", [
             'registration_form[email]' => $email,
-            'registration_form[username]' => 'voyageur',
+            'registration_form[username]' => uniqid('voy.', true),
             'registration_form[plainPassword]' => $password,
         ]);
         $this->assertResponseRedirects('/login');

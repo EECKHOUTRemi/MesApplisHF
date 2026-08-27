@@ -24,6 +24,17 @@
 # GHSA-hrxh-6v49-42gf (HIGH) — gRPC-Go xDS RBAC / HTTP/2 vulnerabilities
 #   Fixed in grpc v1.82.1. FrankenPHP does not use xDS service-mesh features;
 #   the xDS RBAC code path is not reachable in this deployment.
+#
+# (added 2026-08-24) — same kin-openapi package, different CVEs surfaced after
+# its own patch releases. Same unpatchable-at-app-level situation as above.
+#
+# CVE-2026-76905 (HIGH) — kin-openapi openapi3filter nil-pointer DoS on malformed
+#   multipart/form-data. Fixed in kin-openapi v0.141.0. Same reasoning as above:
+#   only reachable through Caddy's admin API (localhost:2019), not exposed.
+#
+# CVE-2026-77354 (HIGH) — kin-openapi openapi3filter uncontrolled resource
+#   consumption via deepObject query parameter decoding. Fixed in kin-openapi
+#   v0.142.0. Same unreachable admin-API-only code path.
 package trivy
 
 default ignore = false
@@ -38,4 +49,12 @@ ignore {
 
 ignore {
 	input.VulnerabilityID == "GHSA-hrxh-6v49-42gf"
+}
+
+ignore {
+	input.VulnerabilityID == "CVE-2026-76905"
+}
+
+ignore {
+	input.VulnerabilityID == "CVE-2026-77354"
 }

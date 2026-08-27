@@ -1,0 +1,15 @@
+{# symfony/translation n'est pas installé : le filtre |trans laisserait la clé du
+   bundle en anglais. On formate donc la durée d'expiration en français à partir
+   de la clé et du compteur exposés par le ResetPasswordToken. #}
+{% macro duration(resetToken) -%}
+    {%- set count = resetToken.expirationMessageData['%count%'] -%}
+    {%- set units = {
+        '%count% year|%count% years':     ['an', 'ans'],
+        '%count% month|%count% months':   ['mois', 'mois'],
+        '%count% day|%count% days':       ['jour', 'jours'],
+        '%count% hour|%count% hours':     ['heure', 'heures'],
+        '%count% minute|%count% minutes': ['minute', 'minutes'],
+    } -%}
+    {%- set unit = units[resetToken.expirationMessageKey] -%}
+    {{- count }} {{ count > 1 ? unit[1] : unit[0] -}}
+{%- endmacro %}
