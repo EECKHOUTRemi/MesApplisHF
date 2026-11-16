@@ -3,7 +3,7 @@
 # ===========================================================================
 # base — shared foundation for every environment (PHP 8.4 + FrankenPHP).
 # ===========================================================================
-FROM dunglas/frankenphp:1-php8.4 AS base
+FROM dunglas/frankenphp:1-php8.5 AS base
 
 WORKDIR /app
 
