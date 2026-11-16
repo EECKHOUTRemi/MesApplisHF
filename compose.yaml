@@ -29,6 +29,9 @@ services:
       MERCURE_URL: http://mercure/.well-known/mercure
       MERCURE_PUBLIC_URL: ${MERCURE_PUBLIC_URL:?MERCURE_PUBLIC_URL must be set}
       MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET:?MERCURE_JWT_SECRET must be set}
+      # Cloudflare Turnstile (captcha on the registration form).
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:?TURNSTILE_SITE_KEY must be set}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:?TURNSTILE_SECRET_KEY must be set}
       # FrankenPHP listens on :80 inside the container; the host proxy terminates TLS.
       SERVER_NAME: ":80"
       # Trust the host reverse proxy so Symfony reads the real client IP/scheme.
