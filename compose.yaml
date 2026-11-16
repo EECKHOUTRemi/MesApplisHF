@@ -39,6 +39,11 @@ services:
     # Published only on loopback; the host's Nginx/Caddy reverse-proxies the domain here.
     ports:
       - "127.0.0.1:${HTTP_PORT:?HTTP_PORT_must_be_set}:80"
+    # User uploads and LiipImagine thumbnails must outlive the container: without
+    # these volumes every rebuild/redeploy wipes them.
+    volumes:
+      - uploads:/app/public/uploads
+      - media_cache:/app/public/media/cache
     restart: unless-stopped
 
   database:
@@ -96,6 +101,8 @@ services:
 
 volumes:
   database_data:
+  uploads:
+  media_cache:
 
 ###> symfony/mercure-bundle ###
   mercure_data:
