@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ===========================================================================
-# base — shared foundation for every environment (PHP 8.4 + FrankenPHP).
+# base — shared foundation for every environment (PHP 8.5 + FrankenPHP).
 # ===========================================================================
 FROM dunglas/frankenphp:1-php8.5 AS base
 
