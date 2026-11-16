@@ -2,6 +2,7 @@
 
 namespace App\Tests\E2E;
 
+use App\Tests\Captcha\FakeTurnstileResponseFactory;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Mime\Email;
@@ -31,6 +32,7 @@ class UserJourneyTest extends WebTestCase
             'registration_form[email]' => $email,
             'registration_form[username]' => uniqid('voy.', true),
             'registration_form[plainPassword]' => $password,
+            'registration_form[captcha]' => FakeTurnstileResponseFactory::VALID_TOKEN,
         ]);
         $this->assertResponseRedirects('/login');
 

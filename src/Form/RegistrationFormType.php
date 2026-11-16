@@ -3,9 +3,11 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Validator\Turnstile;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -13,7 +15,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-/** Formulaire d'inscription : nom d'utilisateur, e-mail et mot de passe en clair (non mappé). */
+/**
+ * Formulaire d'inscription : nom d'utilisateur, e-mail, mot de passe en clair (non mappé)
+ * et jeton anti-robot Cloudflare Turnstile (non mappé).
+ */
 class RegistrationFormType extends AbstractType
 {
     /**
@@ -56,6 +61,13 @@ class RegistrationFormType extends AbstractType
                 'label'    => 'J\'ai lu et j\'accèpte la Politique de confidentialité',
                 'required' => true,
                 'mapped' => false
+            ])
+            // Rempli côté client par le widget Cloudflare Turnstile (contrôleur Stimulus "turnstile").
+            ->add('captcha', HiddenType::class, [
+                'mapped' => false,
+                'error_bubbling' => false,
+                'constraints' => [new Turnstile()],
+                'attr' => ['data-turnstile-target' => 'input'],
             ])
         ;
     }

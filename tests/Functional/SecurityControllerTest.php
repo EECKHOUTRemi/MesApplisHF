@@ -2,6 +2,8 @@
 
 namespace App\Tests\Functional;
 
+use App\Tests\Captcha\FakeTurnstileResponseFactory;
+
 /**
  * Teste les flux d'authentification : affichage des pages, connexion valide/invalide,
  * inscription avec hachage du mot de passe et envoi d'e-mail de vérification.
@@ -62,6 +64,7 @@ class SecurityControllerTest extends AppWebTestCase
             'registration_form[email]' => $email,
             'registration_form[username]' => uniqid('insc.', true),
             'registration_form[plainPassword]' => 'MotDePasse123',
+            'registration_form[captcha]' => FakeTurnstileResponseFactory::VALID_TOKEN,
         ]);
 
         // L'utilisateur doit confirmer son e-mail avant de pouvoir se connecter.
@@ -74,6 +77,27 @@ class SecurityControllerTest extends AppWebTestCase
         $this->assertContains('ROLE_USER', $user->getRoles());
     }
 
+    public function testRegistrationWithInvalidCaptchaIsRejected(): void
+    {
+        $email = uniqid('robot.', true) . '@test.local';
+
+        $this->client->request('GET', '/register');
+        $this->client->submitForm("S'inscrire", [
+            'registration_form[email]' => $email,
+            'registration_form[username]' => uniqid('robot.', true),
+            'registration_form[plainPassword]' => 'MotDePasse123',
+            'registration_form[captcha]' => 'jeton-invalide',
+        ]);
+
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertSelectorTextContains('.invalid-feedback', 'La vérification anti-robot a échoué');
+        $this->assertEmailCount(0);
+        $this->assertNull(
+            $this->em()->getRepository(\App\Entity\User::class)->findOneBy(['email' => $email]),
+            "Aucun compte ne doit être créé sans captcha valide"
+        );
+    }
+
     public function testRegistrationSendsVerificationEmail(): void
     {
         $this->client->request('GET', '/register');
@@ -81,6 +105,7 @@ class SecurityControllerTest extends AppWebTestCase
             'registration_form[email]' => uniqid('inscrit.', true) . '@test.local',
             'registration_form[username]' => uniqid('insc.', true),
             'registration_form[plainPassword]' => 'MotDePasse123',
+            'registration_form[captcha]' => FakeTurnstileResponseFactory::VALID_TOKEN,
         ]);
 
         $this->assertEmailCount(1);
@@ -95,6 +120,7 @@ class SecurityControllerTest extends AppWebTestCase
             'registration_form[email]' => $existing->getEmail(),
             'registration_form[username]' => uniqid('insc.', true),
             'registration_form[plainPassword]' => 'MotDePasse123',
+            'registration_form[captcha]' => FakeTurnstileResponseFactory::VALID_TOKEN,
         ]);
 
         // La réponse reste identique à une inscription réussie : elle ne doit pas
@@ -116,6 +142,7 @@ class SecurityControllerTest extends AppWebTestCase
             'registration_form[email]' => $existing->getEmail(),
             'registration_form[username]' => uniqid('insc.', true),
             'registration_form[plainPassword]' => 'MotDePasse123',
+            'registration_form[captcha]' => FakeTurnstileResponseFactory::VALID_TOKEN,
         ]);
 
         // Pas d'e-mail de confirmation (aucun compte créé), mais une alerte à l'adresse existante.
@@ -135,6 +162,7 @@ class SecurityControllerTest extends AppWebTestCase
             'registration_form[email]' => uniqid('inscrit.', true) . '@test.local',
             'registration_form[username]' => $existing->getUsername(),
             'registration_form[plainPassword]' => 'MotDePasse123',
+            'registration_form[captcha]' => FakeTurnstileResponseFactory::VALID_TOKEN,
         ]);
 
         // Contrairement à l'e-mail, le nom d'utilisateur n'est pas sensible : le
