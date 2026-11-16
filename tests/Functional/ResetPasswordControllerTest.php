@@ -125,7 +125,7 @@ class ResetPasswordControllerTest extends AppWebTestCase
 
         // Le formulaire est réaffiché avec l'erreur, le mot de passe reste inchangé.
         $this->assertResponseStatusCodeSame(422);
-        $this->assertSelectorTextContains('.invalid-feedback', 'Les mots de passe doivent etre identiques.');
+        $this->assertSelectorTextContains('.invalid-feedback', 'Les mots de passe doivent être identiques.');
 
         /** @var UserPasswordHasherInterface $passwordHasher */
         $passwordHasher = static::getContainer()->get(UserPasswordHasherInterface::class);

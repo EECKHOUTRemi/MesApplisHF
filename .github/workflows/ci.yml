@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.4"
+          php-version: "8.5"
           extensions: intl, pdo_pgsql, zip, opcache, gd
           coverage: none
       - run: composer validate --strict
@@ -56,14 +56,14 @@ jobs:
           context: .
           target: prod
           tags: ${{ env.IMAGE }}:${{ github.sha }}
-          outputs: type=docker,dest=/tmp/image.tar
+          outputs: type=docker,dest=${{ runner.temp }}/image.tar
           pull: true           # always resolve latest digest for floating base-image tags
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - uses: actions/upload-artifact@v7
         with:
           name: docker-image
-          path: /tmp/image.tar
+          path: ${{ runner.temp }}/image.tar
 
   # ── Stage 2: test ───────────────────────────────────────────────
   # PR-only: see note on the lint job above.
@@ -88,7 +88,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.4"
+          php-version: "8.5"
           extensions: intl, pdo_pgsql, zip, opcache
           coverage: xdebug # needed for Sonar coverage
       - run: composer install --prefer-dist --no-progress --no-interaction
@@ -122,8 +122,8 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: docker-image
-          path: /tmp
-      - run: docker load --input /tmp/image.tar
+          path: ${{ runner.temp }}
+      - run: docker load --input ${{ runner.temp }}/image.tar
       - name: Trivy image scan
         uses: aquasecurity/trivy-action@v0.36.0
         with:
@@ -183,8 +183,8 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: docker-image
-          path: /tmp
-      - run: docker load --input /tmp/image.tar
+          path: ${{ runner.temp }}
+      - run: docker load --input ${{ runner.temp }}/image.tar
       - uses: docker/login-action@v4
         with:
           registry: ghcr.io
@@ -244,7 +244,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           extensions: intl, pdo_pgsql, zip, opcache
 
       - name: Install Graphviz (phpDocumentor class diagrams)

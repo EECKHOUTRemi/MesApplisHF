@@ -42,6 +42,16 @@
                         {% set privacyLabel = 'J\'ai lu et j\'accèpte la <a href="' ~ path('app_privacy') ~ '">Politique de Confidentialité</a>' %}
                         {{ form_row(registrationForm.privacy, { label: privacyLabel, label_html: true }) }}
 
+                        <div class="mb-3" data-controller="turnstile" data-turnstile-site-key-value="{{ turnstile_site_key }}">
+                            <div data-turnstile-target="widget"></div>
+                            {{ form_widget(registrationForm.captcha) }}
+                            {% if registrationForm.captcha.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in registrationForm.captcha.vars.errors %}{{ error.message }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
                         <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
                     {{ form_end(registrationForm) }}
                 </div>

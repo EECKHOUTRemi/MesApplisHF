@@ -32,7 +32,9 @@ class UserType extends AbstractType
                 'expanded' => true,
             ])
             ->add('username', TextType::class)
-            ->add('isVerified', CheckboxType::class)
+            ->add('isVerified', CheckboxType::class, [
+                'required' => false,
+            ])
             ->add('height', NumberType::class, [
                 'label' => 'Taille (cm)',
                 'required' => false,

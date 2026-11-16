@@ -21,3 +21,15 @@ services:
             $publisher: '@App\Tests\Mercure\CollectingPublisher'
             $jwtFactory: '@mercure.hub.default.jwt.factory'
             $publicUrl: '%env(default::MERCURE_PUBLIC_URL)%'
+
+    # Les tests n'appellent pas Cloudflare : l'API Turnstile est simulée et
+    # n'accepte que le jeton FakeTurnstileResponseFactory::VALID_TOKEN.
+    App\Tests\Captcha\FakeTurnstileResponseFactory: ~
+
+    app.turnstile.mock_http_client:
+        class: Symfony\Component\HttpClient\MockHttpClient
+        arguments: ['@App\Tests\Captcha\FakeTurnstileResponseFactory']
+
+    App\Security\TurnstileVerifier:
+        arguments:
+            $httpClient: '@app.turnstile.mock_http_client'
