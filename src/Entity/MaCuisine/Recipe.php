@@ -44,8 +44,8 @@ class Recipe
      * @var Collection<int, RefRecipeIngredient>
      */
     #[ORM\OneToMany(
-        mappedBy: 'recipe',
         targetEntity: RefRecipeIngredient::class,
+        mappedBy: 'recipe',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
@@ -69,7 +69,7 @@ class Recipe
 
     /** Nombre de parts servies. Facultatif : la pastille n'apparaît que si la valeur est renseignée. */
     #[ORM\Column(nullable: true)]
-    private ?int $portions = null;
+    private ?float $portions = null;
 
     /** Temps total de préparation, en minutes ; le gabarit le reformate en heures/minutes. */
     #[ORM\Column(nullable: true)]

@@ -10,6 +10,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -79,8 +80,8 @@ class RecipeType extends AbstractType
                 'constraints' => [
                     new Regex(
                         pattern: '/\b((https?|ftp):\/\/)?([a-z0-9-]{2,}\.)+[a-z]{2,}(\/\S*)?/i',
-                        match: false,
                         message: 'La source ne doit pas contenir de lien ou d\'adresse web.',
+                        match: false,
                     ),
                 ],
             ])
@@ -94,8 +95,9 @@ class RecipeType extends AbstractType
                     'class' => 'ingredients-select',
                 ],
             ])
-            ->add('portions', IntegerType::class, [
+            ->add('portions', NumberType::class, [
                 'required' => false,
+                'scale' => 2,
             ])
             ->add('time', IntegerType::class, [
                 'required' => false,
