@@ -32,6 +32,7 @@ class RecipeFormHandler
     private TokenStorageInterface $tokenStorage;
     private string $recipesImagesDirectory;
     private ImageHandler $imageHandler;
+    private TextFormatter $textFormatter;
 
     /**
      * @param EntityManagerInterface $em
@@ -40,6 +41,7 @@ class RecipeFormHandler
      * @param TokenStorageInterface $tokenStorage
      * @param string $recipesImagesDirectory Chemin absolu du dossier de stockage des images de recettes
      * @param ImageHandler $imageHandler
+     * @param TextFormatter $textFormatter
      */
     public function __construct(
         EntityManagerInterface $em,
@@ -48,6 +50,7 @@ class RecipeFormHandler
         TokenStorageInterface $tokenStorage,
         #[Autowire(param: 'recipes_images_directory')] string $recipesImagesDirectory,
         ImageHandler $imageHandler,
+        TextFormatter $textFormatter,
     ) {
         $this->em = $em;
         $this->ingredientRepository = $ingredientRepository;
@@ -55,6 +58,7 @@ class RecipeFormHandler
         $this->tokenStorage = $tokenStorage;
         $this->recipesImagesDirectory = $recipesImagesDirectory;
         $this->imageHandler = $imageHandler;
+        $this->textFormatter = $textFormatter;
     }
 
     /**
@@ -144,7 +148,8 @@ class RecipeFormHandler
         foreach ($extras as $ingredient => $datas) {
             $ingredientObj = is_numeric($ingredient)
                 ? $this->ingredientRepository->find($ingredient)
-                : $this->ingredientRepository->findNameLike($ingredient)[0];
+                // le nom stocké a été normalisé par NameFormatterListener
+                : $this->ingredientRepository->findNameLike($this->textFormatter->format($ingredient))[0];
 
             $id = $ingredientObj->getId();
             $submittedIds[$id] = true;
