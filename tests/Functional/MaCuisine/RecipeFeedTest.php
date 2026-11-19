@@ -20,7 +20,7 @@ class RecipeFeedTest extends AppWebTestCase
     /**
      * @param User $author
      * @param string $prefix
-     * @param array{portions?: int, time?: int, difficulty?: int, cost?: int} $meta
+     * @param array{portions?: float, time?: int, difficulty?: int, cost?: int} $meta
      * @return Recipe
      */
     private function createRecipe(User $author, string $prefix, array $meta = []): Recipe

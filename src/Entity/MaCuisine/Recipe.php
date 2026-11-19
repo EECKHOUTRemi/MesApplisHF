@@ -271,17 +271,17 @@ class Recipe
         return $this;
     }
 
-    /** @return int|null */
-    public function getPortions(): ?int
+    /** @return float|null */
+    public function getPortions(): ?float
     {
         return $this->portions;
     }
 
     /**
-     * @param int|null $portions
+     * @param float|null $portions
      * @return static
      */
-    public function setPortions(?int $portions): static
+    public function setPortions(?float $portions): static
     {
         $this->portions = $portions;
 
