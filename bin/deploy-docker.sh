@@ -40,7 +40,9 @@ git checkout "$BRANCH"
 git reset --hard "origin/$BRANCH"
 
 log "Building image (target from $ENV_FILE)..."
-$COMPOSE build
+# --pull: always resolve the latest digest of the floating base-image tag
+# (dunglas/frankenphp:1-php8.5) so PHP patch releases are picked up.
+$COMPOSE build --pull
 
 log "Starting containers..."
 $COMPOSE up -d --remove-orphans

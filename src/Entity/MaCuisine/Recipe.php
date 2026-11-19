@@ -44,8 +44,8 @@ class Recipe
      * @var Collection<int, RefRecipeIngredient>
      */
     #[ORM\OneToMany(
-        mappedBy: 'recipe',
         targetEntity: RefRecipeIngredient::class,
+        mappedBy: 'recipe',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
@@ -69,7 +69,7 @@ class Recipe
 
     /** Nombre de parts servies. Facultatif : la pastille n'apparaît que si la valeur est renseignée. */
     #[ORM\Column(nullable: true)]
-    private ?int $portions = null;
+    private ?float $portions = null;
 
     /** Temps total de préparation, en minutes ; le gabarit le reformate en heures/minutes. */
     #[ORM\Column(nullable: true)]
@@ -271,17 +271,17 @@ class Recipe
         return $this;
     }
 
-    /** @return int|null */
-    public function getPortions(): ?int
+    /** @return float|null */
+    public function getPortions(): ?float
     {
         return $this->portions;
     }
 
     /**
-     * @param int|null $portions
+     * @param float|null $portions
      * @return static
      */
-    public function setPortions(?int $portions): static
+    public function setPortions(?float $portions): static
     {
         $this->portions = $portions;
 

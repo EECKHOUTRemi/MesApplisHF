@@ -153,8 +153,8 @@ class RecipeFormHandler
                 ->setRecipe($recipe)
                 ->setIngredient($ingredientObj);
 
-            $ref->setUnite((string) $datas['unit']);
-            $ref->setQuantity((float) $datas['qty']);
+            $ref->setUnite((string) $datas['unit'])
+                ->setQuantity((float) $datas['qty']);
 
             if (!isset($existing[$id])) {
                 $this->em->persist($ref);

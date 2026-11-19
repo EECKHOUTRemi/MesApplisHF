@@ -9,9 +9,12 @@ var/cache/*
 var/log/*
 node_modules/
 public/assets/
+public/uploads/
+public/media/
 
 # Local environment overrides and secrets must not enter the image.
 .env.local
+.env.local.php
 .env.*.local
 
 # Private keys must never enter the build context: the image is deployed to the
