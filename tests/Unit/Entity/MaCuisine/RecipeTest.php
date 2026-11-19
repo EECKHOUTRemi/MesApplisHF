@@ -31,7 +31,7 @@ class RecipeTest extends TestCase
             ->setDifficulty(2)
             ->setCost(3);
 
-        $this->assertSame(4, $recipe->getPortions());
+        $this->assertSame(4.0, $recipe->getPortions());
         $this->assertSame(45, $recipe->getTime());
         $this->assertSame(2, $recipe->getDifficulty());
         $this->assertSame(3, $recipe->getCost());

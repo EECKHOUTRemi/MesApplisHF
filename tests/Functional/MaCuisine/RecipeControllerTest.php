@@ -435,7 +435,7 @@ class RecipeControllerTest extends AppWebTestCase
         $this->em()->clear();
         $recipe = $this->em()->getRepository(Recipe::class)->findOneBy(['name' => $name]);
         $this->assertNotNull($recipe);
-        $this->assertSame(4, $recipe->getPortions());
+        $this->assertSame(4.0, $recipe->getPortions());
         $this->assertSame(45, $recipe->getTime());
         $this->assertSame(2, $recipe->getDifficulty());
         $this->assertSame(3, $recipe->getCost());
@@ -517,7 +517,7 @@ class RecipeControllerTest extends AppWebTestCase
 
         $this->em()->clear();
         $reloaded = $this->em()->find(Recipe::class, $recipe->getId());
-        $this->assertSame(6, $reloaded->getPortions());
+        $this->assertSame(6.0, $reloaded->getPortions());
         $this->assertSame(120, $reloaded->getTime());
         $this->assertSame(4, $reloaded->getDifficulty());
         $this->assertSame(5, $reloaded->getCost());
