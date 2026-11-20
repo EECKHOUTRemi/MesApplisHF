@@ -44,6 +44,16 @@ log "Building image (target from $ENV_FILE)..."
 # (dunglas/frankenphp:1-php8.5) so PHP patch releases are picked up.
 $COMPOSE build --pull
 
+# Safety net: snapshot the uploads of the running stack before replacing it.
+# Exit code 2 = no running container (first deploy): nothing to save.
+log "Backing up uploads before restart..."
+BACKUP_STATUS=0
+./bin/backup-uploads.sh "$ENV" || BACKUP_STATUS=$?
+case "$BACKUP_STATUS" in
+    0|2) ;;
+    *) die "uploads backup failed: deploy aborted (no container was touched)" ;;
+esac
+
 log "Starting containers..."
 $COMPOSE up -d --remove-orphans
 
