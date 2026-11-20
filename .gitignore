@@ -32,6 +32,7 @@
 !bin/deploy.sh
 !bin/deploy-docker.sh
 !bin/backup.sh
+!bin/backup-uploads.sh
 !bin/phpunit
 /vendor/
 
